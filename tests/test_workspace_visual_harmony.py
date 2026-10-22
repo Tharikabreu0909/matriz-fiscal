@@ -4,7 +4,9 @@ import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+DOCUMENT = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+CSS = (ROOT / "static" / "app.css").read_text(encoding="utf-8")
+HTML = DOCUMENT + CSS
 
 
 def test_workspace_uses_one_visual_system_for_the_three_bands():
@@ -34,10 +36,15 @@ def test_step_buttons_have_equal_height_and_flexible_width():
     assert "height:32px" in HTML
 
 
+def test_stylesheet_is_linked_from_the_page():
+    assert 'href="/static/app.css"' in DOCUMENT
+    assert "<style>" not in DOCUMENT
+
+
 def test_existing_javascript_was_not_rewritten_for_visual_change():
     scripts = re.findall(
         r"<script>(.*?)</script>",
-        HTML,
+        DOCUMENT,
         flags=re.S,
     )
     assert scripts

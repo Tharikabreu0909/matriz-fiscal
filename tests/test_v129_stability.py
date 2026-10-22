@@ -2,11 +2,11 @@ from pathlib import Path
 
 
 def html_text() -> str:
+    static = Path(__file__).resolve().parents[1] / "static"
     return (
-        Path(__file__).resolve().parents[1]
-        / "static"
-        / "index.html"
-    ).read_text(encoding="utf-8")
+        (static / "index.html").read_text(encoding="utf-8")
+        + (static / "app.css").read_text(encoding="utf-8")
+    )
 
 
 def test_analysis_has_only_one_visible_competence_list():

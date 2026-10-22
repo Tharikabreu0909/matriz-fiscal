@@ -6,7 +6,10 @@ from services.pgdas_planner import calculate_required_pgdas
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+HTML = (
+    (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+    + (ROOT / "static" / "app.css").read_text(encoding="utf-8")
+)
 APP = (ROOT / "app.py").read_text(encoding="utf-8")
 BATCH = (ROOT / "INICIAR_CHECKFISCAL_WINDOWS.bat").read_text(
     encoding="utf-8"

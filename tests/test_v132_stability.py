@@ -14,7 +14,10 @@ from services.reflection_coverage import latest_normally_due_competence
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+HTML = (
+    (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+    + (ROOT / "static" / "app.css").read_text(encoding="utf-8")
+)
 
 
 def test_same_malha_source_is_recognized_before_merge():

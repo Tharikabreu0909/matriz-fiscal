@@ -8,3 +8,4 @@ __pycache__/
 checkfiscal_data/
 checkfiscal_local.db
 exports/
+.cursor/

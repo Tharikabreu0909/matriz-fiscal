@@ -345,15 +345,27 @@ async def log_requests(request: Request, call_next):
         raise
 
 
+_STATIC_CACHE = {
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    "Pragma": "no-cache",
+    "Expires": "0",
+}
+
+
 @app.get("/", response_class=HTMLResponse)
 def index() -> HTMLResponse:
     return HTMLResponse(
         (BASE_DIR / "static" / "index.html").read_text(encoding="utf-8"),
-        headers={
-            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-            "Pragma": "no-cache",
-            "Expires": "0",
-        },
+        headers=_STATIC_CACHE,
+    )
+
+
+@app.get("/static/app.css")
+def app_stylesheet() -> FileResponse:
+    return FileResponse(
+        BASE_DIR / "static" / "app.css",
+        media_type="text/css; charset=utf-8",
+        headers=_STATIC_CACHE,
     )
 
 
