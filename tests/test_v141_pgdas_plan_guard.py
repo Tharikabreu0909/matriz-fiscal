@@ -87,14 +87,14 @@ def test_type_01_only_malha_requires_pgdas_for_declaration_verification():
 
 def test_ui_blocks_analysis_when_pgdas_plan_is_incomplete():
     assert "currentPgdasPlanError=plan.validation?.status==='ERROR'" in HTML
-    assert "currentMalhaHasCompetences&&((requiredPlan.length===0&&!plan.last_transmitted_competence)||missingMalha.length>0)" in HTML
+    assert "currentMalhaHasCompetences&&(requiredPlan.length===0||missingMalha.length>0)" in HTML
     assert "planError?'Falha no planejamento'" in HTML
     assert "const documentsComplete=hasMalha&&!planError&&cards.length>0&&received===cards.length" in HTML
     assert "id=\"pgdasPlanNotice\"" in HTML
-    assert "VERSÃO 1.45" in HTML
-    assert "127.0.0.1:8145" in BATCH
-    assert "--port 8145" in BATCH
-    assert "127.0.0.1:8145" in DESKTOP
-    assert "port=8145" in DESKTOP
-    assert "--port 8145" in LINUX
+    assert "VERSÃO 1.41" in HTML
+    assert "127.0.0.1:8141" in BATCH
+    assert "--port 8141" in BATCH
+    assert "127.0.0.1:8141" in DESKTOP
+    assert "port=8141" in DESKTOP
+    assert "--port 8141" in LINUX
     assert "const noPgdasNeeded=false" in HTML

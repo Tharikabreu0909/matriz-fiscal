@@ -169,8 +169,5 @@ def test_old_three_document_plan_is_refreshed_without_reupload(
         "06/2022",
         "06/2023",
         "11/2025",
-        # The latest Type 17 competence in this fixture is 08/2025,
-        # so its 12-month reflection horizon ends in 08/2026. The
-        # latest due PA can be newer without extending that horizon.
-        "08/2026",
+        latest_normally_due_competence(),
     ]

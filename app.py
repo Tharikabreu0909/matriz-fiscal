@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from html import escape as html_escape
 import asyncio
 from io import BytesIO
 import json
-import re
 import zipfile
 from tempfile import NamedTemporaryFile
 from typing import Any
@@ -51,10 +49,6 @@ from database import (
     list_stored_documents,
     get_stored_document,
     database_status,
-    list_pgdas_missing_status,
-    set_pgdas_missing_status,
-    get_last_transmitted_pgdas,
-    set_last_transmitted_pgdas,
 )
 from readers.malha_reader import read_malha_pdf
 from readers.pgdas_reader import read_pgdas_pdf
@@ -80,9 +74,6 @@ from services.client_report import (
 from services.pgdas_planner import (
     calculate_required_pgdas,
     normalize_malha_data,
-    adapt_plan_to_last_transmitted,
-    normalize_competence,
-    month_index,
 )
 from services.reflection_coverage import (
     calculate_reflection_coverage,
@@ -118,7 +109,7 @@ from services.runtime_paths import DATA_DIR, DOCUMENTS_DIR
 
 
 BASE_DIR = Path(__file__).resolve().parent
-APP_VERSION = "1.45.0"
+APP_VERSION = "1.41.0"
 MAX_FILE_SIZE = 20 * 1024 * 1024
 PROFILE_CODE = "SINGLE_ANNEX_ESTIMATE_V1"
 
@@ -130,14 +121,9 @@ def ensure_current_pgdas_plan(
     normalized_malha = normalize_malha_data(process.get("malha", {}))
     current = process.get("pgdas_plan", {})
     refreshed = calculate_required_pgdas(normalized_malha)
-    cutoff = get_last_transmitted_pgdas(process["id"])
-    if cutoff:
-        refreshed = adapt_plan_to_last_transmitted(refreshed, cutoff)
 
     current_version = current.get("planner", {}).get("version")
     refreshed_version = refreshed.get("planner", {}).get("version")
-    current_cutoff = current.get("last_transmitted_competence")
-    refreshed_cutoff = refreshed.get("last_transmitted_competence")
     current_periods = [
         item.get("requested_competence")
         for item in current.get("required_pgdas", [])
@@ -158,8 +144,7 @@ def ensure_current_pgdas_plan(
     refreshed_type_17_count = refreshed.get("summary", {}).get("type_17_month_count")
 
     if (
-        current_cutoff != refreshed_cutoff
-        or current_version != refreshed_version
+        current_version != refreshed_version
         or current_periods != refreshed_periods
         or current_due != refreshed_due
         or current_validation != refreshed_validation
@@ -710,7 +695,6 @@ async def upload_pgdas(
             accepted=accepted,
         )
         if accepted:
-            set_pgdas_missing_status(process_id, extracted_period, "AVAILABLE")
             if process.get("company_id"):
                 stored = store_document(
                     content=content,
@@ -1118,7 +1102,6 @@ async def upload_pgdas_auto(
             )
 
             if accepted:
-                set_pgdas_missing_status(process_id, period, "AVAILABLE")
                 if process.get("company_id"):
                     stored = store_document(
                         content=item["content"],
@@ -1306,117 +1289,6 @@ def system_support_bundle() -> FileResponse:
     )
 
 
-class LastPgdasPayload(BaseModel):
-    # None remove a presunção, retornando à solicitação padrão.
-    last_transmitted: str | None = None
-
-
-@app.post("/api/process/{process_id}/last-transmitted-pgdas")
-def last_transmitted_pgdas_update(process_id: int, payload: LastPgdasPayload) -> dict:
-    try:
-        process = get_process(process_id)
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail="Processo não encontrado") from exc
-    last = payload.last_transmitted
-    if last is not None:
-        if not re.fullmatch(r"(0[1-9]|1[0-2])/\d{4}", last):
-            raise HTTPException(status_code=422, detail="Informe a competência no formato MM/AAAA")
-        year = int(last[3:])
-        if year < 1990 or year > 2100:
-            raise HTTPException(status_code=422, detail="Ano fora do intervalo 1990–2100")
-        from datetime import date as _date
-        if month_index(last) > month_index(f"{_date.today().month:02d}/{_date.today().year}"):
-            raise HTTPException(status_code=422, detail="A última declaração não pode ser futura")
-    set_last_transmitted_pgdas(process_id, last)
-    updated = ensure_current_pgdas_plan(get_process(process_id))
-    append_process_event(process_id, "PGDAS_LAST_TRANSMITTED", "Último PGDAS transmitido configurado", {
-        "last_transmitted":last, "mode":"ASSUMED_NOT_DECLARED" if last else "NORMAL",
-    })
-    return {"last_transmitted":last, "pgdas_plan":updated["pgdas_plan"]}
-
-
-class MissingPgdasStatusPayload(BaseModel):
-    competence: str
-    status: str
-
-
-@app.post("/api/process/{process_id}/pgdas-situation")
-def save_pgdas_situation(process_id: int, payload: MissingPgdasStatusPayload) -> dict:
-    try:
-        process = ensure_current_pgdas_plan(get_process(process_id))
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail="Processo não encontrado") from exc
-    competences = {
-        row.get("requested_competence", "")
-        for row in process.get("pgdas_plan", {}).get("required_pgdas", [])
-    }
-    if payload.competence not in competences:
-        raise HTTPException(status_code=400, detail="Competência não solicitada neste processo")
-    if payload.status not in {"AVAILABLE", "NOT_DECLARED", "NOT_LOCATED"}:
-        raise HTTPException(status_code=422, detail="Situação inválida")
-    if payload.status != "AVAILABLE" and payload.competence in {
-        x.get("assessment", {}).get("period") for x in list_accepted_pgdas(process_id)
-    }:
-        raise HTTPException(status_code=409, detail="Já existe PGDAS aceito para esta competência")
-    set_pgdas_missing_status(process_id, payload.competence, payload.status)
-    append_process_event(process_id, "PGDAS_SITUATION", "Situação do PGDAS registrada", {
-        "competence":payload.competence, "status":payload.status,
-    })
-    return {"competence":payload.competence,"status":payload.status}
-
-
-@app.get("/api/process/{process_id}/partial-report", response_class=HTMLResponse)
-def partial_pgdas_report(process_id: int) -> HTMLResponse:
-    try:
-        process = ensure_current_pgdas_plan(get_process(process_id))
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail="Processo não encontrado") from exc
-    malha = process.get("malha") or {}
-    situations = list_pgdas_missing_status(process_id)
-    accepted = {x.get("assessment",{}).get("period") for x in list_accepted_pgdas(process_id)}
-    requests = process.get("pgdas_plan",{}).get("required_pgdas",[])
-    def fmt_cents(value):
-        try:
-            value=int(value or 0)
-            return f"R$ {value/100:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
-        except (TypeError,ValueError):
-            return "Não informado"
-    rows = []
-    for month in malha.get("work_months",[]):
-        for notice in month.get("notices",[]):
-            rows.append("<tr>"+"".join(f"<td>{html_escape(str(v))}</td>" for v in (
-                month.get("competence", ""), notice.get("type_code", ""),
-                fmt_cents(notice.get("informed_cents")),
-                fmt_cents(notice.get("considered_cents")),
-                fmt_cents(notice.get("divergence_cents")),
-            ))+"</tr>")
-    docs = []
-    cutoff = process.get("pgdas_plan",{}).get("last_transmitted_competence")
-    assumed = process.get("pgdas_plan",{}).get("assumed_not_declared_competences",[])
-    for request in requests:
-        c=request.get("requested_competence", "")
-        status="Recebido" if c in accepted else {
-            "NOT_DECLARED":"Não declarado à Receita",
-            "NOT_LOCATED":"Não localizado",
-        }.get(situations.get(c),"Aguardando upload")
-        docs.append(f"<tr><td>{html_escape(c)}</td><td>{html_escape(status)}</td></tr>")
-    for competence in assumed:
-        docs.append(f"<tr><td>{html_escape(competence)}</td><td>PGDAS presumido não transmitido (informação do usuário); receita declarada hipotética R$ 0,00 — não é faturamento real</td></tr>")
-    name=html_escape(str((malha.get("contributor") or {}).get("legal_name") or "Empresa"))
-    content=("<!doctype html><html lang='pt-br'><meta charset='utf-8'>"
-       "<title>CheckFiscal - relatório parcial</title>"
-       "<style>body{font-family:Arial;max-width:1050px;margin:40px auto;color:#1b2533}table{border-collapse:collapse;width:100%;margin:20px 0}th,td{border:1px solid #ccd4dd;padding:8px;text-align:left}th{background:#eaf1fa}p{line-height:1.5}.warning{background:#fff4da;padding:13px;border-left:4px solid #c58b20}@media print{button{display:none}}</style>"
-       f"<h1>CheckFiscal — relatório fiscal parcial</h1><h2>{name}</h2>"
-       "<p class='warning'><b>Relatório parcial, não é guia nem cálculo de imposto.</b>"
-       " As diferenças abaixo são divergências de FATURAMENTO indicadas na malha."
-       " A ausência de PGDAS não equivale a faturamento zero. Imposto, RBT12, multa e juros dependem de dados reais e de validação.</p>"
-       "<h3>Avisos da malha — todas as competências</h3><table><tr><th>Competência</th><th>Tipo</th><th>Informado</th><th>Considerado</th><th>Diferença de faturamento</th></tr>"
-       +"".join(rows)+"</table><h3>Documentos solicitados</h3><table><tr><th>PGDAS</th><th>Situação informada</th></tr>"
-       +"".join(docs)+"</table><p>O status 'não declarado' foi informado pelo usuário, não verificado automaticamente na Receita Federal.</p>"
-       "<button onclick='window.print()'>Imprimir ou salvar em PDF</button></html>")
-    return HTMLResponse(content=content)
-
-
 @app.get("/api/process/{process_id}")
 def process_status(process_id: int) -> JSONResponse:
     try:
@@ -1479,8 +1351,6 @@ def process_status(process_id: int) -> JSONResponse:
         "analysis_summary": context["analysis_summary"],
         "reflection_coverage": reflection_coverage,
         "initial_plan_status": initial_plan_status,
-        "pgdas_missing_status": list_pgdas_missing_status(process_id),
-        "last_transmitted_pgdas": get_last_transmitted_pgdas(process_id),
         "confirmations": context["confirmations"],
         "accounting_study_conclusions": context[
             "conclusions"
@@ -1925,25 +1795,6 @@ def calculate_tax(
             ),
         )
 
-    # Um PGDAS que contém somente o histórico não cobre necessariamente todos
-    # os meses de divergência Tipo 17. Não declarar "cálculo concluído = zero"
-    # enquanto uma dessas competências ainda não foi analisada.
-    waiting_type_17 = [
-        item["competence"]
-        for item in analysis_result.get("analyses", [])
-        if "17" in item.get("types", [])
-        and item.get("status") == "AWAITING_PGDAS"
-    ]
-    if waiting_type_17:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Cálculo pendente: falta receita do PGDAS para divergência "
-                "Tipo 17 nas competências " + ", ".join(waiting_type_17) +
-                ". O faturamento divergente não é imposto calculado."
-            ),
-        )
-
     try:
         scenario_confirmations = build_scenario_confirmations(
             context["regularization_result"],
@@ -2006,23 +1857,6 @@ def calculate_tax(
             status_code=422,
             detail=str(error),
         ) from error
-
-    expected_corrections = [
-        item["competence"]
-        for item in scenario_confirmations
-        if (item.get("analysis", {}).get("recommendation", {})
-            .get("simulation_pgdas_increment_cents") or 0) > 0
-    ]
-    if expected_corrections and not result.get("visible_impacts"):
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Cálculo pendente: há diferença de faturamento Tipo 17 "
-                "em " + ", ".join(expected_corrections) +
-                ", mas nenhuma competência pôde ser calculada. "
-                "Confira a cobertura documental do PGDAS."
-            ),
-        )
 
     save_tax_profile(
         process_id=process_id,

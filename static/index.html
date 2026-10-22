@@ -1998,7 +1998,6 @@ button{font:inherit;cursor:pointer;border-radius:8px;padding:10px 14px;font-weig
 .pgdas-plan-notice.error{border-color:#8d3c42;background:#281318;color:#ffc5c2}
 .pgdas-plan-notice.info{border-color:#285b41;background:#0d1b16;color:#b6f0c9}
 .workflow-state.error{border-color:#8d3c42;background:#281318;color:#ffc5c2}
-.pgdas-missing-guidance{padding:13px;background:#1d1b13;border:1px solid #6f5624;border-radius:10px;color:#dfc78d;font-size:11px;line-height:1.6;margin:12px 0}.pgdas-missing-guidance button{padding:9px 14px;background:#173e96;border:0;color:white;border-radius:8px;cursor:pointer;margin-left:12px}.pgdas-situation-control{display:grid;gap:5px;font-size:9px;color:#bbcade;text-align:left;margin-top:8px}.pgdas-situation-select{width:100%;padding:8px!important;font-size:10px!important}.pgdas-situation-flag{font-size:9px;color:#f6bf55}.pgdas-upload.situation-marked{border-color:#aa7b29!important;background:#1b1911!important}
 </style>
 </head>
 <body>
@@ -2126,7 +2125,7 @@ button{font:inherit;cursor:pointer;border-radius:8px;padding:10px 14px;font-weig
     <div class="workspace-commandbar-v139">
       <span id="workspaceCompanyName" hidden></span>
       <span id="workspaceCompanyCnpj" hidden></span>
-      <span class="version-pill">VERSÃO 1.45</span>
+      <span class="version-pill">VERSÃO 1.41</span>
       <div class="workspace-actions">
         <span class="badge blue" id="workspaceStatusLabel">Saudável</span>
         <button class="secondary" type="button" id="editCurrentCompany">
@@ -2221,14 +2220,6 @@ button{font:inherit;cursor:pointer;border-radius:8px;padding:10px 14px;font-weig
       </section>
       <section class="workflow-screen documents-screen" data-workflow-screen="documents">
         <header class="workflow-screen-head compact"><div><span>Etapa 2 de 5</span><h2>Documentos PGDAS-D</h2><p>Jogue todos os PDFs no balão central. Os períodos são identificados automaticamente.</p></div><span class="workflow-state" id="documentsStageBadge">Pendente</span></header>
-        <div class="panel" style="padding:14px;margin-bottom:12px;border:1px solid #344055;border-radius:12px">
-          <label style="display:flex;gap:9px;align-items:center;margin-bottom:10px"><input type="checkbox" id="enableLastPgdas" onchange="toggleLastPgdasFields()"> <strong>Existem declarações PGDAS não transmitidas</strong></label>
-          <div id="lastPgdasControls" style="display:none;gap:9px;align-items:end;flex-wrap:wrap">
-            <label>Última declaração entregue (mês)<select id="lastPgdasMonth"><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></label>
-            <label>Ano (1990 a 2100)<input id="lastPgdasYear" type="number" min="1990" max="2100" value="2026" style="width:108px"></label>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;margin-top:10px"><button type="button" class="secondary" onclick="saveLastPgdas()">Aplicar ao planejamento</button><span id="lastPgdasInfo" style="font-size:10px;color:#e7c969">Não declarados ≠ faturamento zero. Zero somente como hipótese de receita DECLARADA.</span></div>
-        </div>
         <div class="pgdas-plan-notice" id="pgdasPlanNotice" role="status" aria-live="polite" hidden></div>
         <div class="bulk-pgdas-dropzone" id="bulkPgdasDropzone" tabindex="0" role="button" aria-label="Enviar vários arquivos PGDAS-D">
           <input type="file" id="bulkPgdasInput" accept=".pdf,application/pdf" multiple>
@@ -2376,9 +2367,7 @@ button{font:inherit;cursor:pointer;border-radius:8px;padding:10px 14px;font-weig
         <p class="sub">Cada competência calculada recebe seu próprio campo de upload.</p>
       </div>
     </div>
-    <div class="pgdas-missing-guidance">Caso a declaração não exista, marque <strong>Não declarado à Receita Federal</strong> no cartão correspondente. Isso registra a pendência, mas não cria receita fictícia nem libera cálculo tributário sem os dados reais.
-  <button type="button" onclick="openPartialPgdasReport()">Abrir relatório parcial da malha</button></div>
-  <section class="pgdas-upload-grid" id="pgdasUploadGrid"></section>
+    <section class="pgdas-upload-grid" id="pgdasUploadGrid"></section>
     <div class="reflection-coverage" id="reflectionCoverage"></div>
     <div class="pgdas-status" id="pgdasStatus"></div>
 
@@ -2674,7 +2663,7 @@ button{font:inherit;cursor:pointer;border-radius:8px;padding:10px 14px;font-weig
           <h1>Configurações e segurança</h1>
           <p>Proteção dos dados locais, suporte e preparação para a beta comercial.</p>
         </div>
-        <span class="version-pill">Beta comercial assistida · 1.45</span>
+        <span class="version-pill">Beta comercial assistida · 1.41</span>
       </div>
       <div class="settings-grid commercial-settings-grid">
         <section class="settings-card commercial-settings-card">
@@ -3017,12 +3006,9 @@ async function loadExistingProcess(processId,{preserveStep=false}={}){
     {preserveStep}
   );
   restoreAcceptedPgdas(payload.accepted_pgdas||[]);
-  restoreMissingPgdasStatuses();
-  restoreLastPgdasSettings();
   renderAnalyses(payload.analysis_result,payload.reflection_coverage,payload.initial_plan_status,payload.reflection_coverage?.closed_months_complete,payload.analysis_summary,payload.regularization_result);
   renderReflectionCoverage(payload.reflection_coverage);
   restoreAcceptedPgdas(payload.accepted_pgdas||[]);
-  restoreMissingPgdasStatuses();
   const tax=payload.tax_calculations?.CONSERVATIVE_FISCAL_EXPOSURE;
   const charges=payload.legal_charge_calculations?.CONSERVATIVE_FISCAL_EXPOSURE;
   if(tax)renderTaxResult(tax);if(charges)renderLegalCharges(charges);
@@ -3520,74 +3506,6 @@ function setStepState(step,{enabled=true,complete=false,status='Pendente'}={}){
   const label=document.getElementById(id);if(label)label.textContent=status;
 }
 
-function toggleLastPgdasFields(){
-  document.getElementById('lastPgdasControls').style.display=document.getElementById('enableLastPgdas').checked?'flex':'none';
-}
-function restoreLastPgdasSettings(){
-  const last=currentProcessPayload?.process?.pgdas_plan?.last_transmitted_competence;
-  const check=document.getElementById('enableLastPgdas');if(!check)return;
-  check.checked=Boolean(last);if(last){document.getElementById('lastPgdasMonth').value=last.slice(0,2);document.getElementById('lastPgdasYear').value=last.slice(3);}
-  toggleLastPgdasFields();
-  const assumed=currentProcessPayload?.process?.pgdas_plan?.assumed_not_declared_competences||[];
-  document.getElementById('lastPgdasInfo').textContent=last?
-   `Último entregue: ${last}. Na malha, ${assumed.length} competência(s) posterior(es) marcada(s) como presumidamente não declarada(s): ${assumed.join(', ')||'nenhuma'}. A receita real permanece desconhecida.`:
-   'Não declarados ≠ faturamento zero. Zero somente como hipótese de receita DECLARADA.';
-}
-async function saveLastPgdas(){
-  if(!currentProcessId){showMessage('Importe a malha primeiro.',true);return;}
-  const enabled=document.getElementById('enableLastPgdas').checked;
-  const year=Number(document.getElementById('lastPgdasYear').value);
-  if(enabled&&(!Number.isInteger(year)||year<1990||year>2100)){showMessage('Ano inválido. Informe entre 1990 e 2100.',true);return;}
-  const last=enabled?`${document.getElementById('lastPgdasMonth').value}/${year}`:null;
-  try{
-    const response=await fetch(`/api/process/${currentProcessId}/last-transmitted-pgdas`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({last_transmitted:last})});
-    const result=await response.json();if(!response.ok)throw new Error(result.detail||'Erro ao salvar período.');
-    await loadExistingProcess(currentProcessId,{preserveStep:true});
-    showMessage(last?`Planejamento ajustado: último PGDAS transmitido ${last}.`:'Planejamento padrão restabelecido.');
-  }catch(error){showMessage(error.message,true);}
-}
-function missingPgdasStatuses(){return currentProcessPayload?.pgdas_missing_status||{};}
-function pgdasSituationCount(){return document.querySelectorAll('.pgdas-upload.situation-marked').length;}
-function setPgdasSituationDisplay(card,status){
-  if(!card)return;
-  card.classList.toggle('situation-marked',status==='NOT_DECLARED'||status==='NOT_LOCATED');
-  const flag=card.querySelector('.pgdas-situation-flag');
-  if(flag)flag.textContent=status==='NOT_DECLARED'?'Não declarado à Receita':status==='NOT_LOCATED'?'Ainda não localizado':'';
-  const select=card.querySelector('.pgdas-situation-select');
-  if(select)select.value=status||'AVAILABLE';
-}
-async function changePgdasSituation(select){
-  const card=select.closest('.pgdas-upload');
-  const competence=card?.dataset.competence;
-  const old=missingPgdasStatuses()[competence]||'AVAILABLE';
-  if(!competence||!currentProcessId)return;
-  select.disabled=true;
-  try{
-    const resp=await fetch(`/api/process/${currentProcessId}/pgdas-situation`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({competence,status:select.value})
-    });
-    const data=await resp.json();
-    if(!resp.ok)throw new Error(data.detail||'Não foi possível registrar a situação.');
-    if(!currentProcessPayload.pgdas_missing_status)currentProcessPayload.pgdas_missing_status={};
-    if(data.status==='AVAILABLE')delete currentProcessPayload.pgdas_missing_status[competence];
-    else currentProcessPayload.pgdas_missing_status[competence]=data.status;
-    setPgdasSituationDisplay(card,data.status);
-    updateDocumentProgress();
-  }catch(e){select.value=old;showMessage(e.message,true);}
-  finally{select.disabled=false;}
-}
-function restoreMissingPgdasStatuses(){
-  document.querySelectorAll('.pgdas-upload').forEach(card=>{
-    if(!card.classList.contains('received')){
-      setPgdasSituationDisplay(card,missingPgdasStatuses()[card.dataset.competence]||'AVAILABLE');
-    }
-  });
-  updateDocumentProgress();
-}
-function openPartialPgdasReport(){
-  if(currentProcessId)window.open(`/api/process/${currentProcessId}/partial-report`,'_blank','noopener');
-}
 function updateGuidedJourney(){
   const hasMalha=Boolean(
     currentProcessId
@@ -3599,11 +3517,9 @@ function updateGuidedJourney(){
   const cards=[...document.querySelectorAll('.pgdas-upload')];
   const received=cards.filter(card=>card.classList.contains('received')).length;
   const planError=hasMalha&&currentPgdasPlanError;
-  const marked=pgdasSituationCount();
   const noPgdasNeeded=false;
   setPgdasPlanNotice({hasMalha,hasType17:currentMalhaHasType17,hasCompetences:currentMalhaHasCompetences,planError});
   const documentsComplete=hasMalha&&!planError&&cards.length>0&&received===cards.length;
-  const documentsReviewed=hasMalha&&!planError&&(cards.length>0?received+marked===cards.length:Boolean(currentProcessPayload?.process?.pgdas_plan?.last_transmitted_competence));
   const analysisAvailable=documentsComplete&&Boolean(currentAnalysisResult?.analyses?.length);
   const reviewCount=Number(currentAnalysisResult?.summary?.review_required_count||0);
   const awaitingCount=Number(currentAnalysisResult?.summary?.awaiting_pgdas_count||0);
@@ -3613,14 +3529,14 @@ function updateGuidedJourney(){
   const reportReady=Boolean(currentChargesResult);
 
   setStepState('malha',{enabled:true,complete:hasMalha,status:hasMalha?'Concluída':'Iniciar'});
-  setStepState('documents',{enabled:hasMalha,complete:documentsComplete,status:!hasMalha?'Bloqueado':planError?'Falha no planejamento':documentsComplete?'Concluídos':documentsReviewed?'Conferência parcial':`${received} recebidos · ${marked} sinalizados de ${cards.length}`});
-  setStepState('analysis',{enabled:documentsReviewed,complete:calculationReady,status:!documentsReviewed?'Bloqueado':calculationReady?'Concluída':reviewCount?'Revisão pendente':'Em processamento'});
+  setStepState('documents',{enabled:hasMalha,complete:documentsComplete,status:!hasMalha?'Bloqueado':planError?'Falha no planejamento':documentsComplete?'Concluídos':`${received} de ${cards.length}`});
+  setStepState('analysis',{enabled:documentsComplete,complete:calculationReady,status:!documentsComplete?'Bloqueado':calculationReady?'Concluída':reviewCount?'Revisão pendente':'Em processamento'});
   setStepState('calculation',{enabled:calculationReady,complete:calculationComplete,status:!calculationReady?'Bloqueado':calculationComplete?'Estimativa pronta':'Disponível'});
   setStepState('report',{enabled:reportReady,complete:reportReady,status:reportReady?'Liberado':'Bloqueado'});
   setStepState('history',{enabled:true,complete:false,status:'Disponível'});
 
   document.getElementById('advanceToDocuments').disabled=!hasMalha;
-  document.getElementById('advanceToAnalysis').disabled=!documentsReviewed;
+  document.getElementById('advanceToAnalysis').disabled=!documentsComplete;
   document.getElementById('advanceToCalculation').disabled=!calculationReady;
   document.getElementById('advanceToReport').disabled=!reportReady;
   const calculateButton=document.getElementById('calculateTaxButton');
@@ -3639,8 +3555,8 @@ function updateGuidedJourney(){
   }
   const setBadge=(id,text,complete=false,error=false)=>{const el=document.getElementById(id);if(!el)return;el.textContent=text;el.classList.toggle('complete',complete);el.classList.toggle('error',error);};
   setBadge('malhaStageBadge',hasMalha?'Competências identificadas':'Aguardando arquivo',hasMalha);
-  setBadge('documentsStageBadge',planError?'Falha no planejamento':documentsComplete?'Todos recebidos':documentsReviewed?'Conferência parcial':`${received} recebidos · ${marked} sinalizados`,documentsComplete,planError);
-  setBadge('analysisStageBadge',calculationReady?'Análise concluída':documentsReviewed?'Em análise parcial':'Pendente',calculationReady);
+  setBadge('documentsStageBadge',planError?'Falha no planejamento':documentsComplete?'Todos recebidos':`${received} de ${cards.length}`,documentsComplete,planError);
+  setBadge('analysisStageBadge',calculationReady?'Análise concluída':documentsComplete?'Em análise':'Pendente',calculationReady);
   setBadge('calculationStageBadge',calculationComplete?'Estimativa calculada':calculationReady?'Disponível':'Pendente',calculationComplete);
   setBadge('reportStageBadge',reportReady?'Relatório liberado':'Pendente',reportReady);
   document.querySelectorAll('[data-calc-progress]').forEach(item=>item.classList.remove('complete'));
@@ -3655,7 +3571,6 @@ function setPgdasCardState(competence,state,label=''){
   if(!card)return;
   card.classList.remove('loading','received','rejected');
   if(state)card.classList.add(state);
-  if(state==='received')setPgdasSituationDisplay(card,'AVAILABLE');
   const status=card.querySelector('.pgdas-card-status');
   if(status){
     status.textContent=label||(
@@ -3684,7 +3599,7 @@ function updateDocumentProgress(){
   ).length;
   const counter=document.getElementById('documentProgressCounter');
   const hasMalha=Boolean(currentProcessId&&!awaitingNewMalhaUpload&&((document.querySelectorAll('.malha-competence-row').length)||(currentProcessPayload?.process?.malha?.raw_rows||[]).length));
-  if(counter)counter.textContent=currentPgdasPlanError?'Falha no plano':`${received} recebidos · ${pgdasSituationCount()} sinalizados de ${cards.length}`;
+  if(counter)counter.textContent=currentPgdasPlanError?'Falha no plano':`${received} de ${cards.length}`;
   updateGuidedJourney();
 }
 
@@ -4021,7 +3936,6 @@ function setPgdasPlanNotice({hasMalha=false,hasType17=false,hasCompetences=false
 
 function render(payload,{preserveStep=false}={}){
   const stepBefore=currentWorkflowStep;
-  if(currentProcessId!==payload.process_id)currentProcessPayload=null;
   currentProcessId=payload.process_id;
   currentProcessPayload={...(currentProcessPayload||{}),process:{...(currentProcessPayload?.process||{}),id:payload.process_id,malha:payload.malha,pgdas_plan:payload.pgdas_plan}};
   const malha=payload.malha;
@@ -4037,12 +3951,11 @@ function render(payload,{preserveStep=false}={}){
     const explicit=Array.isArray(item.covers_malha_competences)?item.covers_malha_competences:[];
     return [...explicit,...(item.covers_type_01_competences||[]),...(item.covers_type_17_competences||[])];
   }).map(String));
-  const assumedSet=new Set(plan.assumed_not_declared_competences||[]);
-  const missingMalha=malhaCompetences.filter(competence=>!coveredMalha.has(competence)&&!assumedSet.has(competence));
+  const missingMalha=malhaCompetences.filter(competence=>!coveredMalha.has(competence));
   const coveredType17=new Set(requiredPlan.flatMap(item=>item.covers_type_17_competences||[]).map(String));
-  const missingType17=type17Competences.filter(competence=>!coveredType17.has(competence)&&!assumedSet.has(competence));
+  const missingType17=type17Competences.filter(competence=>!coveredType17.has(competence));
   currentPgdasPlanError=plan.validation?.status==='ERROR'
-    ||(currentMalhaHasCompetences&&((requiredPlan.length===0&&!plan.last_transmitted_competence)||missingMalha.length>0))
+    ||(currentMalhaHasCompetences&&(requiredPlan.length===0||missingMalha.length>0))
     ||(currentMalhaHasType17&&missingType17.length>0);
 
   document.getElementById('legalName').textContent=malha.contributor.legal_name||'Não identificado';
@@ -4148,20 +4061,10 @@ function render(payload,{preserveStep=false}={}){
         </div>
         <span class="pgdas-card-status">Pendente</span>
         <div class="pgdas-progress-track"><span></span></div>
-        <label class="pgdas-situation-control">Situação do PGDAS
-          <select class="pgdas-situation-select" onchange="changePgdasSituation(this)">
-            <option value="AVAILABLE">Declaração disponível / enviar PDF</option>
-            <option value="NOT_DECLARED">Não declarado à Receita Federal</option>
-            <option value="NOT_LOCATED">Ainda não localizado</option>
-          </select>
-        </label>
-        <small class="pgdas-situation-flag"></small>
       </article>`;
   }).join('');
 
   bindPgdasUploads();
-  restoreMissingPgdasStatuses();
-  restoreLastPgdasSettings();
 
   const cta=document.getElementById('pgdasCta');
   if(cta)cta.style.display='flex';
@@ -4290,7 +4193,6 @@ async function sendPgdas(card,file){
 
     card.classList.remove('loading','rejected');
     card.classList.add('received');
-    setPgdasSituationDisplay(card,'AVAILABLE');
     if(cardStatus)cardStatus.textContent='Concluído';
     button.textContent='✓ Documento aceito e cruzado';
     fileLabel.innerHTML=`

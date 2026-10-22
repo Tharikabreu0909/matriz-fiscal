@@ -7,4 +7,4 @@ def test_bulk_pgdas_route_is_available():
 
 
 def test_app_version_is_140():
-    assert app.version == "1.45.0"
+    assert app.version == "1.41.0"

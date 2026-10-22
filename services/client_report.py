@@ -4,8 +4,6 @@ from datetime import datetime
 from html import escape
 from typing import Any
 
-from services.pgdas_planner import normalize_malha_data
-
 
 def brl(cents: int | None) -> str:
     value = int(cents or 0)
@@ -121,12 +119,6 @@ def action_rows(
                     "de retificar definitivamente o PGDAS."
                 )
 
-        if type_17.get("present") and type_17.get("simulation_target_cents") is None:
-            actions.append(
-                "Tipo 17: divergência de faturamento apontada na malha: "
-                + brl(type_17.get("document_divergence_cents"))
-                + ". Cálculo do imposto pendente de conferência do PGDAS."
-            )
         if not actions:
             actions.append(
                 "Nenhuma exposição tributária adicional identificada."
@@ -190,43 +182,21 @@ def build_report_model(
         stored_confirmations,
     )
     rows = action_rows(analyses, legal_charges)
-    # A tabela do relatório deve espelhar TODAS as competências originais da malha,
-    # mesmo as que não tiveram PGDAS importado ou cálculo tributário concluído.
-    normalized_malha = normalize_malha_data(process.get("malha") or {})
-    analyses_by_competence = {row["competence"]: row for row in rows}
-    for month in normalized_malha.get("work_months", []):
-        competence = month["competence"]
-        if competence in analyses_by_competence:
-            continue
-        notices = month.get("notices") or []
-        type_01 = next((n for n in notices if n.get("type_code") == "01"), None)
-        type_17 = next((n for n in notices if n.get("type_code") == "17"), None)
-        actions = ["Competência identificada na malha; análise documental pendente."]
-        if type_17:
-            actions.append(
-                "Tipo 17: diferença de faturamento informada na malha: "
-                + brl(type_17.get("divergence_cents"))
-                + ". Conferir PGDAS e calcular eventual imposto, sem presumir pagamento devido."
-            )
-        elif type_01:
-            actions.append("Tipo 01: conferir LFE/EFD e PGDAS; não gera imposto automaticamente.")
-        analyses_by_competence[competence] = {
-            "competence": competence, "actions": actions,
-            "minimum_sped_detected_cents": type_01.get("considered_cents") if type_01 else None,
-            "simulation_pgdas_target_cents": None,
-            "tax_increment_cents": 0, "updated_total_cents": 0,
-        }
-    rows = sorted(
-        analyses_by_competence.values(),
-        key=lambda row: (int(row["competence"][3:]), int(row["competence"][:2])),
-    )
     tax_summary = tax_result.get("summary", {})
     charge_summary = legal_charges.get("summary", {})
     update_date = (
         legal_charges.get("source", {}).get("update_date")
     )
 
-    relevant_rows = rows  # Nenhuma competência da malha pode ser ocultada.
+    relevant_rows = [
+        row
+        for row in rows
+        if (
+            row["tax_increment_cents"] > 0
+            or row["minimum_sped_detected_cents"] is not None
+            or row["simulation_pgdas_target_cents"] is not None
+        )
+    ]
 
     return {
         "company": {
@@ -299,7 +269,6 @@ def build_report_model(
             ),
         },
         "competence_rows": relevant_rows,
-        "malha_competence_count": len(normalized_malha.get("work_months", [])),
         "reflection_rows": tax_result.get(
             "visible_impacts",
             [],

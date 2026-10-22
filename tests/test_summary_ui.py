@@ -117,7 +117,7 @@ def test_professional_design_shell_is_connected_to_real_portfolio():
     assert "Aconchego da Moda Ltda." not in html
     assert "312" not in html
     assert 'data-workflow-step="malha"' in html
-    assert "VERSÃO 1.45" in html
+    assert "VERSÃO 1.41" in html
 
 
 

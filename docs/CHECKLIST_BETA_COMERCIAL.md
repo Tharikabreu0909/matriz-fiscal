@@ -11,7 +11,7 @@
 
 ## Na instalação
 
-- conferir a versão 1.42 e a porta 8142;
+- conferir a versão 1.41 e a porta 8141;
 - cadastrar uma empresa de teste;
 - importar uma malha conhecida;
 - se houver Tipo 17, confirmar que os PGDAS foram planejados; se a etapa mostrar “Falha no planejamento”, não avançar para análise;

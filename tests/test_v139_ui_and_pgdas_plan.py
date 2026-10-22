@@ -20,7 +20,7 @@ def test_company_form_was_rewritten():
         'id="newCompanyLegalName"'
     )
     assert "company-form-success-v139" in HTML
-    assert "VERSÃO 1.45" in HTML
+    assert "VERSÃO 1.41" in HTML
 
 
 def test_workspace_has_no_duplicate_company_title():
@@ -55,8 +55,8 @@ def test_browser_cache_is_disabled():
 
 
 def test_launcher_uses_unique_port():
-    assert "127.0.0.1:8145" in BATCH
-    assert "--port 8145" in BATCH
+    assert "127.0.0.1:8141" in BATCH
+    assert "--port 8141" in BATCH
 
 
 def test_aconchego_plan_is_complete_upfront():

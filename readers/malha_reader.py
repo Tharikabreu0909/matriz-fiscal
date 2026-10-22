@@ -86,13 +86,7 @@ def read_malha_pdf(pdf_path: str | Path) -> dict[str, Any]:
     with pdfplumber.open(path) as pdf:
         pages = list(pdf.pages)
         contributor = extract_contributor(pages[0])
-        # Avisos podem continuar em páginas seguintes (inclusive com mudança
-        # de Tipo 01 para Tipo 17 na segunda página).
-        notice_tables = [find_notice_table(page) for page in pages if any(
-            all(term in " ".join(str(c or "") for c in table[0])
-                for term in ("Tipo de Divergência", "Referência", "Informado", "Divergência"))
-            for table in page.extract_tables() if table
-        )]
+        notice_table = find_notice_table(pages[0])
         full_text = "\n".join(page.extract_text() or "" for page in pages)
 
         queried_at = ""
@@ -113,8 +107,7 @@ def read_malha_pdf(pdf_path: str | Path) -> dict[str, Any]:
         current_type_description = ""
         first_seen: dict[tuple[Any, ...], int] = {}
 
-        for page_number, notice_table in enumerate(notice_tables, start=1):
-          for table_row_index, row in enumerate(notice_table[1:], start=1):
+        for table_row_index, row in enumerate(notice_table[1:], start=1):
             type_cell, reference_cell, informed_cell, considered_cell, divergence_cell = [
                 (cell or "").strip() for cell in row
             ]
@@ -154,7 +147,7 @@ def read_malha_pdf(pdf_path: str | Path) -> dict[str, Any]:
 
             raw_rows.append({
                 "id": row_id,
-                "page": page_number,
+                "page": 1,
                 "table_row": table_row_index,
                 "type_code": current_type_code,
                 "type_description": current_type_description,

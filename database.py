@@ -91,16 +91,6 @@ def _run_migrations(connection: sqlite3.Connection) -> None:
         """,
         (utc_now(),),
     )
-    connection.execute("""
-        CREATE TABLE IF NOT EXISTS pgdas_missing_status (
-            process_id INTEGER NOT NULL,
-            competence TEXT NOT NULL,
-            status TEXT NOT NULL CHECK(status IN ('NOT_DECLARED','NOT_LOCATED')),
-            updated_at TEXT NOT NULL,
-            PRIMARY KEY(process_id, competence),
-            FOREIGN KEY(process_id) REFERENCES processes(id) ON DELETE CASCADE
-        )
-    """)
     connection.execute("PRAGMA user_version = 2")
 
 
@@ -274,12 +264,6 @@ def init_db() -> None:
             """
         )
         _run_migrations(connection)
-        connection.execute("""CREATE TABLE IF NOT EXISTS pgdas_last_transmitted (
-            process_id INTEGER PRIMARY KEY,
-            competence TEXT NOT NULL,
-            updated_at TEXT NOT NULL,
-            FOREIGN KEY(process_id) REFERENCES processes(id) ON DELETE CASCADE
-        )""")
 
 
 def normalize_cnpj(value: str) -> str:
@@ -1344,49 +1328,3 @@ def database_status() -> dict[str, Any]:
 
 
 init_db()
-
-def get_last_transmitted_pgdas(process_id: int) -> str | None:
-    with connect() as connection:
-        row = connection.execute(
-            "SELECT competence FROM pgdas_last_transmitted WHERE process_id=?", (process_id,)
-        ).fetchone()
-    return row["competence"] if row else None
-
-
-def set_last_transmitted_pgdas(process_id: int, competence: str | None) -> None:
-    with connect() as connection:
-        if competence is None:
-            connection.execute("DELETE FROM pgdas_last_transmitted WHERE process_id=?", (process_id,))
-        else:
-            connection.execute("""INSERT INTO pgdas_last_transmitted(process_id, competence, updated_at)
-                VALUES (?,?,?) ON CONFLICT(process_id) DO UPDATE SET
-                competence=excluded.competence, updated_at=excluded.updated_at""",
-                (process_id, competence, utc_now()))
-
-
-
-def list_pgdas_missing_status(process_id: int) -> dict[str, str]:
-    with connect() as connection:
-        rows = connection.execute(
-            "SELECT competence,status FROM pgdas_missing_status WHERE process_id=?",
-            (process_id,),
-        ).fetchall()
-    return {row["competence"]: row["status"] for row in rows}
-
-
-def set_pgdas_missing_status(process_id: int, competence: str, status: str) -> None:
-    if status not in {"NOT_DECLARED", "NOT_LOCATED", "AVAILABLE"}:
-        raise ValueError("Situação inválida para o PGDAS")
-    with connect() as connection:
-        if status == "AVAILABLE":
-            connection.execute(
-                "DELETE FROM pgdas_missing_status WHERE process_id=? AND competence=?",
-                (process_id, competence),
-            )
-        else:
-            connection.execute("""
-                INSERT INTO pgdas_missing_status(process_id,competence,status,updated_at)
-                VALUES(?,?,?,?)
-                ON CONFLICT(process_id,competence)
-                DO UPDATE SET status=excluded.status, updated_at=excluded.updated_at
-            """, (process_id, competence, status, utc_now()))

@@ -7,7 +7,7 @@ import uvicorn
 
 
 def open_browser() -> None:
-    webbrowser.open("http://127.0.0.1:8145")
+    webbrowser.open("http://127.0.0.1:8141")
 
 
 if __name__ == "__main__":
@@ -15,6 +15,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "app:app",
         host="127.0.0.1",
-        port=8145,
+        port=8141,
         access_log=False,
     )
