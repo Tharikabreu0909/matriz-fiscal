@@ -1,0 +1,528 @@
+{
+  "malha": {
+    "reader": {
+      "name": "checkfiscal-malha-gdf-reader",
+      "version": "1.0.0"
+    },
+    "source_document": {
+      "file_name": "malha fiscal aconchego(3).pdf",
+      "sha256": "11738f5d61b5f7fd1232a84ba03801612ef27637a6d144d3ed0bcf4ee4958ecd",
+      "page_count": 2,
+      "queried_at": "17/07/2026 14:25",
+      "source_system": "Agenci@Net - Secretaria de Estado de Economia - SEEC DF"
+    },
+    "contributor": {
+      "cfdf": "08.055.883/001-11",
+      "legal_name": "ACONCHEGO DA MODA COMERCIO DE ROUPAS LTDA"
+    },
+    "summary": {
+      "raw_row_count": 9,
+      "unique_raw_notice_count": 7,
+      "duplicate_row_count": 2,
+      "work_month_count": 5,
+      "types_found": [
+        "01",
+        "17"
+      ]
+    },
+    "raw_rows": [
+      {
+        "id": 1,
+        "page": 1,
+        "table_row": 1,
+        "type_code": "01",
+        "type_description": "Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.",
+        "reference": "01/06/2025",
+        "competence": "06/2025",
+        "informed_field": "SPED_LFE_INFORMED",
+        "informed_cents": 1921000,
+        "considered_cents": 3777614,
+        "divergence_cents": 1856614,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "01 - Faturamento declarado no LFE ou na EFD x\nMovimentação do Cartão Débito/Crédito.",
+          "reference": "01/06/2025",
+          "informed": "R$\n19.210,00",
+          "considered": "R$ 37.776,14",
+          "divergence": "R$\n18.566,14"
+        }
+      },
+      {
+        "id": 2,
+        "page": 1,
+        "table_row": 2,
+        "type_code": "01",
+        "type_description": "Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.",
+        "reference": "01/06/2025",
+        "competence": "06/2025",
+        "informed_field": "SPED_LFE_INFORMED",
+        "informed_cents": 1921000,
+        "considered_cents": 3777614,
+        "divergence_cents": 1856614,
+        "duplicate": true,
+        "duplicate_of": 1,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/06/2025",
+          "informed": "R$\n19.210,00",
+          "considered": "R$ 37.776,14",
+          "divergence": "R$\n18.566,14"
+        }
+      },
+      {
+        "id": 3,
+        "page": 1,
+        "table_row": 3,
+        "type_code": "01",
+        "type_description": "Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.",
+        "reference": "01/07/2025",
+        "competence": "07/2025",
+        "informed_field": "SPED_LFE_INFORMED",
+        "informed_cents": 4762500,
+        "considered_cents": 4905204,
+        "divergence_cents": 142704,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/07/2025",
+          "informed": "R$\n47.625,00",
+          "considered": "R$ 49.052,04",
+          "divergence": "R$ 1.427,04"
+        }
+      },
+      {
+        "id": 4,
+        "page": 1,
+        "table_row": 4,
+        "type_code": "01",
+        "type_description": "Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.",
+        "reference": "01/08/2025",
+        "competence": "08/2025",
+        "informed_field": "SPED_LFE_INFORMED",
+        "informed_cents": 3386400,
+        "considered_cents": 4182950,
+        "divergence_cents": 796550,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/08/2025",
+          "informed": "R$\n33.864,00",
+          "considered": "R$ 41.829,50",
+          "divergence": "R$ 7.965,50"
+        }
+      },
+      {
+        "id": 5,
+        "page": 1,
+        "table_row": 5,
+        "type_code": "01",
+        "type_description": "Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.",
+        "reference": "01/11/2025",
+        "competence": "11/2025",
+        "informed_field": "SPED_LFE_INFORMED",
+        "informed_cents": 0,
+        "considered_cents": 5084854,
+        "divergence_cents": 5084854,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/11/2025",
+          "informed": "R$ 0,00",
+          "considered": "R$ 50.848,54",
+          "divergence": "R$\n50.848,54"
+        }
+      },
+      {
+        "id": 6,
+        "page": 1,
+        "table_row": 6,
+        "type_code": "01",
+        "type_description": "Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.",
+        "reference": "01/11/2025",
+        "competence": "11/2025",
+        "informed_field": "SPED_LFE_INFORMED",
+        "informed_cents": 0,
+        "considered_cents": 5084854,
+        "divergence_cents": 5084854,
+        "duplicate": true,
+        "duplicate_of": 5,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/11/2025",
+          "informed": "R$ 0,00",
+          "considered": "R$ 50.848,54",
+          "divergence": "R$\n50.848,54"
+        }
+      },
+      {
+        "id": 7,
+        "page": 1,
+        "table_row": 7,
+        "type_code": "17",
+        "type_description": "Valor da Receita Bruta no PGDAS x Valor de Faturamento baseado em Operações com Cartão de crédito/débito ou Documentos Fiscais emitidos ou declarado no LFE/EFD.",
+        "reference": "01/06/2022",
+        "competence": "06/2022",
+        "informed_field": "PGDAS_INFORMED",
+        "informed_cents": 795500,
+        "considered_cents": 3424000,
+        "divergence_cents": 2628500,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "17 - Valor da Receita Bruta no PGDAS x Valor de\nFaturamento baseado em Operações com Cartão de\ncrédito/débito ou Documentos Fiscais emitidos ou\ndeclarado no LFE/EFD.",
+          "reference": "01/06/2022",
+          "informed": "R$\n7.955,00",
+          "considered": "R$ 34.240,00",
+          "divergence": "R$\n26.285,00"
+        }
+      },
+      {
+        "id": 8,
+        "page": 1,
+        "table_row": 8,
+        "type_code": "17",
+        "type_description": "Valor da Receita Bruta no PGDAS x Valor de Faturamento baseado em Operações com Cartão de crédito/débito ou Documentos Fiscais emitidos ou declarado no LFE/EFD.",
+        "reference": "01/07/2025",
+        "competence": "07/2025",
+        "informed_field": "PGDAS_INFORMED",
+        "informed_cents": 4762500,
+        "considered_cents": 4905204,
+        "divergence_cents": 142704,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/07/2025",
+          "informed": "R$\n47.625,00",
+          "considered": "R$ 49.052,04",
+          "divergence": "R$ 1.427,04"
+        }
+      },
+      {
+        "id": 9,
+        "page": 1,
+        "table_row": 9,
+        "type_code": "17",
+        "type_description": "Valor da Receita Bruta no PGDAS x Valor de Faturamento baseado em Operações com Cartão de crédito/débito ou Documentos Fiscais emitidos ou declarado no LFE/EFD.",
+        "reference": "01/08/2025",
+        "competence": "08/2025",
+        "informed_field": "PGDAS_INFORMED",
+        "informed_cents": 3386400,
+        "considered_cents": 4182950,
+        "divergence_cents": 796550,
+        "duplicate": false,
+        "duplicate_of": null,
+        "confidence": 1.0,
+        "source_cells": {
+          "type": "",
+          "reference": "01/08/2025",
+          "informed": "R$\n33.864,00",
+          "considered": "R$ 41.829,50",
+          "divergence": "R$ 7.965,50"
+        }
+      }
+    ],
+    "work_months": [
+      {
+        "competence": "06/2022",
+        "types": [
+          "17"
+        ],
+        "raw_row_count": 1,
+        "unique_notice_count": 1,
+        "duplicate_count": 0,
+        "raw_row_ids": [
+          7
+        ],
+        "notices": [
+          {
+            "type_code": "17",
+            "informed_field": "PGDAS_INFORMED",
+            "informed_cents": 795500,
+            "considered_cents": 3424000,
+            "divergence_cents": 2628500,
+            "duplicate": false
+          }
+        ],
+        "preliminary_actions": [
+          "IMPORT_PGDAS_AND_EVALUATE_TAX"
+        ],
+        "status": "AWAITING_CONFIRMATION"
+      },
+      {
+        "competence": "06/2025",
+        "types": [
+          "01"
+        ],
+        "raw_row_count": 2,
+        "unique_notice_count": 1,
+        "duplicate_count": 1,
+        "raw_row_ids": [
+          1,
+          2
+        ],
+        "notices": [
+          {
+            "type_code": "01",
+            "informed_field": "SPED_LFE_INFORMED",
+            "informed_cents": 1921000,
+            "considered_cents": 3777614,
+            "divergence_cents": 1856614,
+            "duplicate": false
+          },
+          {
+            "type_code": "01",
+            "informed_field": "SPED_LFE_INFORMED",
+            "informed_cents": 1921000,
+            "considered_cents": 3777614,
+            "divergence_cents": 1856614,
+            "duplicate": true
+          }
+        ],
+        "preliminary_actions": [
+          "REVIEW_AND_RECTIFY_SPED_LFE"
+        ],
+        "status": "AWAITING_CONFIRMATION"
+      },
+      {
+        "competence": "07/2025",
+        "types": [
+          "01",
+          "17"
+        ],
+        "raw_row_count": 2,
+        "unique_notice_count": 2,
+        "duplicate_count": 0,
+        "raw_row_ids": [
+          3,
+          8
+        ],
+        "notices": [
+          {
+            "type_code": "01",
+            "informed_field": "SPED_LFE_INFORMED",
+            "informed_cents": 4762500,
+            "considered_cents": 4905204,
+            "divergence_cents": 142704,
+            "duplicate": false
+          },
+          {
+            "type_code": "17",
+            "informed_field": "PGDAS_INFORMED",
+            "informed_cents": 4762500,
+            "considered_cents": 4905204,
+            "divergence_cents": 142704,
+            "duplicate": false
+          }
+        ],
+        "preliminary_actions": [
+          "REVIEW_AND_RECTIFY_SPED_LFE",
+          "IMPORT_PGDAS_AND_EVALUATE_TAX"
+        ],
+        "status": "AWAITING_CONFIRMATION"
+      },
+      {
+        "competence": "08/2025",
+        "types": [
+          "01",
+          "17"
+        ],
+        "raw_row_count": 2,
+        "unique_notice_count": 2,
+        "duplicate_count": 0,
+        "raw_row_ids": [
+          4,
+          9
+        ],
+        "notices": [
+          {
+            "type_code": "01",
+            "informed_field": "SPED_LFE_INFORMED",
+            "informed_cents": 3386400,
+            "considered_cents": 4182950,
+            "divergence_cents": 796550,
+            "duplicate": false
+          },
+          {
+            "type_code": "17",
+            "informed_field": "PGDAS_INFORMED",
+            "informed_cents": 3386400,
+            "considered_cents": 4182950,
+            "divergence_cents": 796550,
+            "duplicate": false
+          }
+        ],
+        "preliminary_actions": [
+          "REVIEW_AND_RECTIFY_SPED_LFE",
+          "IMPORT_PGDAS_AND_EVALUATE_TAX"
+        ],
+        "status": "AWAITING_CONFIRMATION"
+      },
+      {
+        "competence": "11/2025",
+        "types": [
+          "01"
+        ],
+        "raw_row_count": 2,
+        "unique_notice_count": 1,
+        "duplicate_count": 1,
+        "raw_row_ids": [
+          5,
+          6
+        ],
+        "notices": [
+          {
+            "type_code": "01",
+            "informed_field": "SPED_LFE_INFORMED",
+            "informed_cents": 0,
+            "considered_cents": 5084854,
+            "divergence_cents": 5084854,
+            "duplicate": false
+          },
+          {
+            "type_code": "01",
+            "informed_field": "SPED_LFE_INFORMED",
+            "informed_cents": 0,
+            "considered_cents": 5084854,
+            "divergence_cents": 5084854,
+            "duplicate": true
+          }
+        ],
+        "preliminary_actions": [
+          "REVIEW_AND_RECTIFY_SPED_LFE"
+        ],
+        "status": "AWAITING_CONFIRMATION"
+      }
+    ],
+    "explanatory_notes": "01 - Faturamento declarado no LFE ou na EFD x Movimentação do Cartão Débito/Crédito.: O valor do faturamento total\ndeclarado no LFE ou na EFD (somatório do ICMS com o ISS) pelo contribuinte (valor INFORMADO) é inferior ao\nfaturamento informado pelas administradoras de cartão de débito/crédito (valor CONSIDERADO) para o contribuinte no\nperíodo de apuração. Observação: o contribuinte deve considerar que além do pagamento por meio cartões de\ncrédito/débito, o mercado utiliza outras formas de recebimento, tais como: dinheiro, cheque e ticket, fato este que\npossivelmente será considerado na definição dos parâmetros para o planejamento da atividade fiscalizadora pela\nAdministração Tributária. Solução: O contribuinte deve retificar o Livro Fiscal (LFE/EFD) declarando os documentos fiscais\nemitidos nas operações/prestações realizadas (ICMS/ISS). Caso não os tenha emitido, poderá fazê-lo por meio de\ndocumento fiscal extemporâneo nos termos da Instrução Normativa SUREC/SEF-DF nº 07/2009.\n17 - Valor da Receita Bruta no PGDAS x Valor de Faturamento baseado em Operações com Cartão de crédito/débito ou\nDocumentos Fiscais emitidos ou declarado no LFE/EFD.: Consiste no CRUZAMENTO da Receita Bruta informada no\nPGDAS-D (valor INFORMADO) com o maior entre os três faturamentos a seguir (que consistirá no Valor CONSIDERADO):\na) Informações das Administradoras de Cartões de Crédito/Débito; b) Somatório do faturamento com operações\n(observados os CFOP específicos) e prestações acobertadas por meio de documentos fiscais eletrônicos emitidos pelo\n 1/2\n\ncontribuinte; c) Faturamento total, informado no LFE/EFD, com operações (observados os CFOP específicos) e com\nprestações. Observações: 1) Quando houver a informação da DATA DE SAÍDA no documento fiscal, a referência será o\nMês e Ano desta data, caso contrário será considerado o Mês e Ano da Data de Emissão do documento fiscal. 2) Como as\natualizações do PGDAS-D na base de dados do fisco distrital é feita após remessas das informações pela Receita Federal\ndo Brasil - RFB, 7(sete) dias, após a retificação do PGDAS, o contribuinte deverá aguardar este prazo para verificar a\nsituação (alteração ou exclusão) do indício no MALHA FISCAL. Solução: O Contribuinte deverá revisar a escrituração fiscal\ne, quando necessário, retificar as informações prestadas no LFE/EFD para declarar todos os documentos fiscais, utilizando,\nse for preciso, os termos da IN nº 07/2009 A correta adequação no regime de tributação, a retificação das informações\nprestadas no LFE/EFD, inclusive quando efetuada nos termos da IN nº 07/2009, assim como, o recolhimento ou\nparcelamento do ICMS e/ou ISS complementar serão considerados espontâneos e sujeitos apenas aos acréscimos\nmoratórios, ressalvadas as ações fiscais em andamento e aos créditos tributários anteriormente constituídos por meio de\nauto de infração. Observe que, mesmo que o contribuinte/Simples nacional tenha feito opção pelo Regime de Caixa (receita\nrecebida), nas Declarações PGDAS deve ser informada a Receita Bruta auferida também no Regime de Competência\nVisualizar Histórico de pendências anteriores"
+  },
+  "pgdas_plan": {
+    "planner": {
+      "name": "checkfiscal-required-pgdas-planner",
+      "version": "1.0.0",
+      "history_months": 24
+    },
+    "company": {
+      "cfdf": "08.055.883/001-11",
+      "legal_name": "ACONCHEGO DA MODA COMERCIO DE ROUPAS LTDA"
+    },
+    "summary": {
+      "work_month_count": 5,
+      "type_17_month_count": 3,
+      "type_01_only_month_count": 2,
+      "required_pgdas_count": 2
+    },
+    "work_plan": [
+      {
+        "competence": "06/2022",
+        "types": [
+          "17"
+        ],
+        "actions": [
+          "IMPORT_PGDAS",
+          "EVALUATE_TAX",
+          "EVALUATE_RBT12_REFLECTIONS"
+        ],
+        "requires_pgdas_analysis": true,
+        "raw_row_count": 1,
+        "duplicate_count": 0
+      },
+      {
+        "competence": "06/2025",
+        "types": [
+          "01"
+        ],
+        "actions": [
+          "REVIEW_SPED_LFE"
+        ],
+        "requires_pgdas_analysis": false,
+        "raw_row_count": 2,
+        "duplicate_count": 1
+      },
+      {
+        "competence": "07/2025",
+        "types": [
+          "01",
+          "17"
+        ],
+        "actions": [
+          "REVIEW_SPED_LFE",
+          "IMPORT_PGDAS",
+          "EVALUATE_TAX",
+          "EVALUATE_RBT12_REFLECTIONS"
+        ],
+        "requires_pgdas_analysis": true,
+        "raw_row_count": 2,
+        "duplicate_count": 0
+      },
+      {
+        "competence": "08/2025",
+        "types": [
+          "01",
+          "17"
+        ],
+        "actions": [
+          "REVIEW_SPED_LFE",
+          "IMPORT_PGDAS",
+          "EVALUATE_TAX",
+          "EVALUATE_RBT12_REFLECTIONS"
+        ],
+        "requires_pgdas_analysis": true,
+        "raw_row_count": 2,
+        "duplicate_count": 0
+      },
+      {
+        "competence": "11/2025",
+        "types": [
+          "01"
+        ],
+        "actions": [
+          "REVIEW_SPED_LFE"
+        ],
+        "requires_pgdas_analysis": false,
+        "raw_row_count": 2,
+        "duplicate_count": 1
+      }
+    ],
+    "required_pgdas": [
+      {
+        "requested_competence": "06/2022",
+        "covers_type_17_competences": [
+          "06/2022"
+        ],
+        "coverage_start": "06/2020",
+        "coverage_end": "06/2022",
+        "status": "AWAITING_UPLOAD",
+        "selection_rule": "LATEST_UNCOVERED_TYPE_17_COMPETENCE"
+      },
+      {
+        "requested_competence": "08/2025",
+        "covers_type_17_competences": [
+          "07/2025",
+          "08/2025"
+        ],
+        "coverage_start": "08/2023",
+        "coverage_end": "08/2025",
+        "status": "AWAITING_UPLOAD",
+        "selection_rule": "LATEST_UNCOVERED_TYPE_17_COMPETENCE"
+      }
+    ],
+    "post_upload_validation": {
+      "required": true,
+      "rule": "VALIDATE_ACTUAL_PGDAS_TIMELINE",
+      "description": "Após a leitura dos PGDAS, conferir se o banco oculto possui os meses necessários para recalcular cada competência e os reflexos posteriores. Solicitar complemento apenas se houver lacuna real."
+    }
+  }
+}

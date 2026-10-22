@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CheckFiscal 1.42 — Instalação</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#172033;padding:28px}main{max-width:900px;margin:auto;background:#fff;border:1px solid #d9e2ec;border-radius:14px;padding:25px}.step{border-left:4px solid #2f6df6;background:#eef4ff;padding:13px;margin:11px 0;border-radius:0 8px 8px 0}.warning{border-left-color:#d92d20;background:#fff1f0}code{background:#f2f4f7;padding:3px 6px;border-radius:5px}a{color:#175cd3}</style></head>
+<body><main><h1>CheckFiscal versão 1.42</h1>
+<div class="step warning"><strong>Correção da instalação:</strong> esta versão evita a dependência extra que estava tentando compilar PyYAML e seleciona Python 3.11, 3.12 ou 3.13.</div>
+<h2>Como abrir no Windows</h2>
+<div class="step">1. Extraia o ZIP em uma pasta nova. Não execute o arquivo diretamente de dentro do ZIP.</div>
+<div class="step">2. Execute <code>INICIAR_CHECKFISCAL_WINDOWS.bat</code>.</div>
+<div class="step">3. O sistema abre em <code>http://127.0.0.1:8142</code>. Confirme que o painel mostra <strong>VERSÃO 1.42</strong>.</div>
+<h2>Se o instalador informar que só encontrou Python 3.15</h2>
+<div class="step">Instale Python 3.13 de 64 bits pelo <a href="https://www.python.org/downloads/windows/">site oficial do Python</a>. Durante a instalação, marque <strong>Add Python to PATH</strong>. Você pode manter o Python 3.15 instalado; os dois podem coexistir. Depois, execute o BAT novamente.</div>
+<h2>Se a instalação anterior falhou</h2>
+<div class="step">A versão 1.42 recria automaticamente apenas a pasta temporária <code>.venv</code> se ela tiver sido criada com uma versão incompatível do Python.</div>
+<div class="step warning">Não apague a pasta <code>%LOCALAPPDATA%\CheckFiscal</code>: ela contém o banco de dados local.</div>
+</main></body></html>

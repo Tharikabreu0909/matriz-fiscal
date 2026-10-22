@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teste CheckFiscal 1.42</title>
+<style>body{font:16px/1.55 Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#172033;padding:24px}main{max-width:850px;margin:auto;background:#fff;border:1px solid #d9e2ec;border-radius:14px;padding:24px}li{margin:10px 0}code{background:#eef2f7;padding:3px 6px;border-radius:5px}.warn{background:#fff6e5;border-left:4px solid #c88719;padding:12px}</style></head>
+<body><main><h1>Roteiro de teste — CheckFiscal 1.42</h1>
+<p class="warn"><strong>Confirme primeiro:</strong> a aplicação precisa mostrar <b>VERSÃO 1.42</b> e abrir em <code>http://127.0.0.1:8142</code>.</p>
+<ol>
+<li>Cadastre ou abra uma empresa de teste.</li>
+<li>Envie uma malha com apenas Tipo 01. A etapa Documentos deve gerar pelo menos uma solicitação PGDAS para conferência; não pode mostrar “Não se aplica”.</li>
+<li>Envie o PGDAS da competência solicitada. O cartão deve ficar verde quando CNPJ e competência coincidirem.</li>
+<li>Confira que Tipo 01 mantém a ação de revisar SPED/LFE, mas não gera sozinho imposto, multa ou reflexos no RBT12.</li>
+<li>Envie uma malha com Tipo 17. O sistema deve gerar PGDAS para análise fiscal e os pedidos posteriores aplicáveis.</li>
+<li>Se uma competência não puder ser identificada ou ficar sem cobertura, o sistema deve bloquear a etapa e mostrar “Falha no planejamento”.</li>
+</ol><p>Não apague o banco local para testar. A versão 1.42 atualiza o planejamento dos processos existentes ao abri-los.</p></main></body></html>

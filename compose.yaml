@@ -1,0 +1,9 @@
+services:
+  checkfiscal:
+    build: .
+    ports:
+      - "127.0.0.1:8145:8145"
+    environment:
+      CHECKFISCAL_DATA_DIR: /data
+    volumes:
+      - ./checkfiscal_data:/data

@@ -1,0 +1,15 @@
+.venv
+.build-venv
+dist
+build
+__pycache__
+.pytest_cache
+checkfiscal_data
+*.db
+.git
+tests
+docs
+/*.md
+/*.html
+/*.bat
+/*.spec

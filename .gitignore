@@ -1,0 +1,9 @@
+.venv/
+.build-venv/
+dist/
+build/
+*.spec.bak
+__pycache__/
+.pytest_cache/
+checkfiscal_data/
+checkfiscal_local.db

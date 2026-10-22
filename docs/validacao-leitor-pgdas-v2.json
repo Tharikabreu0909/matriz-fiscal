@@ -1,0 +1,47 @@
+[
+  {
+    "file": "PGDASD-EXTRATO-07202619047013105.pdf",
+    "document_type": "PGDAS_EXTRACT",
+    "period": "06/2026",
+    "basic_cnpj": "09.462.429",
+    "identity_match": true,
+    "rpa_cents": 4351800,
+    "rbt12_cents": 39461674,
+    "history_month_count": 17,
+    "contains_das": true,
+    "das_total_cents": 260574,
+    "destination_count": 6,
+    "contains_payment": true,
+    "rbt12_matches": true
+  },
+  {
+    "file": "PGDASD-DECLARACAO-09462429202606001 (1).pdf",
+    "document_type": "PGDAS_DECLARATION",
+    "period": "06/2026",
+    "basic_cnpj": "09.462.429",
+    "identity_match": true,
+    "rpa_cents": 4351800,
+    "rbt12_cents": 39461674,
+    "history_month_count": 17,
+    "contains_das": false,
+    "das_total_cents": null,
+    "destination_count": 0,
+    "contains_payment": false,
+    "rbt12_matches": true
+  },
+  {
+    "file": "PGDASD-EXTRATO-07202535397216205.pdf",
+    "document_type": "PGDAS_EXTRACT",
+    "period": "11/2025",
+    "basic_cnpj": "09.462.429",
+    "identity_match": true,
+    "rpa_cents": 2566600,
+    "rbt12_cents": 33702189,
+    "history_month_count": 22,
+    "contains_das": true,
+    "das_total_cents": 142126,
+    "destination_count": 6,
+    "contains_payment": true,
+    "rbt12_matches": true
+  }
+]
