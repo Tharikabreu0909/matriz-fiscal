@@ -7,3 +7,4 @@ __pycache__/
 .pytest_cache/
 checkfiscal_data/
 checkfiscal_local.db
+exports/

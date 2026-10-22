@@ -17,6 +17,9 @@ mkdir -p checkfiscal_data
 echo
 echo "Subindo o CheckFiscal 1.45 em http://127.0.0.1:8145"
 echo "Os dados ficam em: $(pwd)/checkfiscal_data"
+echo "Alteracoes em arquivos .py recarregam o servidor sozinhas."
+echo "Alteracoes em static/ aparecem ao atualizar o navegador."
+echo "Se mudar requirements.txt, interrompa e suba de novo para reconstruir a imagem."
 echo "Para encerrar: Ctrl+C e depois docker compose down"
 echo
 

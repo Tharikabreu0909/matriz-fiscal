@@ -5,5 +5,21 @@ services:
       - "127.0.0.1:8145:8145"
     environment:
       CHECKFISCAL_DATA_DIR: /data
+      # Volumes do Windows não disparam inotify; o polling faz o reload ver o host.
+      WATCHFILES_FORCE_POLLING: "true"
     volumes:
       - ./checkfiscal_data:/data
+      - .:/app
+    command:
+      - python
+      - -m
+      - uvicorn
+      - app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8145"
+      - --no-access-log
+      - --reload
+      - --reload-dir
+      - /app
