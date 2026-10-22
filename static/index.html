@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>CheckFiscal — Auditoria Inteligente do Simples Nacional</title>
+  <title>Matriz Fiscal — Auditoria Inteligente do Simples Nacional</title>
   <style>
     :root {
       --bg: #f4f7fb;
@@ -2995,7 +2995,7 @@
       }
     }
 
-    /* ===== CheckFiscal Professional UI v1.25 ===== */
+    /* ===== Matriz Fiscal Professional UI v1.25 ===== */
     :root {
       --bg: #070b12;
       --panel: #101722;
@@ -6448,7 +6448,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">✓</div>
-        <div>CheckFiscal<small>Auditoria Inteligente</small></div>
+        <div>Matriz Fiscal<small>Auditoria Inteligente</small></div>
       </div>
       <div class="nav-title">Visão do escritório</div>
       <nav class="app-nav">
@@ -6721,7 +6721,7 @@
               <div class="bulk-drop-icon">⇧</div>
               <strong>Jogue os arquivos PGDAS aqui</strong>
               <span>Arraste vários PDFs para este balão ou clique para selecionar.</span>
-              <small>O CheckFiscal identifica automaticamente o CNPJ e o período de apuração.</small>
+              <small>O Matriz Fiscal identifica automaticamente o CNPJ e o período de apuração.</small>
             </div>
             <div class="bulk-upload-feedback" id="bulkUploadFeedback" role="status" aria-live="polite"></div>
             <div class="documents-needed-head" id="documentsProgressHeader">
@@ -6821,7 +6821,7 @@
               Arraste o PDF para este balão ou clique para selecionar
             </span>
             <small>
-              Processo único da empresa. O CheckFiscal lê a empresa,
+              Processo único da empresa. O Matriz Fiscal lê a empresa,
               identifica as competências e calcula os PGDAS necessários
               automaticamente.
             </small>
@@ -7213,7 +7213,7 @@
           <section class="settings-card commercial-settings-card">
             <span class="settings-eyebrow">Proteção dos dados</span>
             <h3>Backup completo</h3>
-            <p>Salva empresas, processos, cálculos e os PDFs originais guardados pelo CheckFiscal.</p>
+            <p>Salva empresas, processos, cálculos e os PDFs originais guardados pelo Matriz Fiscal.</p>
             <div class="settings-actions">
               <button class="primary" type="button" id="downloadBackupButton">Baixar backup</button>
               <button class="secondary" type="button" id="restoreBackupButton">Restaurar backup</button>
@@ -7771,7 +7771,7 @@
       const file = event.target.files?.[0];
       if (!file) return;
       const confirmed = window.confirm(
-        'Restaurar este backup substituirá os dados atuais. Antes da restauração, o CheckFiscal criará uma cópia de segurança automática. Continuar?'
+        'Restaurar este backup substituirá os dados atuais. Antes da restauração, o Matriz Fiscal criará uma cópia de segurança automática. Continuar?'
       );
       if (!confirmed) { event.target.value = ''; return; }
       setBackupFeedback('Validando e restaurando o backup...');
@@ -7780,7 +7780,7 @@
         const response = await fetch('/api/system/restore', { method: 'POST', body: form });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.detail || 'Não foi possível restaurar.');
-        setBackupFeedback('Backup restaurado. Recarregando o CheckFiscal...', 'success');
+        setBackupFeedback('Backup restaurado. Recarregando o Matriz Fiscal...', 'success');
         setTimeout(() => window.location.reload(), 900);
       } catch (error) {
         setBackupFeedback(error.message, 'error');
@@ -7878,7 +7878,7 @@
         `${file.name} · identificando empresa e competências`;
       analyzeButton.disabled = true;
       showMessage(
-        'Aguarde enquanto o CheckFiscal organiza as competências '
+        'Aguarde enquanto o Matriz Fiscal organiza as competências '
         + 'e calcula os documentos necessários.'
       );
 

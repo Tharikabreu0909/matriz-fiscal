@@ -1,4 +1,4 @@
-# CheckFiscal 1.43 — preservação de competências e cálculo pendente
+# Matriz Fiscal 1.43 — preservação de competências e cálculo pendente
 
 - Relatório apresenta todas as competências da malha, inclusive 12/2025 e 2026, sem esconder os meses sem cálculo.
 - Motor impede retorno de cálculo zerado como completo quando há Tipo 17 aguardando receita PGDAS.

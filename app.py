@@ -320,7 +320,7 @@ class CompanyUpdateRequest(BaseModel):
 
 
 app = FastAPI(
-    title="CheckFiscal - Malha, PGDAS e Diagnóstico",
+    title="Matriz Fiscal - Malha, PGDAS e Diagnóstico",
     version=APP_VERSION,
 )
 

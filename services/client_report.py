@@ -626,7 +626,7 @@ td ul {{
   </div>
 
   <header class="header">
-    <div class="brand">CheckFiscal</div>
+    <div class="brand">Matriz Fiscal</div>
     <h1>{escape(report_title)}</h1>
     <p>
       Estimativa conservadora da exposição indicada pela malha fiscal e pelas apurações do Simples Nacional.
@@ -735,7 +735,7 @@ td ul {{
     <section>
       <h2>Observações</h2>
       <div class="notes">
-        Este documento apresenta uma estimativa conservadora produzida a partir dos arquivos analisados e das regras configuradas no CheckFiscal. Não constitui ordem automática de retificação.
+        Este documento apresenta uma estimativa conservadora produzida a partir dos arquivos analisados e das regras configuradas no Matriz Fiscal. Não constitui ordem automática de retificação.
         A composição dos documentos fiscais deve ser conferida antes de qualquer retificação definitiva. A emissão definitiva das guias e das retificações deve ser realizada nos sistemas oficiais. O cálculo atual pressupõe
         receita integralmente tributada pelo Anexo {annex}, sem
         segregações especiais, substituição tributária, tributação
@@ -745,7 +745,7 @@ td ul {{
 
     <footer class="footer">
       <span>Emitido em {escape(model["generated_at"])}</span>
-      <span>CheckFiscal · Auditoria inteligente do Simples Nacional</span>
+      <span>Matriz Fiscal · Auditoria inteligente do Simples Nacional</span>
     </footer>
   </div>
 </main>

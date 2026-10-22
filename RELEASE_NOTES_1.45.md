@@ -1,4 +1,4 @@
-# CheckFiscal 1.45 — Último PGDAS efetivamente transmitido
+# Matriz Fiscal 1.45 — Último PGDAS efetivamente transmitido
 
 - Nova seleção mês + ano (1990–2100), independente de ano fixo.
 - Preferência gravada por processo e aplicada no cálculo do plano.

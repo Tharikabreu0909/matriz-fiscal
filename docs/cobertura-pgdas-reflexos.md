@@ -20,6 +20,6 @@ Correção em 11/2025:
 
 ## Segurança
 
-O CheckFiscal não usa zero nem projeção automática como receita futura. O
+O Matriz Fiscal não usa zero nem projeção automática como receita futura. O
 resultado é parcial até que o período exista e o respectivo PGDAS seja
 importado.

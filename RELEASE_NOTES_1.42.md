@@ -1,4 +1,4 @@
-# CheckFiscal 1.42.0
+# Matriz Fiscal 1.42.0
 
 ## Correção da instalação no Windows
 - `uvicorn[standard]` foi substituído por `uvicorn` base porque o aplicativo não usa os extras opcionais. Isso evita a tentativa desnecessária de compilar PyYAML.

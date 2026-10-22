@@ -4,7 +4,7 @@
 
 ## Objeto
 
-Disponibilização temporária do CheckFiscal para simulação de exposição fiscal relacionada a malhas do Simples Nacional.
+Disponibilização temporária do Matriz Fiscal para simulação de exposição fiscal relacionada a malhas do Simples Nacional.
 
 ## Natureza dos resultados
 

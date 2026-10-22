@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Transformar a memória técnica do CheckFiscal em uma apresentação simples,
+Transformar a memória técnica do Matriz Fiscal em uma apresentação simples,
 compreensível e adequada para envio ao cliente.
 
 ## Conteúdo

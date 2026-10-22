@@ -41,5 +41,5 @@ automaticamente o faturamento final do SPED/LFE.
 
 A falta do estudo contábil não impede a simulação da exposição.
 
-Ela impede apenas que o CheckFiscal apresente o valor fiscal apontado como
+Ela impede apenas que o Matriz Fiscal apresente o valor fiscal apontado como
 ordem definitiva de retificação.

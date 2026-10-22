@@ -1,4 +1,4 @@
-# CheckFiscal 1.41 — PGDAS para todas as competências da malha
+# Matriz Fiscal 1.41 — PGDAS para todas as competências da malha
 
 **Versão operacional: 1.41.0** · **Porta local: `http://127.0.0.1:8141`**
 

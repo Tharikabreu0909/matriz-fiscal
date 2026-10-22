@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title CheckFiscal 1.41
+title Matriz Fiscal 1.41
 
 where py >nul 2>nul
 if %errorlevel%==0 (
@@ -21,7 +21,7 @@ if %errorlevel%==0 (
 )
 
 if not exist ".venv\Scripts\python.exe" (
-  echo Preparando o CheckFiscal pela primeira vez...
+  echo Preparando o Matriz Fiscal pela primeira vez...
   %PYTHON% -m venv .venv
   if errorlevel 1 goto :erro
 )
@@ -44,7 +44,7 @@ if exist "checkfiscal_local.db" if not exist "%CHECKFISCAL_DATA_DIR%\checkfiscal
 )
 
 echo.
-echo CheckFiscal 1.41 iniciado em http://127.0.0.1:8141
+echo Matriz Fiscal 1.41 iniciado em http://127.0.0.1:8141
 echo Os dados ficam em: %CHECKFISCAL_DATA_DIR%
 echo Para encerrar, feche esta janela.
 echo.
@@ -55,7 +55,7 @@ exit /b 0
 
 :erro
 echo.
-echo Nao foi possivel iniciar o CheckFiscal.
+echo Nao foi possivel iniciar o Matriz Fiscal.
 echo Confira a conexao com a internet e a instalacao do Python.
 echo.
 pause

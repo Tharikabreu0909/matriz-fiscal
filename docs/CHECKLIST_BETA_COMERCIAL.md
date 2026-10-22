@@ -3,7 +3,7 @@
 ## Antes da instalação
 
 - confirmar que o escritório possui computador Windows atualizado;
-- definir responsável pelo CheckFiscal;
+- definir responsável pelo Matriz Fiscal;
 - explicar que a versão é local e assistida;
 - informar que o escopo atual vai até 12/2026;
 - alinhar que os resultados são estimativas conservadoras;

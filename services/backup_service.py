@@ -86,7 +86,7 @@ def validate_backup_bytes(content: bytes) -> dict[str, Any]:
                 raise ValueError("O backup ultrapassa o limite de segurança.")
             names = {member.filename for member in members}
             if "manifest.json" not in names or "database/checkfiscal.db" not in names:
-                raise ValueError("O arquivo não é um backup válido do CheckFiscal.")
+                raise ValueError("O arquivo não é um backup válido do Matriz Fiscal.")
             manifest = json.loads(archive.read("manifest.json"))
             if manifest.get("product") != "CheckFiscal":
                 raise ValueError("Backup de outro produto.")

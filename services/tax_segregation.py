@@ -758,7 +758,7 @@ def calculate_segmented_reflections(
         ),
         (
             "Receitas monofásicas dependem da validação dos produtos "
-            "e operações. O CheckFiscal não classifica NCM "
+            "e operações. O Matriz Fiscal não classifica NCM "
             "automaticamente nesta versão."
         ),
         (

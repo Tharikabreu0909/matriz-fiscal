@@ -7,7 +7,7 @@ contador.
 
 ## Decisão automática
 
-Quando as fontes são coerentes, o CheckFiscal registra:
+Quando as fontes são coerentes, o Matriz Fiscal registra:
 
 - status `AUTO_ANALYZED`;
 - confiança alta;
