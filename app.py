@@ -14,6 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from starlette.concurrency import run_in_threadpool
 
 from database import (
+    DatabaseBusyError,
     create_process,
     create_company,
     update_company,
@@ -54,6 +55,7 @@ from database import (
 from readers.malha_reader import read_malha_pdf
 from readers.pgdas_reader import read_pgdas_pdf
 from services.cross_engine import validate_pgdas_identity
+from services.request_guard import RequestGuardMiddleware
 from services.analysis_engine import analyze_process
 from services.tax_engine import (
     TaxEngineError,
@@ -344,6 +346,10 @@ async def log_requests(request: Request, call_next):
             request.url.path,
         )
         raise
+
+
+# Registrado depois do log_requests: fica mais externo e rejeita antes de qualquer handler.
+app.add_middleware(RequestGuardMiddleware)
 
 
 _STATIC_CACHE = {
@@ -1279,6 +1285,11 @@ async def system_restore(
     try:
         manifest = await run_in_threadpool(validate_backup_bytes, content)
         result = await run_in_threadpool(restore_backup, content, APP_VERSION)
+    except DatabaseBusyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail="Restauração em andamento ou banco ocupado; tente novamente.",
+        ) from error
     except (ValueError, zipfile.BadZipFile) as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 

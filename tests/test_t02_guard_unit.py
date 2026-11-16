@@ -13,6 +13,7 @@ ALLOWED = {"127.0.0.1:8141", "localhost:8145"}
     ("GET", "/api/process/3", True),
     ("GET", "/api/health", False),
     ("GET", "/", False),
+    ("PUT", "/api/health", True),
     ("GET", "/static/app.css", False),
     ("HEAD", "/api/system/backup", False),
     ("OPTIONS", "/api/companies", False),
@@ -31,7 +32,8 @@ def test_allowed_hosts_defaults_and_additive(monkeypatch):
 
 @pytest.mark.parametrize("origin,expected", [
     ("http://127.0.0.1:8141", "127.0.0.1:8141"),
-    ("https://LOCALHOST:8145/", "localhost:8145"),
+    ("http://LOCALHOST:8145/", "localhost:8145"),
+    ("https://localhost:8145", None),
     ("null", None),
     ("", None),
     ("ftp://localhost:8145", None),

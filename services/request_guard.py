@@ -1,10 +1,9 @@
 """Protecao local contra DNS rebinding e CSRF (P0-S1). Sem token: cenario de um operador local."""
 import json
-import logging
 import os
 from urllib.parse import urlsplit
 
-logger = logging.getLogger("checkfiscal.request_guard")
+from services.app_logging import logger
 
 DEFAULT_PORTS = (8141, 8145, 8146)
 SAFE_METHODS = {"HEAD", "OPTIONS"}
@@ -22,18 +21,18 @@ def allowed_hosts_from_env() -> set[str]:
 
 def is_guarded(method: str, path: str) -> bool:
     method = method.upper()
-    if method in SAFE_METHODS or path in OPEN_PATHS:
+    if method in SAFE_METHODS:
         return False
     if method == "GET":  # GETs sob /api/ podem gravar (backup, relatorio, process)
-        return path.startswith("/api/")
+        return path.startswith("/api/") and path not in OPEN_PATHS
     return True
 
 
 def origin_host(origin: str) -> str | None:
-    """'host:porta' de um Origin http(s); None se for 'null' ou invalido."""
+    """'host:porta' de um Origin http; None se for 'null', https ou invalido (o app nao tem TLS)."""
     try:
         parts = urlsplit(origin.strip())
-        if parts.scheme not in ("http", "https") or not parts.hostname or parts.path not in ("", "/"):
+        if parts.scheme != "http" or not parts.hostname or parts.path not in ("", "/"):
             return None
         host = parts.hostname.lower()
         return f"{host}:{parts.port}" if parts.port else host

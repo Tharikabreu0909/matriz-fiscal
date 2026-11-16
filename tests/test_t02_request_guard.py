@@ -12,6 +12,7 @@ Host padrão do TestClient é "testserver", permitido só na suíte (conftest).
 from __future__ import annotations
 
 import hashlib
+import logging
 import re
 import sqlite3
 from pathlib import Path
@@ -132,7 +133,6 @@ HOSTS_ALLOWED = [
 ]
 
 
-@XFAIL
 @pytest.mark.parametrize("host", HOSTS_BLOCKED)
 @pytest.mark.parametrize("path", ["/", "/api/health"])
 def test_host_fora_da_lista_retorna_400(client, host, path):
@@ -141,7 +141,6 @@ def test_host_fora_da_lista_retorna_400(client, host, path):
     assert response.json().get("code") == "HOST_NOT_ALLOWED"
 
 
-@XFAIL
 def test_dns_rebinding_no_restore_nao_substitui_banco(client, seeded, handler_guard):
     before = _snapshot()
     response = client.post(
@@ -173,7 +172,6 @@ ORIGINS_BLOCKED = [
 ORIGINS_ALLOWED = ["http://127.0.0.1:8141", "http://localhost:8145", "http://127.0.0.1:8146"]
 
 
-@XFAIL
 @pytest.mark.parametrize("origin", ORIGINS_BLOCKED)
 def test_origin_nao_autorizado_bloqueia_escrita(client, seeded, handler_guard, origin):
     before = _snapshot()
@@ -200,7 +198,6 @@ CONTRADICTORY_HEADERS = [
 ]
 
 
-@XFAIL
 @pytest.mark.parametrize("headers", CONTRADICTORY_HEADERS)
 def test_sec_fetch_e_origin_bloqueiam_escrita(client, seeded, handler_guard, headers):
     before = _snapshot()
@@ -244,7 +241,6 @@ STATE_CHANGING = [
 ]
 
 
-@XFAIL
 @pytest.mark.parametrize("send", STATE_CHANGING)
 def test_origin_externo_bloqueia_todas_as_escritas(client, seeded, handler_guard, send):
     before = _snapshot()
@@ -254,7 +250,6 @@ def test_origin_externo_bloqueia_todas_as_escritas(client, seeded, handler_guard
     assert _snapshot() == before
 
 
-@XFAIL
 @pytest.mark.parametrize("send", STATE_CHANGING[:1] + STATE_CHANGING[6:7] + STATE_CHANGING[8:9])
 def test_cross_site_bloqueia_escritas_selecionadas(client, seeded, handler_guard, send):
     before = _snapshot()
@@ -263,7 +258,6 @@ def test_cross_site_bloqueia_escritas_selecionadas(client, seeded, handler_guard
     assert _snapshot() == before
 
 
-@XFAIL
 def test_json_sem_content_type_nao_contorna_o_guard(client, seeded, handler_guard):
     before = _snapshot()
     response = client.post(
@@ -275,7 +269,6 @@ def test_json_sem_content_type_nao_contorna_o_guard(client, seeded, handler_guar
     assert _snapshot() == before
 
 
-@XFAIL
 def test_json_sem_content_type_em_calculo_cross_site(client, seeded, handler_guard):
     before = _snapshot()
     response = client.post(
@@ -287,7 +280,6 @@ def test_json_sem_content_type_em_calculo_cross_site(client, seeded, handler_gua
     assert _snapshot() == before
 
 
-@XFAIL
 def test_barra_final_cross_origin_da_403_e_nao_307(client, seeded, handler_guard):
     before = _snapshot()
     response = client.post(
@@ -317,7 +309,6 @@ GET_GUARDED = [
 ]
 
 
-@XFAIL
 @pytest.mark.parametrize("path", GET_GUARDED)
 def test_get_sob_api_cross_site_bloqueado(client, seeded, handler_guard, path):
     before = _snapshot()
@@ -327,7 +318,6 @@ def test_get_sob_api_cross_site_bloqueado(client, seeded, handler_guard, path):
     assert _snapshot() == before
 
 
-@XFAIL
 def test_client_report_same_site_bloqueado_sem_relatorio(client, seeded, handler_guard):
     before = _snapshot()
     response = client.get(
@@ -345,9 +335,10 @@ def test_head_em_backup_nao_cria_arquivo(client, seeded, handler_guard):
     assert _snapshot() == before
 
 
-@XFAIL
-def test_bloqueio_registrado_em_log_sem_query_nem_corpo(client, seeded, handler_guard, caplog):
+def test_bloqueio_registrado_em_log_sem_query_nem_corpo(client, seeded, handler_guard, caplog, monkeypatch):
     caplog.set_level("INFO")
+    # o logger do app nao propaga ao root (app_logging.propagate=False): liga o caplog nele
+    monkeypatch.setattr(logging.getLogger("checkfiscal"), "propagate", True)
     client.post(
         f"/api/confirm-analysis?process_id={seeded['process_id']}&competence=2026-01",
         headers={"Origin": EVIL},
