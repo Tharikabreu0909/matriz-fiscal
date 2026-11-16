@@ -10,7 +10,6 @@ from services.reflection_coverage import (
 )
 
 
-HISTORY_MONTHS = 24
 
 
 def normalize_type_code(value: Any) -> str:
@@ -215,11 +214,19 @@ def competence_from_index(value: int) -> str:
     return f"{zero_based_month + 1:02d}/{year}"
 
 
+def history_window(competence: str) -> tuple[str, str]:
+    """Janela real de um PGDAS-D: de janeiro do ano anterior ao PA, até o PA.
+
+    shortcut: ignora o início da atividade (não consta na malha); upgrade quando
+    o planejador receber essa data.
+    """
+    return f"01/{int(competence.split('/')[1]) - 1}", competence
+
+
 def initial_document_requests(
     malha_competences: list[str],
     type_01_months: list[str],
     type_17_months: list[str],
-    history_months: int,
 ) -> list[dict[str, Any]]:
     """Planeja PGDAS para conferência de toda competência da malha.
 
@@ -230,25 +237,46 @@ def initial_document_requests(
 
     Um PGDAS mais recente pode cobrir competências anteriores presentes em seu
     histórico. Cada competência-alvo é coberta por pelo menos uma solicitação.
+    Além disso, o cálculo exige os 12 meses anteriores a cada competência da
+    malha na linha do tempo: se o histórico dos PGDAS já planejados não os
+    alcança, pede-se o PGDAS da primeira competência da malha nessa situação.
     """
     type_01_set = set(type_01_months)
     type_17_set = set(type_17_months)
-    not_covered = {
+    all_malha = {
         month_index(competence): competence
         for competence in malha_competences
     }
+    not_covered = dict(all_malha)
+    in_history: set[int] = set()
     requests: list[dict[str, Any]] = []
 
-    while not_covered:
-        requested_index = max(not_covered)
-        requested_competence = not_covered[requested_index]
-        coverage_start_index = requested_index - history_months
+    while True:
+        if not_covered:
+            pool = not_covered
+            requested_index = max(pool)
+        else:
+            pool = all_malha
+            requested_index = next(
+                (
+                    index for index in sorted(pool)
+                    if not set(range(index - 12, index + 1)) <= in_history
+                ),
+                None,
+            )
+            if requested_index is None:
+                break
+        requested_competence = pool[requested_index]
+        coverage_start_index = month_index(
+            history_window(requested_competence)[0]
+        )
+        in_history.update(range(coverage_start_index, requested_index + 1))
         covered_indexes = sorted(
             index
-            for index in not_covered
+            for index in pool
             if coverage_start_index <= index <= requested_index
         )
-        covered_competences = [not_covered[index] for index in covered_indexes]
+        covered_competences = [pool[index] for index in covered_indexes]
         covered_type_01 = [item for item in covered_competences if item in type_01_set]
         covered_type_17 = [item for item in covered_competences if item in type_17_set]
 
@@ -292,7 +320,7 @@ def initial_document_requests(
         })
 
         for index in covered_indexes:
-            del not_covered[index]
+            not_covered.pop(index, None)
 
     return requests
 
@@ -301,7 +329,6 @@ def potential_reflection_requests(
     type_17_months: list[str],
     existing_requests: list[dict[str, Any]],
     latest_due_competence: str,
-    history_months: int,
 ) -> list[dict[str, Any]]:
     """Planeja antecipadamente os PGDAS posteriores possíveis.
 
@@ -328,7 +355,10 @@ def potential_reflection_requests(
             request["requested_competence"]
         )
         covered_by_plan.update(
-            range(requested_index - history_months, requested_index + 1)
+            range(
+                month_index(history_window(request["requested_competence"])[0]),
+                requested_index + 1,
+            )
         )
 
     remaining = reflection_targets - covered_by_plan
@@ -337,7 +367,9 @@ def potential_reflection_requests(
     while remaining:
         requested_index = max(remaining)
         requested_competence = competence_from_index(requested_index)
-        coverage_start_index = requested_index - history_months
+        coverage_start_index = month_index(
+            history_window(requested_competence)[0]
+        )
         covered = sorted(
             index
             for index in remaining
@@ -382,7 +414,6 @@ def potential_reflection_requests(
 
 def calculate_required_pgdas(
     malha_data: dict[str, Any],
-    history_months: int = HISTORY_MONTHS,
     as_of_date: date | None = None,
 ) -> dict[str, Any]:
     """Gera o plano completo de PGDAS para a malha.
@@ -427,13 +458,11 @@ def calculate_required_pgdas(
         malha_competences,
         type_01_months,
         type_17_months,
-        history_months,
     )
     reflection_requests = potential_reflection_requests(
         type_17_months,
         requests,
         latest_due,
-        history_months,
     )
 
     for posterior in reflection_requests:
@@ -565,8 +594,8 @@ def calculate_required_pgdas(
         "planner": {
             "name": "checkfiscal-required-pgdas-planner",
             "strategy": "UPFRONT_COMPLETE_PLAN",
-            "version": "2.4.0",
-            "history_months": history_months,
+            "version": "2.5.0",
+            "history_rule": "JANUARY_OF_PREVIOUS_YEAR_TO_PA",
             "planning_date": (as_of_date or date.today()).isoformat(),
         },
         "company": malha_data.get("contributor", {}),
