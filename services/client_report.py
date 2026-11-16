@@ -5,6 +5,32 @@ from html import escape
 from typing import Any
 
 
+# Textos novos do aviso de competência não calculada (redação sujeita a aprovação).
+MISSING_NOT_CALCULATED = "Não calculado: faltam PGDAS que cubram {faixa}"
+MISSING_NOTICE = (
+    "Algumas competências não foram calculadas porque faltam PGDAS que cubram "
+    "os 12 meses anteriores a elas. Envie os PGDAS solicitados no plano e "
+    "recalcule: os valores abaixo não incluem essas competências."
+)
+
+
+def compact_competences(competences: list[str]) -> str:
+    """['06/2024','07/2024','12/2024'] -> '06/2024 a 07/2024, 12/2024'."""
+    indexes = sorted(
+        int(c[3:]) * 12 + int(c[:2]) - 1 for c in competences
+    )
+    runs: list[list[int]] = []
+    for index in indexes:
+        if runs and index == runs[-1][1] + 1:
+            runs[-1][1] = index
+        else:
+            runs.append([index, index])
+    label = lambda i: f"{i % 12 + 1:02d}/{i // 12}"
+    return ", ".join(
+        label(a) if a == b else f"{label(a)} a {label(b)}" for a, b in runs
+    )
+
+
 def brl(cents: int | None) -> str:
     value = int(cents or 0)
     whole, decimal = divmod(abs(value), 100)
@@ -269,6 +295,7 @@ def build_report_model(
             ),
         },
         "competence_rows": relevant_rows,
+        "missing_months": tax_result.get("missing_months", []),
         "reflection_rows": tax_result.get(
             "visible_impacts",
             [],
@@ -282,8 +309,15 @@ def build_report_model(
 
 def competence_table_rows(
     rows: list[dict[str, Any]],
+    missing_months: list[dict[str, Any]] | None = None,
 ) -> str:
     rendered: list[str] = []
+    not_calculated = {
+        item["competence"]: MISSING_NOT_CALCULATED.format(
+            faixa=compact_competences(item["missing_competences"])
+        )
+        for item in missing_months or []
+    }
 
     for row in rows:
         actions = "".join(
@@ -296,7 +330,7 @@ def competence_table_rows(
               <td class="competence">{escape(row["competence"])}</td>
               <td><ul>{actions}</ul></td>
               <td class="money">{brl(row["tax_increment_cents"])}</td>
-              <td class="money">{brl(row["updated_total_cents"])}</td>
+              <td class="money">{escape(not_calculated[row["competence"]]) if row["competence"] in not_calculated else brl(row["updated_total_cents"])}</td>
             </tr>
             """
         )
@@ -356,8 +390,18 @@ def reflection_table_rows(
 def render_client_report(model: dict[str, Any]) -> str:
     company = model["company"]
     summary = model["summary"]
+    missing_months = model.get("missing_months", [])
     competence_rows = competence_table_rows(
-        model["competence_rows"]
+        model["competence_rows"],
+        missing_months,
+    )
+    missing_notice = (
+        f'<p class="lead">{escape(MISSING_NOTICE)}</p>'
+        if any(
+            row["competence"] in {m["competence"] for m in missing_months}
+            for row in model["competence_rows"]
+        )
+        else ""
     )
     reflection_rows = reflection_table_rows(
         model["reflection_rows"]
@@ -694,7 +738,7 @@ td ul {{
       <h2>Pontos de atenção</h2>
       <p class="lead">
         O SPED/LFE e o PGDAS são analisados separadamente. A simulação não transforma automaticamente os valores do cruzamento em ordens de retificação.
-      </p>
+      </p>{missing_notice}
       <table>
         <thead>
           <tr>
