@@ -71,3 +71,53 @@ def test_origin_and_fetch_site_rules():
 def test_open_paths_accept_cross_site():
     assert run(method="GET", path="/api/health", site="cross-site") is None
     assert run(method="GET", path="/", origin="https://evil.example") is None
+
+
+def _asgi(method, path, headers):
+    """Executa o middleware ASGI com cabecalhos crus (repetidos); devolve (status, app_chamado)."""
+    import asyncio
+
+    from services.request_guard import RequestGuardMiddleware
+
+    seen = {"called": False, "status": None}
+
+    async def inner(scope, receive, send):
+        seen["called"] = True
+
+    async def send(message):
+        if message["type"] == "http.response.start":
+            seen["status"] = message["status"]
+
+    scope = {"type": "http", "method": method, "path": path,
+             "headers": [(k.encode(), v.encode()) for k, v in headers]}
+    asyncio.run(RequestGuardMiddleware(inner, ALLOWED)(scope, None, send))
+    return seen["status"], seen["called"]
+
+
+GOOD = ("host", "127.0.0.1:8141")
+
+
+@pytest.mark.parametrize("method,path", [("POST", "/api/companies"), ("GET", "/api/health"), ("GET", "/")])
+@pytest.mark.parametrize("headers", [
+    [GOOD, GOOD],  # igual, mas repetido
+    [GOOD, ("host", "evil.example")],
+    [("host", "evil.example"), GOOD],
+])
+def test_duplicate_host_is_400_everywhere(method, path, headers):
+    assert _asgi(method, path, headers) == (400, False)
+
+
+@pytest.mark.parametrize("extra", [
+    [("origin", "http://127.0.0.1:8141"), ("origin", "http://127.0.0.1:8141")],
+    [("origin", "http://127.0.0.1:8141"), ("origin", "https://evil.example")],
+    [("sec-fetch-site", "same-origin"), ("sec-fetch-site", "same-origin")],
+    [("sec-fetch-site", "same-origin"), ("sec-fetch-site", "cross-site")],
+])
+def test_duplicate_origin_or_fetch_site_blocked_only_when_guarded(extra):
+    assert _asgi("POST", "/api/companies", [GOOD, *extra]) == (403, False)
+    assert _asgi("GET", "/api/health", [GOOD, *extra]) == (None, True)
+
+
+def test_single_headers_still_pass_at_asgi_level():
+    headers = [GOOD, ("origin", "http://127.0.0.1:8141"), ("sec-fetch-site", "same-origin")]
+    assert _asgi("POST", "/api/companies", headers) == (None, True)

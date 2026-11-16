@@ -63,7 +63,7 @@ Não coletado: `tests/test_v145_last_declared_cutoff.py` → `ImportError: canno
 
 ## Residuais
 
-- Trava de Host duplicado: valida o primeiro cabeçalho.
+- ~~Host duplicado valida o primeiro cabeçalho~~ **Corrigido**: `Host` repetido → 400 em qualquer rota; `Origin` ou `Sec-Fetch-Site` repetidos → 403 nas rotas guardadas.
 - WebSocket não é checado (o app não tem rota WebSocket).
 - `https` bloqueado como `Origin`: se houver proxy TLS, ajustar.
 - Navegador sem `Sec-Fetch-*` e GET sem `Origin` passam só pela regra de `Host`.

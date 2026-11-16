@@ -64,12 +64,18 @@ class RequestGuardMiddleware:
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
-        headers = {}
+        headers: dict[str, list[str]] = {}
         for key, value in scope["headers"]:
-            headers.setdefault(key.decode("latin-1").lower(), value.decode("latin-1"))
+            headers.setdefault(key.decode("latin-1").lower(), []).append(value.decode("latin-1"))
+
+        def one(name: str, invalid: str) -> str | None:
+            # Cabecalho repetido e ambiguo: vira um valor que check() rejeita.
+            values = headers.get(name, [])
+            return values[0] if len(values) == 1 else (invalid if values else None)
+
         verdict = check(
-            scope["method"], scope["path"], headers.get("host"),
-            headers.get("origin"), headers.get("sec-fetch-site"), self.allowed,
+            scope["method"], scope["path"], one("host", ""),
+            one("origin", "null"), one("sec-fetch-site", "duplicate"), self.allowed,
         )
         if verdict is None:
             return await self.app(scope, receive, send)

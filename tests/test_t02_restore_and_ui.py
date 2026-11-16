@@ -48,3 +48,8 @@ def test_blocked_log_neutralizes_newline_in_path(caplog, monkeypatch):
     assert response.status_code == 403
     messages = [r.getMessage() for r in caplog.records if "CROSS_ORIGIN_BLOCKED" in r.getMessage()]
     assert messages and all("\n" not in m for m in messages)
+
+
+def test_duplicate_host_header_via_client_is_400():
+    response = _client().get("/api/health", headers=[("host", "testserver"), ("host", "testserver")])
+    assert response.status_code == 400
