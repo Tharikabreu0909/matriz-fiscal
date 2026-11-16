@@ -7570,3 +7570,10 @@
   .dashboard-portfolio .company-row.dash .company-cell:nth-child(4) { display: block }
   .dashboard-portfolio .company-row.dash .company-cell:nth-child(4):not(:empty)::before { content: "Impacto: "; color: var(--muted) }
 }
+
+    /* T08: valores do ultimo calculo quando desatualizado */
+    .estimate-summary-panel .estimate-outdated-label { display: none; font-size: 12px; color: #dbe4f0; opacity: 1 }
+    .estimate-summary-panel.is-outdated .estimate-outdated-label { display: block }
+    .estimate-summary-panel.is-outdated .compact-summary-grid { opacity: .55 }
+    .estimate-summary-panel.is-outdated .compact-summary-grid .estimate-grand-total { background: none; border-color: var(--line) }
+    .estimate-summary-panel.is-outdated .compact-summary-grid .estimate-grand-total strong { color: inherit }

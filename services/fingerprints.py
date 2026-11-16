@@ -15,6 +15,10 @@ OUTDATED_MESSAGE = (
     "Cálculo desatualizado. Os documentos ou parâmetros deste processo foram alterados após o último "
     "cálculo. Recalcule o imposto e os encargos antes de emitir um novo relatório."
 )
+PERIOD_ADVANCED_MESSAGE = (
+    "Um novo mÃªs venceu desde o Ãºltimo cÃ¡lculo. Envie os PGDAS pendentes do plano, se houver, e recalcule "
+    "o imposto e os encargos antes de emitir um novo relatÃ³rio."
+)
 MSG_TAX_MISSING = "Calcule primeiro o imposto e os reflexos do cenário selecionado."
 MSG_CHARGES_MISSING = "Calcule primeiro a multa e os juros do cenário selecionado."
 
@@ -106,6 +110,7 @@ def tax_fingerprint(analysis_fp: str, *, annex: str, scenario: str, standard_pro
     })
 
 
+# registro de auditoria: nÃ£o Ã© comparado na leitura; sÃ³ o tax fp decide o estado dos encargos
 def charges_fingerprint(tax_fp: str, *, update_date: str, selic_used: dict[str, str], dues: list[dict]) -> str:
     return digest("charges", {
         "tax": tax_fp, "update_date": update_date, "selic_used": selic_used,
@@ -124,7 +129,7 @@ def charges_inputs(result: dict) -> tuple[str, dict[str, str], list[dict]]:
 
 
 def freshness_state(tax_result: dict | None, charges_result: dict | None, current_tax_fp: str | None,
-                    blocked_by_documents: bool) -> dict:
+                    blocked_by_documents: bool, current_analysis_fp: str | None = None) -> dict:
     """Estado de tax/charges e can_emit. current_tax_fp: fingerprint recalculado agora (None se nao calculavel)."""
     if tax_result is None:
         tax = ("PENDENTE_DE_DADOS", "MISSING_DOCUMENTS") if blocked_by_documents else ("NAO_CALCULADO", "NO_CALCULATION")
@@ -134,6 +139,9 @@ def freshness_state(tax_result: dict | None, charges_result: dict | None, curren
             tax = ("DESATUALIZADO", "LEGACY_NO_FINGERPRINT")
         elif stored == current_tax_fp:
             tax = ("ATUALIZADO", "CURRENT")
+        elif (tax_result["input_fingerprint"].get("analysis") == current_analysis_fp):
+            # documentos/decisoes iguais: so o calendario avancou (mes venceu)
+            tax = ("DESATUALIZADO", "PERIOD_ADVANCED")
         else:
             tax = ("DESATUALIZADO", "INPUTS_CHANGED")
 
@@ -155,7 +163,8 @@ def freshness_state(tax_result: dict | None, charges_result: dict | None, curren
     elif charges_result is None:
         code, message = "NOT_CALCULATED", MSG_CHARGES_MISSING
     elif not can_emit:
-        code, message = "CALCULATION_OUTDATED", OUTDATED_MESSAGE
+        code = "CALCULATION_OUTDATED"
+        message = PERIOD_ADVANCED_MESSAGE if tax[1] == "PERIOD_ADVANCED" else OUTDATED_MESSAGE
     else:
         code, message = None, None
     return {

@@ -593,6 +593,7 @@
               <div class="stage-message freshness-banner" data-freshness-banner role="status" hidden></div>
 
               <section class="estimate-summary-panel compact-estimate-summary" id="estimateSummaryPanel">
+                <small class="estimate-outdated-label">Valores do último cálculo</small>
                 <div class="compact-summary-heading">
                   <div>
                     <span>Resultado</span>
@@ -1702,25 +1703,21 @@ CFDF: ${malhaRegistration}
       button.disabled = !enabled;
       button.classList.toggle('complete', complete);
       const id = { malha: 'stepStatusMalha', documents: 'stepStatusDocuments', analysis: 'stepStatusAnalysis', calculation: 'stepStatusCalculation', report: 'stepStatusReport', history: 'stepStatusHistory' }[step];
-      const label = document.getElementById(id);
-      if (label) label.textContent = freshnessOutdated && (step === 'calculation' || step === 'report') ? 'Desatualizado' : status;
+      const label = document.getElementById(id); if (label) label.textContent = status;
     }
 
-    let freshnessOutdated = false;
     // T08: avisa cálculo desatualizado e impede abrir relatório que a API recusaria (409).
     function applyFreshness(f) {
       if (!f) return;
-      freshnessOutdated = f.tax.state === 'DESATUALIZADO' || f.charges.state === 'DESATUALIZADO';
+      const freshnessOutdated = f.tax.state === 'DESATUALIZADO' || f.charges.state === 'DESATUALIZADO';
       document.querySelectorAll('[data-freshness-banner]').forEach(el => {
         el.hidden = !freshnessOutdated;
         el.classList.toggle('visible', freshnessOutdated);
+        document.getElementById('estimateSummaryPanel')?.classList.toggle('is-outdated', freshnessOutdated);
         el.textContent = freshnessOutdated ? (f.report.message || '') : '';
       });
       const open = document.getElementById('openClientReport');
       if (open) { open.disabled = !f.report.can_emit; open.title = f.report.can_emit ? '' : (f.report.message || ''); }
-      if (freshnessOutdated) {
-        for (const id of ['stepStatusCalculation', 'stepStatusReport']) document.getElementById(id).textContent = 'Desatualizado';
-      }
     }
 
     function updateGuidedJourney() {

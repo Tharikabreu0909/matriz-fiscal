@@ -177,3 +177,14 @@ def test_states():
     assert stale["charges"] == {"state": "DESATUALIZADO", "reason": "TAX_OUTDATED"} and stale["can_emit"] is False
     assert f(_stored("T"), {"source": {}}, "T", False)["charges"]["reason"] == "LEGACY_NO_FINGERPRINT"
     assert f(None, None, "T", False)["can_emit"] is False
+
+
+def test_period_advanced_vs_inputs_changed():
+    f = fp.freshness_state
+    stored = _stored("T")  # analysis gravada = "a"
+    adv = f(stored, _charges("T"), "X", False, "a")
+    assert adv["tax"] == {"state": "DESATUALIZADO", "reason": "PERIOD_ADVANCED"}
+    assert adv["charges"] == {"state": "DESATUALIZADO", "reason": "TAX_OUTDATED"}
+    assert adv["message"] == fp.PERIOD_ADVANCED_MESSAGE and adv["block_code"] == "CALCULATION_OUTDATED"
+    chg = f(stored, _charges("T"), "X", False, "outra")
+    assert chg["tax"]["reason"] == "INPUTS_CHANGED" and chg["message"] == fp.OUTDATED_MESSAGE

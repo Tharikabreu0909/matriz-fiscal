@@ -1,4 +1,5 @@
 """T08: estados de atualizacao no fluxo da API (sintetico, banco temporario, sem rede)."""
+import sys
 from datetime import date
 from decimal import Decimal
 
@@ -7,7 +8,7 @@ from fastapi.testclient import TestClient
 
 import app as app_module
 import database
-from services import legal_charges
+from services import fingerprints as fp, legal_charges
 
 RATE = [Decimal("1.00")]
 TODAY = date(2026, 5, 15)
@@ -175,3 +176,18 @@ def test_selic_change_outdates_only_charges_fingerprint(env):
     assert _calc_charges(client, pid).status_code == 200
     second = database.latest_legal_charge_calculation(pid, SCEN)["input_fingerprint"]
     assert first["tax"] == second["tax"] and first["charges"] != second["charges"]
+
+
+def test_calendar_advance_says_period_advanced_not_inputs_changed(env, monkeypatch):
+    client, pid = env
+    _ready(client, pid)
+    monkeypatch.setattr(sys.modules[__name__], "TODAY", date(2026, 6, 25))  # venceu 05/2026 (dia 20)
+    f = _fresh(client, pid)
+    assert (f["tax"]["state"], f["tax"]["reason"]) == ("DESATUALIZADO", "PERIOD_ADVANCED")
+    assert f["charges"]["reason"] == "TAX_OUTDATED"
+    assert f["report"]["message"] == fp.PERIOD_ADVANCED_MESSAGE
+    before = _counts()
+    r = client.get(f"/api/client-report?process_id={pid}")
+    assert r.status_code == 409 and r.json()["code"] == "CALCULATION_OUTDATED"
+    assert r.json()["detail"] == fp.PERIOD_ADVANCED_MESSAGE
+    assert _counts() == before
