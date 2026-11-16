@@ -40,6 +40,8 @@ Entra o fingerprint da análise, anexo, cenário, `standard_profile_confirmed`, 
 ### 3.3 Encargos (`charges_fingerprint`, l.109)
 Entra o fingerprint do imposto usado, a data-base (`update_date`), a taxa de juros por competência (`selic_used`, extraída das linhas do resultado em `charges_inputs`, l.117), os vencimentos usados e `RULES["charges"]`.
 
+**Papel de auditoria:** o fingerprint de encargos (`charges.input_fingerprint.charges`) é gravado como registro, mas a leitura não o compara. Só o fingerprint do imposto usado nos encargos (`charges.input_fingerprint.tax`) decide o estado dos encargos (comentário em `services/fingerprints.py`, l.113).
+
 **Consequência:** mudar só a Selic ou a data-base invalida os encargos, nunca o imposto nem a análise. Coberto por `test_selic_change_outdates_only_charges_fingerprint` em `test_t08_api.py` (troca a taxa simulada e confere que só `charges` muda). Limite: a Selic é simulada (ver R1 e R8).
 
 ## 4. Persistência
@@ -57,7 +59,8 @@ Entra o fingerprint do imposto usado, a data-base (`update_date`), a taxa de jur
 | tax | `PENDENTE_DE_DADOS` | `MISSING_DOCUMENTS` | sem cálculo e o gating de `calculate_tax` recusaria |
 | tax | `NAO_CALCULADO` | `NO_CALCULATION` | sem cálculo e o gating passaria |
 | tax | `ATUALIZADO` | `CURRENT` | fingerprint gravado == recalculado agora |
-| tax | `DESATUALIZADO` | `INPUTS_CHANGED` | fingerprint diferente |
+| tax | `DESATUALIZADO` | `PERIOD_ADVANCED` | fingerprint da análise igual e fingerprint do imposto diferente: só o calendário avançou |
+| tax | `DESATUALIZADO` | `INPUTS_CHANGED` | fingerprint da análise diferente (documento, decisão ou conclusão mudou) |
 | tax | `DESATUALIZADO` | `LEGACY_NO_FINGERPRINT` | cálculo sem a chave |
 | charges | `NAO_CALCULADO` | `NO_CALCULATION` | sem encargos |
 | charges | `ATUALIZADO` | `CURRENT` | imposto atual **e** `charges.input_fingerprint.tax` == fingerprint do imposto atual |
@@ -65,6 +68,10 @@ Entra o fingerprint do imposto usado, a data-base (`update_date`), a taxa de jur
 | charges | `DESATUALIZADO` | `LEGACY_NO_FINGERPRINT` | encargos sem a chave |
 
 `report.can_emit = tax ATUALIZADO e charges ATUALIZADO`.
+
+**Por que `PERIOD_ADVANCED` existe.** O "último mês vencido" (`latest_normally_due_competence`, `services/reflection_coverage.py`, l.22-40) depende da data de hoje. Ele é a PA cujo vencimento padrão (dia 20, ou a segunda seguinte se cair em fim de semana, `standard_due_date` em `services/legal_charges.py`, l.48) já passou. Quando esse vencimento chega, o fim do cálculo avança sozinho e o fingerprint do imposto muda, mesmo sem nenhum documento novo. Antes desta correção, esse caso aparecia como `INPUTS_CHANGED` com a mensagem "documentos alterados", que era falsa. Agora a comparação é feita em duas etapas: se o fingerprint da análise é igual, o motivo é `PERIOD_ADVANCED`; só se a análise mudou o motivo é `INPUTS_CHANGED`.
+
+Observação sobre a data: o vencimento padrão é o dia 20, ou a segunda seguinte. Por isso a virada ocorre **no dia do vencimento**, e não no dia 21 como se disse antes. Exemplo: em junho de 2026 o dia 20 cai em um sábado, então a virada de maio ocorre na segunda, 22/06. A regra não considera feriados bancários (ver aviso em `standard_due_date`).
 
 `block_code` (campo interno, presente também na resposta) vale `NOT_CALCULATED`, `CALCULATION_OUTDATED` ou `null`. Usado pelas rotas para decidir o 409.
 
@@ -84,17 +91,19 @@ Formato de `freshness`: `{scenario, analysis{state,fingerprint}, tax{state,reaso
 ## 7. Mensagens
 
 Constantes em `services/fingerprints.py` (l.14-19) e `services/client_report.py` (l.8-16):
-- Contador, desatualizado: "Cálculo desatualizado. Os documentos ou parâmetros deste processo foram alterados após o último cálculo. Recalcule o imposto e os encargos antes de emitir um novo relatório."
+- Contador, desatualizado por documento ou decisão (`INPUTS_CHANGED`): "Cálculo desatualizado. Os documentos ou parâmetros deste processo foram alterados após o último cálculo. Recalcule o imposto e os encargos antes de emitir um novo relatório."
+- Contador, virada de calendário (`PERIOD_ADVANCED`, `PERIOD_ADVANCED_MESSAGE` em `services/fingerprints.py`): "Um novo mês venceu desde o último cálculo. Envie os PGDAS pendentes do plano, se houver, e recalcule o imposto e os encargos antes de emitir um novo relatório."
+- Quando o motivo é `PERIOD_ADVANCED`, o 409 de encargos (`TAX_OUTDATED`) e o 409 do relatório (`CALCULATION_OUTDATED`) usam a mensagem de virada; nos demais casos usam a mensagem de documentos alterados.
 - Cliente, competência pendente: título "Cálculo pendente de documentação" com o detalhe aprovado e a faixa "faltam PGDAS que cubram …". Nunca R$ 0,00.
 - Os textos "Calcule primeiro…" (409 de falta de cálculo) foram mantidos.
 
 ## 8. Interface (`static/index.html`)
 
 - Faixa discreta `data-freshness-banner` nas etapas Cálculo e Relatório, visível só com `DESATUALIZADO`. Mostra `report.message`.
-- Rótulo "Desatualizado" no stepper das etapas Cálculo e Relatório.
+- Resumo da estimativa (`estimateSummaryPanel`) com a grade a 55% de opacidade e o rótulo "Valores do último cálculo" quando há `DESATUALIZADO` (classe `is-outdated`, `static/index.html` ~7575). Os valores continuam visíveis, marcados como antigos.
+- O rótulo "Desatualizado" do stepper foi **removido** (era sobrescrito e não aparecia de forma confiável). Não há mais troca de texto no stepper.
 - Botão do relatório (`openClientReport`) desabilitado quando `can_emit` é falso; o título do botão traz a mensagem.
 - Nenhum controle novo. O dashboard não foi redesenhado.
-- Há um ajuste visual pequeno do Selo previsto para `static/index.html` que não afeta os documentos (ainda não está neste commit).
 
 ## 9. Arquivos alterados
 
@@ -114,10 +123,16 @@ Constantes em `services/fingerprints.py` (l.14-19) e `services/client_report.py`
 ## 11. Riscos e limitações
 
 - **R1. Selic publicada depois do cálculo não é detectada offline.** Exigiria cache da Selic (F3-04). O relatório mostra a data-base usada (`charges.base_date`).
-- **R2. O estado depende do calendário.** `build_freshness` calcula a cobertura com a data de hoje (`as_of_date=None`). O "último mês vencido" muda com o tempo, então um cálculo pode virar `DESATUALIZADO` sem nenhum documento novo. Lido no código; não reproduzido com data simulada. Os testes de API fixam a data em 15/05/2026 (`TODAY` em `test_t08_api.py`), então esta dependência não é coberta por teste.
+- **R2. O estado depende do calendário.** `build_freshness` calcula a cobertura com a data de hoje (`as_of_date=None`). Quando o vencimento de uma PA chega, o cálculo vira `DESATUALIZADO` com motivo `PERIOD_ADVANCED`, sem documento novo. Coberto por teste: unidade `test_period_advanced_vs_inputs_changed` (`test_t08_fingerprints.py`) e API `test_calendar_advance_says_period_advanced_not_inputs_changed` (`test_t08_api.py`, data simulada em 25/06/2026). Feriados bancários não são considerados: a virada pode ocorrer antes ou depois do vencimento real.
 - **R3. Acoplamento de `standard_profile_confirmed`** (decisão 5 acima).
 - **R4. `GET /api/process/{id}` refaz a análise a cada leitura** (`analyze_process`, cobertura e planejador). Custo de CPU por leitura; não grava resultado de cálculo, mas `ensure_current_pgdas_plan` pode regravar o plano (comportamento que já existia).
 - **R5. Cálculo legado passa a `DESATUALIZADO`** e exige recalculo. Afeta processos calculados antes do merge.
 - **R6. Upload e confirmação não invalidam nada.** A diferença aparece só no estado. Os PGDAS duplicados continuam como linhas em `pgdas_documents` (sem UNIQUE; ver `t08-t09-t11-dependencias.md`). Duplicatas com o mesmo conteúdo não alteram o fingerprint.
 - **R7. Mudar a malha (`analyze-malha`) apaga resultados derivados** (`invalidate_process_analysis`, database.py:541). Isso é T09, fora deste trabalho. Diagnósticos, decisões humanas, conclusões, perfis, cálculos e relatórios somem.
 - **R8. Os testes usam processo sintético com divergência zero** (ver `t08-test-report.md`). Provam estados, não valores.
+
+## 12. Efeito para o operador
+
+- **Cálculo antigo (sem fingerprint):** aparece como `DESATUALIZADO` com motivo `LEGACY_NO_FINGERPRINT`. É preciso recalcular o imposto e os encargos **uma vez**. Depois disso o processo volta a ter fingerprint e o estado passa a ser `ATUALIZADO` (se nada mais mudou).
+- **Virada do mês (no dia do vencimento da PA: dia 20, ou a segunda seguinte se cair em fim de semana):** o estado muda para `DESATUALIZADO` com motivo `PERIOD_ADVANCED`. Nenhum documento precisa ser trocado, mas é preciso **enviar os PGDAS pendentes do plano, se houver**, e recalcular o imposto e os encargos. Enquanto isso, o relatório fica bloqueado (409 `CALCULATION_OUTDATED`) e os encargos recusados (409 `TAX_OUTDATED`).
+- **Mudança de documento ou decisão:** `DESATUALIZADO` com `INPUTS_CHANGED`. Mesma ação: recalcular.
