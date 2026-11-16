@@ -34,11 +34,12 @@ def test_workspace_has_no_duplicate_company_title():
     assert 'id="contextLegalName"' in HTML
 
 
-def test_back_to_portfolio_is_only_at_bottom():
+def test_back_to_portfolio_sits_between_summary_and_stages():
+    # v1.46: botão único, logo abaixo dos cards de resumo e acima das etapas.
     assert HTML.count('id="backToPortfolio"') == 1
-    assert HTML.index('id="workflowStageHost"') < HTML.index(
-        'id="backToPortfolio"'
-    )
+    back = HTML.index('id="backToPortfolio"')
+    assert HTML.index('id="workspaceLastActivity"') < back
+    assert back < HTML.index('id="workflowStageHost"')
 
 
 def test_redundant_blocks_are_removed_from_visual_flow():

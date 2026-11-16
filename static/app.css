@@ -6756,3 +6756,583 @@
       }
     }
   
+
+    /* v1.46 — Painel da empresa no padrão visual de referência */
+    #companyWorkspace .company-context-v146 {
+      grid-template-columns: minmax(300px, 1.7fr) 1fr 1fr .8fr !important;
+      min-height: 104px !important;
+      padding: 0 8px !important;
+      background: linear-gradient(180deg, #111a29, #0c131e) !important;
+    }
+
+    #companyWorkspace .company-context-v146 .context-cell-v139 {
+      min-height: 104px !important;
+      padding: 18px 26px !important;
+      border-right: 0 !important;
+      position: relative !important;
+    }
+
+    #companyWorkspace .company-context-v146 .context-cell-v139+.context-cell-v139::before {
+      content: "" !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 22px !important;
+      bottom: 22px !important;
+      width: 1px !important;
+      background: #2a3a52 !important;
+    }
+
+    #companyWorkspace .company-context-v146 .context-name-v139 {
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 22px !important;
+    }
+
+    #companyWorkspace .context-icon-v146 {
+      display: grid !important;
+      place-items: center !important;
+      flex: 0 0 64px !important;
+      width: 64px !important;
+      height: 64px !important;
+      border-radius: 14px !important;
+      border: 1px solid #2c4572 !important;
+      background: linear-gradient(180deg, #17294a, #112038) !important;
+      color: #5b8dff !important;
+    }
+
+    #companyWorkspace .company-context-v146 span {
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: .03em !important;
+      color: #8d9bb0 !important;
+    }
+
+    #companyWorkspace .company-context-v146 strong {
+      margin-top: 6px !important;
+      font-size: 17px !important;
+      font-weight: 700 !important;
+    }
+
+    #companyWorkspace .company-context-v146 .context-name-v139 strong {
+      font-size: 18px !important;
+      text-transform: uppercase !important;
+      line-height: 1.3 !important;
+    }
+
+    #companyWorkspace .context-sub-v146 {
+      display: block !important;
+      margin-top: 4px !important;
+      color: #7c8ba1 !important;
+      font-size: 11px !important;
+    }
+
+    #companyWorkspace .context-sub-v146 b {
+      color: #aab6c8 !important;
+      font-weight: 600 !important;
+    }
+
+    /* Ícones SVG em traço */
+    #companyWorkspace .context-icon-v146 svg,
+    #companyWorkspace .summary-icon-v146 svg,
+    #companyWorkspace .step-icon-v146 svg {
+      fill: none !important;
+      stroke: currentColor !important;
+      stroke-width: 1.7 !important;
+      stroke-linecap: round !important;
+      stroke-linejoin: round !important;
+    }
+
+    #companyWorkspace .context-icon-v146 svg {
+      width: 32px !important;
+      height: 32px !important
+    }
+
+    /* Stepper */
+    #companyWorkspace .journey-stepper-v139 {
+      min-height: 86px !important;
+      padding: 10px 14px !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button {
+      min-height: 60px !important;
+      padding: 8px 14px !important;
+      gap: 12px !important;
+      background: transparent !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 .step-number {
+      width: 38px !important;
+      height: 38px !important;
+      flex: 0 0 38px !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      background: #18212f !important;
+      color: #c9d3e1 !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button strong {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button small {
+      font-size: 12px !important;
+      white-space: nowrap !important;
+      margin-top: 2px !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button.active {
+      background: linear-gradient(180deg, #172d57, #122347) !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button.active small {
+      color: #6f9bff !important
+    }
+
+    #companyWorkspace .journey-stepper-v139 button.active .step-number {
+      color: #fff !important;
+      background: #2f6df6 !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button.complete:not(.active) .step-number {
+      color: #fff !important;
+      background: #157347 !important;
+    }
+
+    #companyWorkspace .journey-stepper-v139 button.complete:not(.active) small {
+      color: #4cc38a !important
+    }
+
+    #companyWorkspace .step-icon-v146 {
+      display: inline-grid !important;
+      place-items: center !important;
+      flex: 0 0 auto !important;
+      color: #8a98ad !important;
+    }
+
+    #companyWorkspace .step-icon-v146 svg {
+      width: 20px !important;
+      height: 20px !important
+    }
+
+    #companyWorkspace .step-icon-v146 .si-lock,
+    #companyWorkspace button:disabled .step-icon-v146 .si-open {
+      display: none !important
+    }
+
+    #companyWorkspace button:disabled .step-icon-v146 .si-lock {
+      display: block !important
+    }
+
+    #companyWorkspace button.active .step-icon-v146 {
+      color: #8fb2ff !important
+    }
+
+    /* Cards de resumo */
+    #companyWorkspace .work-summary-v139 {
+      gap: 16px !important;
+      margin-bottom: 10px !important;
+    }
+
+    #companyWorkspace .work-summary-v139 .summary-box {
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: flex-start !important;
+      text-align: left !important;
+      align-items: center !important;
+      gap: 18px !important;
+      min-height: 92px !important;
+      padding: 16px 18px !important;
+    }
+
+    #companyWorkspace .summary-icon-v146 {
+      display: grid !important;
+      place-items: center !important;
+      flex: 0 0 58px !important;
+      width: 58px !important;
+      height: 58px !important;
+      border-radius: 50% !important;
+      background: #1a2333 !important;
+      color: #5b8dff !important;
+    }
+
+    #companyWorkspace .summary-icon-v146 svg {
+      width: 28px !important;
+      height: 28px !important
+    }
+
+    #companyWorkspace .work-summary-v139 .summary-box>div {
+      min-width: 0 !important
+    }
+
+    #companyWorkspace .work-summary-v139 .summary-box span {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+      color: #a6b2c4 !important;
+    }
+
+    #companyWorkspace .work-summary-v139 .summary-box strong {
+      display: block !important;
+      margin-top: 6px !important;
+      font-size: 24px !important;
+      font-weight: 700 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* Voltar à carteira logo abaixo dos cards */
+    #companyWorkspace .workspace-back-v146 {
+      margin: 0 0 22px !important;
+      padding: 0 !important;
+      border-top: 0 !important;
+    }
+
+    #companyWorkspace .workspace-back-v146 .back-button {
+      min-height: 38px !important;
+      padding: 8px 16px !important;
+      font-size: 14px !important;
+      border: 1px solid #2b394e !important;
+      background: #0d141f !important;
+      color: #fff !important;
+    }
+
+    @media(max-width:1180px) {
+      #companyWorkspace .company-context-v146 {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      #companyWorkspace .company-context-v146 .context-name-v139 {
+        grid-column: 1/-1 !important;
+      }
+
+      #companyWorkspace .company-context-v146 .context-cell-v139:last-child {
+        grid-column: auto !important;
+        border-top: 0 !important;
+      }
+
+      #companyWorkspace .company-context-v146 .context-cell-v139::before {
+        display: none !important
+      }
+    }
+
+    @media(max-width:560px) {
+      #companyWorkspace .company-context-v146 {
+        grid-template-columns: 1fr !important;
+      }
+
+      #companyWorkspace .context-icon-v146 {
+        flex-basis: 48px !important;
+        width: 48px !important;
+        height: 48px !important;
+      }
+    }
+
+    /* v1.46 — Etapa de análise estruturada (visão geral + competências) */
+    #analysisStageContent>.analysis-panel {
+      margin: 0 0 18px !important;
+      padding: 22px 24px 24px !important;
+      border: 1px solid #22314a !important;
+      border-radius: 16px !important;
+      background: linear-gradient(180deg, #0f1724, #0b111b) !important;
+    }
+
+    #analysisStageContent>.analysis-panel>.section-title {
+      margin: 0 0 16px !important;
+      padding: 0 !important;
+    }
+
+    #analysisStageContent>.analysis-panel>.section-title h2 {
+      margin: 0 0 4px !important;
+      font-size: 20px !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+    }
+
+    #analysisStageContent>.analysis-panel>.section-title .sub {
+      margin: 0 !important;
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      color: #8d9bb0 !important;
+    }
+
+    /* Indicadores da visão geral */
+    #analysisStageContent .summary-primary-metrics {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 14px !important;
+      margin: 0 0 12px !important;
+    }
+
+    #analysisStageContent .summary-primary-metrics .summary-card,
+    #analysisStageContent .summary-financial .summary-card {
+      min-height: 0 !important;
+      padding: 16px 20px !important;
+      border: 1px solid #263550 !important;
+      border-radius: 12px !important;
+    }
+
+    #analysisStageContent .summary-card span {
+      display: block !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+    }
+
+    #analysisStageContent .summary-card strong {
+      display: block !important;
+      margin-top: 6px !important;
+      font-size: 22px !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+    }
+
+    #analysisStageContent .financial-disclosure {
+      margin: 0 !important;
+      border: 1px solid #263550 !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+    }
+
+    #analysisStageContent .financial-disclosure>summary {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 14px 20px !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: #fff !important;
+    }
+
+    #analysisStageContent .financial-disclosure>summary::after {
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      color: #6f9bff !important;
+    }
+
+    #analysisStageContent .financial-disclosure-body {
+      padding: 0 20px 18px !important;
+    }
+
+    #analysisStageContent .summary-note {
+      font-size: 12px !important;
+      color: #8d9bb0 !important;
+    }
+
+    /* Lista de competências: uma linha por competência */
+    #analysisStageContent .diagnostic-list {
+      display: grid !important;
+      gap: 10px !important;
+    }
+
+    #analysisStageContent .simplified-diagnostic {
+      margin: 0 !important;
+      border: 1px solid #263550 !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+    }
+
+    #analysisStageContent .diagnostic-head-v146 {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 16px !important;
+      min-height: 56px !important;
+      padding: 10px 20px !important;
+      cursor: pointer !important;
+      list-style: none !important;
+    }
+
+    #analysisStageContent .diagnostic-head-v146::-webkit-details-marker {
+      display: none !important
+    }
+
+    #analysisStageContent .diag-head-main-v146,
+    #analysisStageContent .diag-head-side-v146 {
+      display: flex !important;
+      align-items: center !important;
+      gap: 16px !important;
+      min-width: 0 !important;
+    }
+
+    #analysisStageContent .diag-head-main-v146 h3 {
+      margin: 0 !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: #fff !important;
+    }
+
+    #analysisStageContent .diag-head-main-v146 .badges {
+      display: flex !important;
+      gap: 6px !important;
+      margin: 0 !important;
+    }
+
+    #analysisStageContent .diag-head-main-v146 .badge.type {
+      padding: 4px 12px !important;
+      border: 1px solid #284a86 !important;
+      border-radius: 999px !important;
+      background: #12224a !important;
+      color: #6f9bff !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+    }
+
+    #analysisStageContent .diag-head-side-v146 .status-pill {
+      padding: 5px 12px !important;
+      border-radius: 999px !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      white-space: nowrap !important;
+    }
+
+    /* Setas: ▸ à esquerda (gira ao abrir) e ⌄ à direita (inverte ao abrir) */
+    #analysisStageContent .diag-caret-v146,
+    #analysisStageContent .diagnostic-head-v146 .diagnostic-toggle {
+      display: inline-block !important;
+      flex: 0 0 auto !important;
+      width: 9px !important;
+      height: 9px !important;
+      padding: 0 !important;
+      border: solid #c9d3e1 !important;
+      border-width: 0 2px 2px 0 !important;
+      background: none !important;
+      font-size: 0 !important;
+      transition: transform .18s ease !important;
+    }
+
+    #analysisStageContent .diag-caret-v146 {
+      transform: rotate(-45deg) !important
+    }
+
+    #analysisStageContent .simplified-diagnostic[open] .diag-caret-v146 {
+      transform: rotate(45deg) !important
+    }
+
+    #analysisStageContent .diagnostic-head-v146 .diagnostic-toggle {
+      margin: 0 4px 4px 4px !important;
+      transform: rotate(45deg) !important;
+    }
+
+    #analysisStageContent .simplified-diagnostic[open] .diagnostic-head-v146 .diagnostic-toggle {
+      margin: 4px 4px 0 4px !important;
+      transform: rotate(-135deg) !important;
+    }
+
+    #analysisStageContent .simplified-diagnostic[open]>.diagnostic-head-v146 {
+      border-bottom: 1px solid #22314a !important;
+    }
+
+    /* Conteúdo aberto da competência */
+    #analysisStageContent .simplified-diagnostic .diagnostic-body {
+      padding: 18px 20px 20px !important;
+    }
+
+    #analysisStageContent .simplified-seg-block {
+      padding: 16px 18px !important;
+      border: 1px solid #263550 !important;
+      border-radius: 12px !important;
+    }
+
+    #analysisStageContent .simplified-seg-block h4,
+    #analysisStageContent .simplified-consolidated h4 {
+      margin: 0 0 12px !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: #fff !important;
+    }
+
+    #analysisStageContent .simplified-seg-block .seg-values {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+      gap: 12px !important;
+      margin: 0 !important;
+    }
+
+    #analysisStageContent .seg-value,
+    #analysisStageContent .consolidated-item {
+      padding: 14px 16px !important;
+      border: 1px solid #263550 !important;
+      border-radius: 10px !important;
+    }
+
+    #analysisStageContent .seg-value span,
+    #analysisStageContent .consolidated-item span {
+      display: block !important;
+      font-size: 12px !important;
+      line-height: 1.35 !important;
+    }
+
+    #analysisStageContent .seg-value strong,
+    #analysisStageContent .consolidated-item strong {
+      display: block !important;
+      margin-top: 6px !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: #fff !important;
+    }
+
+    #analysisStageContent .highlight-value {
+      border-color: #7a3b3b !important;
+      background: #1f1215 !important;
+    }
+
+    #analysisStageContent .highlight-value strong {
+      color: #ff9b9b !important
+    }
+
+    #analysisStageContent .simple-guidance,
+    #analysisStageContent .cross-type-note {
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+    }
+
+    #analysisStageContent .simplified-consolidated {
+      margin-top: 14px !important;
+      padding: 16px 18px !important;
+      border: 1px solid #263550 !important;
+      border-radius: 12px !important;
+    }
+
+    #analysisStageContent .diag-action {
+      font-size: 12px !important
+    }
+
+    @media(max-width:900px) {
+      #analysisStageContent .summary-primary-metrics {
+        grid-template-columns: 1fr !important;
+      }
+
+      #analysisStageContent>.analysis-panel {
+        padding: 18px 16px !important;
+      }
+    }
+
+    @media(max-width:560px) {
+      #analysisStageContent .diagnostic-head-v146 {
+        flex-wrap: wrap !important;
+        padding: 12px 14px !important;
+      }
+
+      #analysisStageContent .diag-head-main-v146 {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+      }
+    }
+
+    #analysisStageContent .review-action-area .badge.healthy {
+      display: inline-flex !important;
+      align-items: center !important;
+      margin-top: 4px !important;
+      padding: 6px 12px !important;
+      border: 1px solid #1f6b47 !important;
+      border-radius: 999px !important;
+      background: #0f2a1d !important;
+      color: #4cc38a !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+    }

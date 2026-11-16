@@ -200,18 +200,18 @@
           </div>
         </div>
 
-        <section class="company-context company-context-v139">
-          <div class="context-cell-v139">
-            <span>CNPJ</span>
-            <strong id="contextCnpj">—</strong>
-          </div>
+        <section class="company-context company-context-v139 company-context-v146">
           <div class="context-cell-v139 context-name-v139">
-            <span>Razão social</span>
-            <strong id="contextLegalName">—</strong>
+            <i class="context-icon-v146" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13.5V20h14v-6.5"/><path d="M10 20v-4h4v4"/></svg></i>
+            <div>
+              <span>Razão social</span>
+              <strong id="contextLegalName">—</strong>
+            </div>
           </div>
           <div class="context-cell-v139">
-            <span>CFDF / IE</span>
-            <strong id="contextStateRegistration">—</strong>
+            <span>CNPJ / CPF / IE</span>
+            <strong id="contextCnpj">—</strong>
+            <small class="context-sub-v146">IE <b id="contextStateRegistration">—</b></small>
           </div>
           <div class="context-cell-v139">
             <span>Município / UF</span>
@@ -226,53 +226,69 @@
         <nav class="journey-stepper journey-stepper-v139" id="journeyStepper" aria-label="Progresso da malha">
           <button type="button" class="active" data-workflow-step="malha">
             <span class="step-number">1</span>
+            <span class="step-icon-v146" aria-hidden="true"><svg class="si-open" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><svg class="si-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <span><strong>Malha</strong><small id="stepStatusMalha">Iniciar</small></span>
           </button>
           <span class="step-connector"></span>
           <button type="button" data-workflow-step="documents" disabled>
             <span class="step-number">2</span>
+            <span class="step-icon-v146" aria-hidden="true"><svg class="si-open" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><svg class="si-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <span><strong>Documentos</strong><small id="stepStatusDocuments">Bloqueado</small></span>
           </button>
           <span class="step-connector"></span>
           <button type="button" data-workflow-step="analysis" disabled>
             <span class="step-number">3</span>
+            <span class="step-icon-v146" aria-hidden="true"><svg class="si-open" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><svg class="si-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <span><strong>Análise</strong><small id="stepStatusAnalysis">Bloqueado</small></span>
           </button>
           <span class="step-connector"></span>
           <button type="button" data-workflow-step="calculation" disabled>
             <span class="step-number">4</span>
+            <span class="step-icon-v146" aria-hidden="true"><svg class="si-open" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><svg class="si-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <span><strong>Cálculo</strong><small id="stepStatusCalculation">Bloqueado</small></span>
           </button>
           <span class="step-connector"></span>
           <button type="button" data-workflow-step="report" disabled>
             <span class="step-number">5</span>
+            <span class="step-icon-v146" aria-hidden="true"><svg class="si-open" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><svg class="si-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <span><strong>Relatório</strong><small id="stepStatusReport">Bloqueado</small></span>
           </button>
           <span class="step-connector"></span>
           <button type="button" data-workflow-step="history">
             <span class="step-number">6</span>
+            <span class="step-icon-v146" aria-hidden="true"><svg class="si-open" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><svg class="si-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
             <span><strong>Histórico</strong><small id="stepStatusHistory">Disponível</small></span>
           </button>
         </nav>
 
         <section class="work-summary work-summary-v139">
           <div class="summary-box">
-            <span>Competências da malha</span>
-            <strong id="workspaceCompetenceCount">0</strong>
+            <i class="summary-icon-v146" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i>
+            <div><span>Competências da malha</span>
+            <strong id="workspaceCompetenceCount">0</strong></div>
           </div>
           <div class="summary-box">
-            <span>PGDAS enviados</span>
-            <strong id="workspacePgdasProgress">0 de 0</strong>
+            <i class="summary-icon-v146" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6M9 15h6"/></svg></i>
+            <div><span>PGDAS enviados</span>
+            <strong id="workspacePgdasProgress">0 de 0</strong></div>
           </div>
           <div class="summary-box">
-            <span>Exposição estimada</span>
-            <strong id="workspaceExposure">A calcular</strong>
+            <i class="summary-icon-v146" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6.5v11"/></svg></i>
+            <div><span>Exposição estimada</span>
+            <strong id="workspaceExposure">A calcular</strong></div>
           </div>
           <div class="summary-box">
-            <span>Última movimentação</span>
-            <strong id="workspaceLastActivity">—</strong>
+            <i class="summary-icon-v146" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>
+            <div><span>Última movimentação</span>
+            <strong id="workspaceLastActivity">—</strong></div>
           </div>
         </section>
+
+        <div class="workspace-bottom-actions-v139 workspace-back-v146">
+          <button class="back-button" type="button" id="backToPortfolio">
+            ← Voltar à carteira
+          </button>
+        </div>
 
         <section class="workflow-stage-host" id="workflowStageHost">
           <section class="workflow-screen active" data-workflow-screen="malha">
@@ -380,11 +396,6 @@
           </section>
         </section>
 
-        <div class="workspace-bottom-actions-v139">
-          <button class="back-button" type="button" id="backToPortfolio">
-            ← Voltar à carteira
-          </button>
-        </div>
 
 
         <section class="malha-upload-shell" id="workspaceMalhaSection">
@@ -1661,7 +1672,8 @@ CFDF: ${malhaRegistration}
       currentWorkflowStep = step;
       document.querySelectorAll('[data-workflow-screen]').forEach(screen => screen.classList.toggle('active', screen.dataset.workflowScreen === step));
       document.querySelectorAll('[data-workflow-step]').forEach(item => item.classList.toggle('active', item.dataset.workflowStep === step));
-      document.getElementById('topbarTitle').textContent = `${currentCompany?.trade_name || currentCompany?.legal_name || 'Empresa'} · ${workflowStepLabel(step)}`;
+      // O nome da empresa já aparece no cabeçalho "Razão social"; a barra superior mostra só o contexto e a etapa.
+      document.getElementById('topbarTitle').textContent = `Painel fiscal da empresa · ${workflowStepLabel(step)}`;
       if (step === 'analysis') ensureAnalysisStageContent();
       document.getElementById('workflowStageHost')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -2896,8 +2908,9 @@ CFDF: ${malhaRegistration}
         return `
       <details class="diagnostic simplified-diagnostic"
         data-competence="${item.competence}">
-        <summary class="diagnostic-head">
-          <div>
+        <summary class="diagnostic-head diagnostic-head-v146">
+          <div class="diag-head-main-v146">
+            <span class="diag-caret-v146" aria-hidden="true"></span>
             <h3>${item.competence}</h3>
             <div class="badges">
               ${item.types.map(type => `
@@ -2905,11 +2918,11 @@ CFDF: ${malhaRegistration}
               `).join('')}
             </div>
           </div>
-          <div>
+          <div class="diag-head-side-v146">
             <span class="status-pill ${statusClass}">
               ${statusLabel}
             </span>
-            <span class="diagnostic-toggle">Abrir</span>
+            <span class="diagnostic-toggle" aria-hidden="true"></span>
           </div>
         </summary>
 
