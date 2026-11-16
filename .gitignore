@@ -9,3 +9,4 @@ checkfiscal_data/
 checkfiscal_local.db
 exports/
 .cursor/
+pdfs/
