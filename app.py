@@ -11,6 +11,7 @@ from typing import Any
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from starlette.concurrency import run_in_threadpool
 
 from database import (
     create_process,
@@ -1276,8 +1277,8 @@ async def system_restore(
             detail="O backup ultrapassa o limite de 1 GB.",
         )
     try:
-        manifest = validate_backup_bytes(content)
-        result = restore_backup(content, APP_VERSION)
+        manifest = await run_in_threadpool(validate_backup_bytes, content)
+        result = await run_in_threadpool(restore_backup, content, APP_VERSION)
     except (ValueError, zipfile.BadZipFile) as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 
