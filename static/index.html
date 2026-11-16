@@ -46,31 +46,24 @@
         <div class="page-header">
           <div>
             <h1>Olá, Tharik! 👋</h1>
-            <p>Indicadores relevantes para a gestão fiscal da carteira.</p>
           </div>
         </div>
         <section class="dashboard-kpis">
-          <div class="dashboard-kpi"><span>Empresas na carteira</span><strong
-              id="dashboardCompanyCount">0</strong><em>Total cadastrado</em></div>
-          <div class="dashboard-kpi"><span>Saudáveis</span><strong id="dashboardHealthyCount">0</strong><em>Sem processo
-              de malha</em></div>
-          <div class="dashboard-kpi"><span>Malhas e análises</span><strong
-              id="dashboardActiveCount">0</strong><em>Processos em andamento</em></div>
-          <div class="dashboard-kpi"><span>Exposição estimada</span><strong id="dashboardExposure">R$
-              0,00</strong><em>Total calculado na carteira</em></div>
+          <div class="dashboard-kpi"><span>Empresas</span><strong id="dashboardCompanyCount">0</strong></div>
+          <div class="dashboard-kpi"><span>Saudáveis</span><strong id="dashboardHealthyCount">0</strong></div>
+          <div class="dashboard-kpi"><span>Malhas ativas</span><strong id="dashboardActiveCount">0</strong></div>
+          <div class="dashboard-kpi"><span>Relatório gerado</span><strong id="dashboardReportCount">0</strong></div>
         </section>
         <div class="dashboard-grid">
           <section class="card">
             <div class="panel-head">
-              <h2>Ranking de maior impacto financeiro</h2>
-              <p>Empresas que concentram o maior valor estimado.</p>
+              <h2>Maior impacto financeiro</h2>
             </div>
             <div class="rank-list" id="dashboardRanking"></div>
           </section>
           <section class="card">
             <div class="panel-head">
               <h2>Movimentações recentes</h2>
-              <p>Últimas atualizações da carteira.</p>
             </div>
             <div class="recent-list" id="dashboardRecent"></div>
           </section>
@@ -345,7 +338,6 @@
             <header class="workflow-screen-head">
               <div><span>Etapa 3 de 5</span>
                 <h2>Análise por competência</h2>
-                <p>Abra uma linha por vez. Tipo 01 e Tipo 17 aparecem verticalmente dentro da competência.</p>
               </div><span class="workflow-state" id="analysisStageBadge">Pendente</span>
             </header>
             <div class="workflow-screen-content" id="analysisStageContent"></div>
@@ -499,9 +491,6 @@
               <button class="analysis-tab active" type="button" data-analysis-tab="summary">
                 Resumo da análise
               </button>
-              <button class="analysis-tab" type="button" data-analysis-tab="details">
-                Análise detalhada
-              </button>
               <button class="analysis-tab" type="button" data-analysis-tab="memory" disabled>
                 Memória de cálculo
               </button>
@@ -513,11 +502,7 @@
             <section class="analysis-summary analysis-panel" id="analysisSummarySection">
               <div class="section-title">
                 <div>
-                  <h2>Visão geral da análise</h2>
-                  <p class="sub">
-                    Indicadores gerais do processo. As competências aparecem
-                    uma única vez na lista de análise abaixo.
-                  </p>
+                  <h2>Análise</h2>
                 </div>
               </div>
 
@@ -562,18 +547,6 @@
 
               <div class="competence-list" id="analysisCompetenceList"></div>
             </section>
-
-            <section class="diagnostics analysis-panel" id="diagnosticsSection">
-              <div class="section-title">
-                <div>
-                  <h2>Competências analisadas</h2>
-                  <p class="sub">Abra uma competência por vez. Tipo 01 e Tipo 17 aparecem verticalmente dentro da mesma
-                    linha.</p>
-                </div>
-              </div>
-              <div class="diagnostic-list" id="diagnosticList"></div>
-            </section>
-
 
             <section class="tax-engine analysis-panel" id="taxEngineSection">
               <div class="section-title compact-tax-title">
@@ -970,15 +943,13 @@
     }
 
     function renderDashboard() {
-      const healthy = allCompanies.filter(item => !item.active_process_id).length;
-      const active = allCompanies.length - healthy;
-      const exposure = allCompanies.reduce((sum, item) => sum + Number(item.exposure_estimated_cents || 0), 0);
+      // Regras (só campos de /api/companies): Saudáveis = sem processo ativo; Malhas ativas = AWAITING_PGDAS/AWAITING_ANALYSIS_PGDAS (ainda não analisadas); Relatório gerado = report_available.
       document.getElementById('dashboardCompanyCount').textContent = allCompanies.length;
-      document.getElementById('dashboardHealthyCount').textContent = healthy;
-      document.getElementById('dashboardActiveCount').textContent = active;
-      document.getElementById('dashboardExposure').textContent = brlPgdas(exposure);
+      document.getElementById('dashboardHealthyCount').textContent = allCompanies.filter(item => !item.active_process_id).length;
+      document.getElementById('dashboardActiveCount').textContent = allCompanies.filter(item => statusGroup(item) === 'active').length;
+      document.getElementById('dashboardReportCount').textContent = allCompanies.filter(item => item.report_available).length;
       const ranking = [...allCompanies].filter(item => item.exposure_estimated_cents > 0).sort((a, b) => b.exposure_estimated_cents - a.exposure_estimated_cents).slice(0, 5);
-      document.getElementById('dashboardRanking').innerHTML = ranking.length ? ranking.map((item, index) => `<div class="rank-item" onclick="openCompany(${item.id})"><div class="rank-pos">${index + 1}</div><div><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong><span>${item.competence_count || 0} competências · Tipo 17 em ${item.type_17_count || 0}</span></div><div class="rank-value"><strong>${brlPgdas(item.exposure_estimated_cents)}</strong><span>${exposure ? Math.round(item.exposure_estimated_cents / exposure * 100) : 0}% do total</span></div></div>`).join('') : '<div class="no-data">As estimativas calculadas aparecerão aqui.</div>';
+      document.getElementById('dashboardRanking').innerHTML = ranking.length ? ranking.map((item, index) => `<div class="rank-item${index === 0 ? ' rank-first' : ''}" onclick="openCompany(${item.id})"><div class="rank-pos">${index + 1}</div><div><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong></div><div class="rank-value"><strong>${brlPgdas(item.exposure_estimated_cents)}</strong></div></div>`).join('') : '<div class="no-data">As estimativas calculadas aparecerão aqui.</div>';
       const recent = [...allCompanies].sort((a, b) => String(b.last_activity_at).localeCompare(String(a.last_activity_at))).slice(0, 6);
       document.getElementById('dashboardRecent').innerHTML = recent.length ? recent.map(item => `<div class="recent-item" onclick="openCompany(${item.id})"><div class="company-avatar" style="width:30px;height:30px;font-size:9px">${initials(item.trade_name || item.legal_name)}</div><div><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong><span>${escapeHtml(item.latest_event_title || 'Empresa cadastrada')}</span></div><span>${formatDateTime(item.last_activity_at, false)}</span></div>`).join('') : '<div class="no-data">Cadastre a primeira empresa.</div>';
     }
@@ -1646,10 +1617,7 @@ CFDF: ${malhaRegistration}
         document.getElementById('reflectionCoverage'),
         document.getElementById('pgdasStatus')
       );
-      move(analysis,
-        document.getElementById('analysisSummarySection'),
-        document.getElementById('diagnosticsSection')
-      );
+      move(analysis, document.getElementById('analysisSummarySection'));
       move(calculation, document.getElementById('taxEngineSection'));
       move(report, document.getElementById('clientReportSection'));
       move(history, document.getElementById('historyPanel'));
@@ -1684,12 +1652,10 @@ CFDF: ${malhaRegistration}
 
     function ensureAnalysisStageContent() {
       const summaryList = document.getElementById('analysisCompetenceList');
-      const diagnosticList = document.getElementById('diagnosticList');
       const hasAnalysis = Boolean(currentAnalysisResult?.analyses?.length);
       if (hasAnalysis) return;
       const placeholder = `<div class="analysis-empty-state"><strong>Análise aguardando documentos</strong><span>Assim que os PGDAS necessários forem reconhecidos, as competências aparecerão aqui em linhas verticais.</span></div>`;
       if (summaryList && !summaryList.children.length) summaryList.innerHTML = placeholder;
-      if (diagnosticList && !diagnosticList.children.length) diagnosticList.innerHTML = placeholder;
     }
 
     function setStepState(step, { enabled = true, complete = false, status = 'Pendente' } = {}) {
@@ -2428,7 +2394,6 @@ CFDF: ${malhaRegistration}
 
     const analysisPanels = {
       summary: 'analysisSummarySection',
-      details: 'diagnosticsSection',
       memory: 'taxEngineSection',
       report: 'clientReportSection'
     };
@@ -2450,10 +2415,7 @@ CFDF: ${malhaRegistration}
         return;
       }
       showWorkflowStep('analysis', true);
-      const target = name === 'details'
-        ? document.getElementById('diagnosticsSection')
-        : document.getElementById('analysisSummarySection');
-      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('analysisSummarySection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     document.querySelectorAll('[data-analysis-tab]').forEach(button => {
@@ -2498,77 +2460,46 @@ CFDF: ${malhaRegistration}
       return value;
     }
 
-    function crossingGuidance(row) {
-      if (row.crossing_type === '01') {
-        return `
-      Divergência mínima de
-      <strong>${brlPgdas(row.divergence_cents)}</strong>.
-      Conferir o SPED/LFE e os documentos faltantes. O valor do
-      cartão não define sozinho o faturamento final do livro.
-    `;
-      }
-
-      if (row.divergence_cents > 0) {
-        return `
-      Divergência potencial de
-      <strong>${brlPgdas(row.divergence_cents)}</strong>.
-      O cenário usa
-      <strong>${brlPgdas(row.simulation_target_cents)}</strong>.
-      Validar os documentos antes da retificação definitiva.
-    `;
-      }
-
-      return 'Nenhum acréscimo potencial foi identificado no PGDAS.';
+    function typeBadge(type) {
+      return `<span class="type-badge t${type}">Tipo ${type}</span>`;
     }
 
+    // Tipo 01 e Tipo 17 ficam em blocos separados e nunca são somados.
     function renderCrossingCompact(row) {
+      const money = value => value == null ? '—' : brlPgdas(value);
+      const is17 = row.crossing_type === '17';
       return `
-    <section class="crossing-compact">
-      <h4>Tipo ${row.crossing_type} — ${row.crossing_label}</h4>
-      <p>${row.crossing_detail}</p>
+    <section class="crossing-compact crossing-t${row.crossing_type}">
+      <h4>${typeBadge(row.crossing_type)}<span>${row.crossing_label}</span></h4>
       <div class="crossing-values">
-        <div class="crossing-value">
-          <span>Informado</span>
-          <strong>${row.informed_cents == null
-          ? '—'
-          : brlPgdas(row.informed_cents)}</strong>
-        </div>
-        <div class="crossing-value">
-          <span>Considerado</span>
-          <strong>${row.considered_cents == null
-          ? '—'
-          : brlPgdas(row.considered_cents)}</strong>
-        </div>
-        <div class="crossing-value">
-          <span>Divergência</span>
-          <strong>${brlPgdas(row.divergence_cents)}</strong>
-        </div>
-        <div class="crossing-value">
-          <span>Valor validado</span>
-          <strong>${row.validated_cents == null
-          ? 'Pendente'
-          : brlPgdas(row.validated_cents)}</strong>
-        </div>
-      </div>
-      <div class="crossing-guidance">
-        ${crossingGuidance(row)}
+        <div class="crossing-value"><span>${is17 ? 'Informado no PGDAS' : 'Informado no SPED/LFE'}</span><strong>${money(row.informed_cents)}</strong></div>
+        <div class="crossing-value"><span>${is17 ? 'Considerado pelo Fisco' : 'Movimentação de cartão'}</span><strong>${money(row.considered_cents)}</strong></div>
+        <div class="crossing-value"><span>Divergência</span><strong>${brlPgdas(row.divergence_cents)}</strong></div>
       </div>
     </section>`;
     }
 
-    function openTechnicalAnalysis(competence) {
-      activateAnalysisTab('details');
-      const card = [...document.querySelectorAll(
-        '.diagnostic[data-competence]'
-      )].find(item => item.dataset.competence === competence);
+    // Alíquota e DAS só existem depois do cálculo (visible_impacts); antes: "A calcular".
+    function competenceTaxRow(competence) {
+      const impact = (currentTaxResult?.visible_impacts || []).find(row => row.competence === competence);
+      return `<div class="competence-tax">
+        <div><span>Alíquota</span><strong>${impact ? percentText(impact.corrected_effective_rate) : 'A calcular'}</strong></div>
+        <div><span>DAS a pagar</span><strong>${impact ? brlPgdas(impact.corrected_das_cents) : 'A calcular'}</strong></div>
+      </div>`;
+    }
 
-      if (card) {
-        card.open = true;
-        card.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
+    function competenceReviewArea(competence) {
+      const analysis = (currentAnalysisResult?.analyses || []).find(row => row.competence === competence);
+      if (!analysis) return '';
+      const type17 = analysis.segregation.type_17;
+      const warnings = analysis.warnings.map(warning => `<div class="identity-error">${warning}</div>`).join('');
+      if (!analysis.requires_review) return warnings;
+      const input = (type17.present && type17.pgdas_imported_cents != null) ? `
+        <label class="confirm-value">Valor a usar na estimativa
+          <input data-corrected-revenue type="number" min="0" step="0.01" value="${(analysis.recommendation.simulation_pgdas_revenue_cents / 100).toFixed(2)}">
+        </label>` : '';
+      return `${warnings}<div class="review-action-area">${input}
+        <button type="button" class="primary" data-competence="${competence}" onclick="resolveReview(this)">Confirmar valor da estimativa</button></div>`;
     }
 
     function renderAnalysisSummary(summary) {
@@ -2622,51 +2553,22 @@ CFDF: ${malhaRegistration}
       list.innerHTML = competences.length
         ? competences.map(item => {
           const [label, statusClass] = summaryStatus(item.status);
-          const types = item.types.length
-            ? `Tipo ${item.types.join(' e Tipo ')}`
-            : 'Sem tipo identificado';
+          const types = item.types.map(typeBadge).join('') || 'Sem tipo';
 
           return `
           <details class="competence-accordion"
             data-summary-competence="${item.competence}">
             <summary>
-              <div class="competence-month">
-                <strong>${item.competence}</strong>
-                <span>${types}</span>
-              </div>
-              <div class="competence-summary-value">
-                <span>Divergência principal</span>
-                <strong>${brlPgdas(
-            item.primary_divergence_cents
-          )}</strong>
-              </div>
-              <div class="competence-summary-action">
-                <span>Próxima ação</span>
-                <strong>${simplifiedNextAction(
-            item.next_action
-          )}</strong>
-              </div>
-              <span class="summary-status ${statusClass}">
-                ${label}
-              </span>
-              <span class="competence-chevron">⌄</span>
+              <strong class="competence-month">${item.competence}</strong>
+              <span class="competence-types">${types}</span>
+              <span class="competence-divergence">${item.primary_divergence_cents > 0 ? brlPgdas(item.primary_divergence_cents) : '—'}</span>
+              <span class="summary-status ${statusClass}">${label}</span>
+              <span class="competence-chevron" aria-hidden="true">⌄</span>
             </summary>
             <div class="competence-content">
-              <div class="competence-crossings">
-                ${(item.crossings || []).map(
-            crossing => renderCrossingCompact(crossing)
-          ).join('')}
-              </div>
-              <div class="competence-summary-footer">
-                <span>
-                  Tipo 01 e Tipo 17 são apresentados separadamente
-                  e nunca são somados.
-                </span>
-                <button type="button"
-                  onclick="openTechnicalAnalysis('${item.competence}')">
-                  Abrir análise técnica
-                </button>
-              </div>
+              ${(item.crossings || []).map(renderCrossingCompact).join('')}
+              ${competenceTaxRow(item.competence)}
+              ${competenceReviewArea(item.competence)}
             </div>
           </details>`;
         }).join('')
@@ -2675,35 +2577,13 @@ CFDF: ${malhaRegistration}
       </div>`;
     }
 
-    function analysisStatus(status) {
-      const map = {
-        AUTO_ANALYZED: ['Analisado automaticamente', 'status-ok'],
-        REVIEW_REQUIRED: ['Revisão necessária', 'status-review'],
-        AWAITING_PGDAS: ['Aguardando PGDAS', 'status-awaiting'],
-        NO_ACTION_REQUIRED: ['Analisado · sem retificação', 'status-ok']
-      };
-      return map[status] || [status, 'status-review'];
-    }
-
-    function actionLabel(action) {
-      const labels = {
-        RECONSTRUCT_SPED_LFE: 'Conferir e reconstruir SPED/LFE',
-        SIMULATE_PGDAS_EXPOSURE: 'Simular exposição do PGDAS',
-        CALCULATE_DIRECT_TAX: 'Calcular imposto direto',
-        CALCULATE_RBT12_REFLECTIONS: 'Calcular reflexos da RBT12',
-        VALIDATE_DOCUMENTS_BEFORE_REGULARIZATION: 'Revisar documentos fiscais'
-      };
-      return labels[action] || action;
-    }
-
     async function resolveReview(button) {
       const competence = button.dataset.competence;
       button.disabled = true;
       button.textContent = 'Resolvendo...';
 
       try {
-        const card = button.closest('.diagnostic');
-        const overrideInput = card.querySelector('[data-corrected-revenue]');
+        const overrideInput = button.closest('.competence-content').querySelector('[data-corrected-revenue]');
         let url = `/api/confirm-analysis?process_id=${encodeURIComponent(currentProcessId)}&competence=${encodeURIComponent(competence)}`;
 
         if (overrideInput) {
@@ -2722,7 +2602,6 @@ CFDF: ${malhaRegistration}
         }
 
         button.textContent = '✓ Divergência resolvida';
-        button.closest('.diagnostic').style.borderColor = 'var(--green)';
 
         renderReflectionCoverage(payload.reflection_coverage);
         renderAnalysisSummary(payload.analysis_summary);
@@ -2782,194 +2661,16 @@ CFDF: ${malhaRegistration}
     ) {
       currentAnalysisResult = result;
       currentReflectionCoverage = coverage;
-      const section = document.getElementById('diagnosticsSection');
-      const list = document.getElementById('diagnosticList');
-
-      section.dataset.available = 'true';
       queueMicrotask(() => {
         updateDocumentProgress();
         updateGuidedJourney();
       });
-
-      list.innerHTML = result.analyses.map(item => {
-        const [statusLabel, statusClass] = analysisStatus(item.status);
-        const recommendation = item.recommendation;
-        const segregation = item.segregation;
-        const type01 = segregation.type_01;
-        const type17 = segregation.type_17;
-        const consolidated = segregation.consolidated;
-
-        const type01Block = type01.present ? `
-      <section class="seg-block type01 simplified-seg-block">
-        <h4>Tipo 01 — SPED/LFE × movimentação de cartão</h4>
-        <div class="seg-values">
-          <div class="seg-value">
-            <span>Informado no SPED/LFE</span>
-            <strong>${brlPgdas(type01.informed_cents)}</strong>
-          </div>
-          <div class="seg-value">
-            <span>Movimentação mínima detectada</span>
-            <strong>${brlPgdas(type01.minimum_detected_cents)}</strong>
-          </div>
-          <div class="seg-value">
-            <span>Diferença mínima apontada</span>
-            <strong>${brlPgdas(type01.minimum_gap_cents)}</strong>
-          </div>
-        </div>
-        <span class="simple-guidance">
-          Conferir a escrituração e os documentos fiscais.
-          Esse valor não entra automaticamente no cálculo do DAS.
-        </span>
-      </section>` : '';
-
-        const type17Block = type17.present ? `
-      <section class="seg-block type17 simplified-seg-block">
-        <h4>Tipo 17 — PGDAS × faturamento detectado</h4>
-        <div class="seg-values">
-          <div class="seg-value">
-            <span>PGDAS informado na malha</span>
-            <strong>${brlPgdas(type17.malha_informed_cents)}</strong>
-          </div>
-          <div class="seg-value">
-            <span>PGDAS encontrado no arquivo</span>
-            <strong>${type17.pgdas_imported_cents == null
-            ? 'Aguardando arquivo'
-            : brlPgdas(type17.pgdas_imported_cents)}</strong>
-          </div>
-          <div class="seg-value">
-            <span>Valor considerado pelo Fisco</span>
-            <strong>${brlPgdas(type17.considered_cents)}</strong>
-          </div>
-          <div class="seg-value highlight-value">
-            <span>Divergência potencial</span>
-            <strong>${brlPgdas(type17.simulation_increment_cents)}</strong>
-          </div>
-        </div>
-        <span class="simple-guidance">
-          A divergência positiva é usada na estimativa de imposto,
-          reflexos, multa e juros.
-        </span>
-      </section>` : '';
-
-        const comparisonNote =
-          segregation.cross_type_comparison ===
-            'DIFFERENT_CONSIDERED_VALUES'
-            ? `<div class="cross-type-note">
-          Os tipos 01 e 17 medem fontes diferentes.
-          Os valores são apresentados separadamente e nunca são somados.
-        </div>`
-            : '';
-
-        const warnings = item.warnings.map(warning => `
-      <div class="identity-error">${warning}</div>
-    `).join('');
-
-        const actions = item.actions.map(action => {
-          const amount = action.amount_cents
-            ?? action.minimum_gap_cents
-            ?? null;
-          return `
-        <span class="diag-action">
-          ${actionLabel(action.action)}
-          ${amount != null ? ' · ' + brlPgdas(amount) : ''}
-        </span>`;
-        }).join('');
-
-        const correctedRevenueInput = (
-          item.requires_review
-          && type17.present
-          && type17.pgdas_imported_cents != null
-        ) ? `
-      <div class="confirm-value">
-        <label>
-          Valor a usar na estimativa após revisar as fontes
-          <input
-            data-corrected-revenue
-            type="number"
-            min="0"
-            step="0.01"
-            value="${(
-          recommendation.simulation_pgdas_revenue_cents / 100
-        ).toFixed(2)}">
-        </label>
-      </div>` : '';
-
-        const reviewButton = item.requires_review
-          ? `${correctedRevenueInput}
-        <button type="button" class="primary"
-          data-competence="${item.competence}"
-          onclick="resolveReview(this)">
-          Confirmar valor da estimativa
-        </button>`
-          : `<div class="badge healthy" style="justify-self:start">
-          Análise automática concluída
-        </div>`;
-
-        return `
-      <details class="diagnostic simplified-diagnostic"
-        data-competence="${item.competence}">
-        <summary class="diagnostic-head diagnostic-head-v146">
-          <div class="diag-head-main-v146">
-            <span class="diag-caret-v146" aria-hidden="true"></span>
-            <h3>${item.competence}</h3>
-            <div class="badges">
-              ${item.types.map(type => `
-                <span class="badge type">Tipo ${type}</span>
-              `).join('')}
-            </div>
-          </div>
-          <div class="diag-head-side-v146">
-            <span class="status-pill ${statusClass}">
-              ${statusLabel}
-            </span>
-            <span class="diagnostic-toggle" aria-hidden="true"></span>
-          </div>
-        </summary>
-
-        <div class="diagnostic-body">
-          <div class="seg-analysis">
-            ${type01Block}
-            ${type17Block}
-          </div>
-
-          ${comparisonNote}
-
-          <section class="consolidated-box simplified-consolidated">
-            <h4>Resumo da competência</h4>
-            <div class="consolidated-grid">
-              <div class="consolidated-item">
-                <span>Receita usada na estimativa</span>
-                <strong>${consolidated.simulation_revenue_cents == null
-            ? 'Não se aplica'
-            : brlPgdas(
-              consolidated.simulation_revenue_cents
-            )}</strong>
-              </div>
-              <div class="consolidated-item">
-                <span>Acréscimo potencial no PGDAS</span>
-                <strong>${brlPgdas(
-              consolidated.simulation_tax_base_increment_cents
-            )}</strong>
-              </div>
-            </div>
-          </section>
-
-          ${warnings}
-          <div class="diag-actions">${actions}</div>
-
-          <div class="review-action-area">
-            ${reviewButton}
-          </div>
-        </div>
-      </details>`;
-      }).join('');
 
       currentRegularizationResult = null;
       currentReflectionCoverage = coverage;
       renderAnalysisSummary(analysisSummary);
       renderTaxSegregationEditor();
       setAnalysisTabEnabled('summary', true);
-      setAnalysisTabEnabled('details', true);
       setAnalysisTabEnabled('memory', taxEngineReady === true);
       activateAnalysisTab('summary');
 

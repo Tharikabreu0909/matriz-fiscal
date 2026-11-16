@@ -4867,7 +4867,8 @@
     }
 
     #analysisSummarySection #analysisCompetenceList {
-      display: none !important
+      display: grid !important;
+      gap: 10px
     }
 
     #analysisSummarySection {
@@ -7336,3 +7337,54 @@
       font-size: 12px !important;
       font-weight: 600 !important;
     }
+
+    /* ===== UI v2: dashboard enxuto + lista única de competências (tema escuro) ===== */
+    .dashboard-kpi strong { font-size: 32px !important; margin-top: 8px !important }
+    .dashboard-kpi span { font-size: 13px !important }
+    .rank-item { grid-template-columns: 36px 1fr auto !important }
+    .rank-item strong { font-size: 14px !important }
+    .rank-item .rank-value strong { font-size: 14px !important }
+    .rank-first { background: var(--blue-soft); border-radius: 10px; padding: 14px 10px !important; border-bottom-color: transparent !important }
+    .rank-first .rank-pos { background: var(--blue); color: #fff }
+    .panel-head p { display: none }
+
+    .type-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font-size: 12px; font-weight: 800; letter-spacing: .02em; border: 1px solid; white-space: nowrap }
+    .type-badge.t01 { background: #0e2a3d; color: #7fd4ff; border-color: #2f7fae }
+    .type-badge.t17 { background: #3a1230; color: #ffa3dc; border-color: #b0498f }
+
+    #analysisStageContent .competence-accordion { background: var(--panel) !important; border: 1px solid var(--line) !important; border-radius: 12px !important }
+    #analysisStageContent .competence-accordion[open] { border-color: #3a4a63 !important; box-shadow: none !important }
+    #analysisStageContent .competence-accordion > summary { display: grid !important; grid-template-columns: 90px 1fr auto auto 20px !important; gap: 14px !important; align-items: center !important; padding: 14px 16px !important; background: transparent !important; border: 0 !important; min-height: 56px }
+    #analysisStageContent .competence-accordion[open] > summary { border-bottom: 1px solid var(--line) !important }
+    #analysisStageContent .competence-month { font-size: 16px; color: var(--text) }
+    #analysisStageContent .competence-types { display: flex; flex-wrap: wrap; gap: 6px }
+    #analysisStageContent .competence-divergence { font-size: 14px; font-weight: 700; color: var(--text); text-align: right }
+    #analysisStageContent .summary-status { font-size: 12px !important; padding: 5px 10px !important }
+    #analysisStageContent .competence-content { display: grid; gap: 12px; padding: 16px !important }
+    #analysisStageContent .crossing-compact { background: var(--panel-2) !important; border: 1px solid var(--line) !important; border-left-width: 4px !important; border-radius: 10px; padding: 12px 14px }
+    #analysisStageContent .crossing-t01 { border-left-color: #2f7fae !important }
+    #analysisStageContent .crossing-t17 { border-left-color: #b0498f !important }
+    #analysisStageContent .crossing-compact h4 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; color: var(--muted) }
+    #analysisStageContent .crossing-values { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 12px }
+    #analysisStageContent .crossing-value { background: transparent !important; border: 0 !important; padding: 0 !important }
+    #analysisStageContent .crossing-value span, #analysisStageContent .competence-tax span { display: block; color: var(--muted); font-size: 12px }
+    #analysisStageContent .crossing-value strong, #analysisStageContent .competence-tax strong { display: block; margin-top: 4px; font-size: 16px; color: var(--text) }
+    #analysisStageContent .competence-tax { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 4px 14px 0 }
+    #analysisStageContent .review-action-area { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 0 14px }
+    #analysisStageContent .confirm-value { display: grid; gap: 4px; font-size: 12px; color: var(--muted) }
+    #analysisStageContent .summary-primary-metrics { grid-template-columns: repeat(3, 1fr) }
+
+    @media (max-width: 720px) {
+      .dashboard-kpis { grid-template-columns: repeat(2, 1fr) !important }
+      #analysisStageContent .competence-accordion > summary { grid-template-columns: 1fr auto 20px !important; row-gap: 8px !important }
+      #analysisStageContent .competence-types { grid-column: 1 / 2 }
+      #analysisStageContent .competence-divergence { text-align: right }
+      #analysisStageContent .summary-status { grid-column: 1 / 3; justify-self: start }
+      #analysisStageContent .crossing-values, #analysisStageContent .competence-tax, #analysisStageContent .summary-primary-metrics { grid-template-columns: 1fr !important }
+    }
+    #analysisStageContent .summary-status { border: 1px solid }
+    #analysisStageContent .summary-status.action { background: var(--green-soft) !important; color: var(--green) !important }
+    #analysisStageContent .summary-status.review { background: var(--red-soft) !important; color: var(--red) !important }
+    #analysisStageContent .summary-status.ancillary { background: #231a3d !important; color: #b8a3ff !important }
+    #analysisStageContent .summary-status.clear { background: var(--panel-2) !important; color: var(--muted) !important }
+    #analysisStageContent .competence-chevron { font-size: 18px; color: var(--muted) }

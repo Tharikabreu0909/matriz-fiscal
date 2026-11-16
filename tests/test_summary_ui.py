@@ -9,20 +9,11 @@ def test_ui_has_summary_tabs_and_clear_crossing_labels():
     ).read_text(encoding="utf-8")
 
     assert "Resumo da análise" in html
-    assert "Análise detalhada" in html
     assert "Memória de cálculo" in html
     assert "Relatório do cliente" in html
-    assert (
-        "Tipo 01 — SPED/LFE × movimentação de cartão"
-        in html
-    )
-    assert (
-        "Tipo 17 — PGDAS × faturamento detectado"
-        in html
-    )
-    assert "Divergência potencial" in html
-    assert "Próxima ação" in html
-
+    # Cliente: lista única de competências; sem aba "Análise detalhada" nem blocos longos por tipo.
+    assert "Análise detalhada" not in html
+    assert "Considerado pelo Fisco" in html
 
 
 def test_ui_hides_accounting_study_and_uses_single_estimate():
@@ -51,7 +42,7 @@ def test_summary_uses_closed_competence_accordions():
     assert 'id="analysisCompetenceList"' in html
     assert 'class="competence-accordion"' in html
     assert "Ver composição da estimativa" in html
-    assert "Abrir análise técnica" in html
+    assert "Abrir análise técnica" not in html
     assert "<table class=\"summary-table\">" not in html
 
 
