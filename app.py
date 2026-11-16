@@ -104,7 +104,6 @@ from services.file_storage import (
 from services.backup_service import (
     create_backup,
     restore_backup,
-    validate_backup_bytes,
 )
 from services.support_bundle import create_support_bundle
 from services.app_logging import logger
@@ -1283,7 +1282,6 @@ async def system_restore(
             detail="O backup ultrapassa o limite de 1 GB.",
         )
     try:
-        manifest = await run_in_threadpool(validate_backup_bytes, content)
         result = await run_in_threadpool(restore_backup, content, APP_VERSION)
     except DatabaseBusyError as error:
         raise HTTPException(
@@ -1295,7 +1293,7 @@ async def system_restore(
 
     logger.warning(
         "Backup restaurado. Origem: %s",
-        manifest.get("created_at", "não informada"),
+        result["manifest"].get("created_at", "não informada"),
     )
     return JSONResponse({
         "status": "RESTORED",

@@ -74,7 +74,7 @@ class RequestGuardMiddleware:
         if verdict is None:
             return await self.app(scope, receive, send)
         status, code = verdict
-        logger.warning("Bloqueado %s %s: %s", scope["method"], scope["path"], code)
+        logger.warning("Bloqueado %r %r: %s", scope["method"], scope["path"], code)
         body = json.dumps({"code": code}).encode()
         await send({"type": "http.response.start", "status": status, "headers": [
             (b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())]})

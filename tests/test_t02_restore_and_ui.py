@@ -1,4 +1,6 @@
 """T02: 409 do restore ocupado e fluxo same-origin da UI (guard nao pode quebrar o app)."""
+import logging
+
 from fastapi.testclient import TestClient
 
 SAME_ORIGIN = {"Origin": "http://127.0.0.1:8141", "Sec-Fetch-Site": "same-origin"}
@@ -18,7 +20,6 @@ def test_restore_busy_returns_409(monkeypatch):
     def busy(*args, **kwargs):
         raise DatabaseBusyError("ocupado")
 
-    monkeypatch.setattr(app, "validate_backup_bytes", lambda content: {})
     monkeypatch.setattr(app, "restore_backup", busy)
     response = _client().post(
         "/api/system/restore", files={"file": ("b.zip", b"x")}, headers=SAME_ORIGIN
@@ -38,3 +39,12 @@ def test_same_origin_ui_flow_passes_guard():
     company_id = created.json()["company"]["id"]
     assert client.get(f"/api/companies/{company_id}", headers=SAME_ORIGIN).status_code == 200
     assert client.get("/api/system/status", headers={"Sec-Fetch-Site": "none"}).status_code == 200
+
+
+def test_blocked_log_neutralizes_newline_in_path(caplog, monkeypatch):
+    monkeypatch.setattr(logging.getLogger("checkfiscal"), "propagate", True)
+    caplog.set_level("WARNING")
+    response = _client().post("/api/x%0a2099-01-01 | INFO | falso", headers={"Origin": "https://evil.example"})
+    assert response.status_code == 403
+    messages = [r.getMessage() for r in caplog.records if "CROSS_ORIGIN_BLOCKED" in r.getMessage()]
+    assert messages and all("\n" not in m for m in messages)
