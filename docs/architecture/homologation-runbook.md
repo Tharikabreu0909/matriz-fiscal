@@ -87,14 +87,13 @@ git branch backup/pre-fase0 bf35530     # 🔒 ponteiro de segurança (não alte
 ## 4. Integração sem perder o frontend 🔒
 O frontend sem commit (`static/index.html`, `static/app.css`, `tests/test_v139_ui_and_pgdas_plan.py`) **não** é commitado na pasta operacional: um commit ali geraria conflito certo com a branch `phase0/ui` (mesmo arquivo, mesma base, conteúdo diferente). Em vez disso:
 
-1. **Provar que a pasta operacional ainda tem o mesmo frontend** que serviu de ponto de partida da `phase0/ui` (o primeiro commit dela, "baseline"):
+1. **Provar que a pasta operacional ainda tem o mesmo frontend** que serviu de ponto de partida da `phase0/ui` (o primeiro commit dela, o "baseline"). Use o próprio Git, que já normaliza o fim de linha do Windows (comparar hash de arquivo cru dá falso "diferente" por causa do `autocrlf`):
    ```powershell
    $base = git log --reverse --format=%h phase0/rc..phase0/ui | Select-Object -First 1
-   foreach ($f in 'static/index.html','static/app.css','tests/test_v139_ui_and_pgdas_plan.py') {
-     "{0}  work={1}  baseline={2}" -f $f, (Get-FileHash $f -Algorithm SHA256).Hash.Substring(0,12), ((git show "${base}:$f" | Out-String) | % { $b=[Text.Encoding]::UTF8.GetBytes($_); -join ([Security.Cryptography.SHA256]::Create().ComputeHash($b)[0..5] | % { $_.ToString('x2') }) })
-   }
+   git diff --quiet $base -- static/index.html static/app.css tests/test_v139_ui_and_pgdas_plan.py
+   $LASTEXITCODE        # 0 = idênticos ao baseline; 1 = alguém editou depois
    ```
-   (compare com `git show <baseline>:<arquivo> | sha256sum` no Git Bash se preferir). Se algum difere, **pare**: alguém editou a pasta depois; trate a diferença antes de seguir. Os três arquivos já estão copiados no backup do passo 3.1.
+   Se der 1, **pare**: trate a diferença antes de seguir (`git diff $base -- <arquivo>` mostra o que mudou). Verificado em 16/11 somente leitura: 0 para os três arquivos e 1 para um arquivo que sabidamente difere (`app.py`), ou seja, o teste detecta diferença. Os três arquivos já estão copiados no backup do passo 3.1.
 2. **Liberar o caminho do fast-forward sem descartar nada** 🔒: mover (não apagar) para `$bk\movidos\` os três arquivos de interface, `docs/`, `pytest.ini`, `tests/conftest.py`, `tests/test_t01_isolation.py`; depois `git checkout -- requirements-dev.txt` (a alteração `httpx` vem na branch).
 3. **Integrar** (container ainda parado):
    ```powershell
