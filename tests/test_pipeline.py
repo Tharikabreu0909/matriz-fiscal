@@ -34,6 +34,8 @@ def test_aconchego_plan():
     assert plan["required_pgdas"][3]["requested_competence"] == "06/2026"
 
 
+# Regra nova (janela real: jan do ano anterior ao PA): mais PGDAS para cobrir os 12 meses
+# anteriores de cada competência; antes supunha-se janela de 24 meses.
 def test_almeida_plan():
     fixture = load_fixture("almeida_silva")
     plan = calculate_required_pgdas(
@@ -43,22 +45,24 @@ def test_almeida_plan():
 
     assert plan["summary"]["work_month_count"] == 11
     assert plan["summary"]["type_17_month_count"] == 8
-    assert plan["summary"]["required_pgdas_count"] == 5
+    assert plan["summary"]["required_pgdas_count"] == 7
 
     assert [
         request["requested_competence"]
         for request in plan["required_pgdas"]
-    ] == ["08/2021", "11/2023", "12/2023", "01/2026", "06/2026"]
+    ] == [
+        "08/2021", "03/2022", "04/2023", "07/2024",
+        "02/2025", "01/2026", "06/2026",
+    ]
     assert plan["required_pgdas"][0]["request_kind"] == "VERIFICATION"
 
-    assert plan["required_pgdas"][1]["covers_type_17_competences"] == [
-        "02/2022",
+    assert plan["required_pgdas"][3]["covers_type_17_competences"] == [
         "04/2023",
         "11/2023",
+        "07/2024",
     ]
 
-    assert plan["required_pgdas"][3]["covers_type_17_competences"] == [
-        "07/2024",
+    assert plan["required_pgdas"][5]["covers_type_17_competences"] == [
         "02/2025",
         "09/2025",
         "11/2025",
