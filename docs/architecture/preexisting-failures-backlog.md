@@ -9,11 +9,11 @@
 | Cat. | Critério (pela evidência do erro) | Item do backlog |
 |---|---|---|
 | **A** | `FileNotFoundError` para um PDF em `\mnt\data\…` (caminho fora do repo) | F0-05 |
-| **B** | `assert '<trecho>' in '<!doctype html>…'`: procura string no HTML/CSS/JS do frontend | F0-13 |
+| **B** | `assert '<trecho>' in '<!doctype html>…'` ou `str.index()` sobre o HTML: procura trecho do frontend | F0-13 |
 | **C** | Versão, porta, launcher ou `requirements` (`uvicorn[standard]`, `py -3.13`, `APP_VERSION`) | F0-12, F6-01 |
 | **D** | Hash de arquivo-fonte (`test_tax_calculator_files_were_not_changed`) | F0-14 |
-| **E** | Função ou tabela ausente da linha 1.44/1.45 | D1, F3-08, F3-09 |
-| **F** | Nenhuma das anteriores: **não classificada** | — |
+| **E** | Função, rota ou tabela ausente da linha 1.44/1.45 | D1, F3-08, F3-09 |
+| **F** | Nenhuma das anteriores (vazia nesta rodada) | — |
 
 ## Tabela (33 falhas)
 
@@ -29,7 +29,7 @@ Gerada a partir do JUnit XML da rodada (`--tb=line`). A coluna de erro é a mens
 | 6 | `tests/test_guided_journey_null_safety.py::test_removed_legacy_requests_is_rendered_safely` | `assert "const legacyRequests=document.getElementById('requests');" in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi...\'goToPgdasUploads\') {\n        showWorkflowStep(\'documents\');\n      }\n    });\n\n  </script>\n</body>\n\n</html>'` | B |
 | 7 | `tests/test_guided_journey_null_safety.py::test_pgdas_grid_has_explicit_guard` | `assert "const pgdasGrid=document.getElementById('pgdasUploadGrid');" in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi...\'goToPgdasUploads\') {\n        showWorkflowStep(\'documents\');\n      }\n    });\n\n  </script>\n</body>\n\n</html>'` | B |
 | 8 | `tests/test_malha_reader_ui_regression.py::test_removed_pgdas_cta_is_null_safe_after_malha_reader` | `assert "const cta=document.getElementById('pgdasCta');" in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi...\'goToPgdasUploads\') {\n        showWorkflowStep(\'documents\');\n      }\n    });\n\n  </script>\n</body>\n\n</html>'` | B |
-| 9 | `tests/test_malha_reader_ui_regression.py::test_reflection_coverage_does_not_create_new_document_requests` | `ValueError: substring not found` | F |
+| 9 | `tests/test_malha_reader_ui_regression.py::test_reflection_coverage_does_not_create_new_document_requests` | `ValueError: substring not found` | B |
 | 10 | `tests/test_malha_reader_ui_regression.py::test_central_balloon_remains_in_place` | `assert 'async function processMalhaFile(file,confirmIdentityMismatch=false)' in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi...\'goToPgdasUploads\') {\n        showWorkflowStep(\'documents\');\n      }\n    });\n\n  </script>\n</body>\n\n</html>'` | B |
 | 11 | `tests/test_one_click_complete_estimate.py::test_tax_handler_automatically_requests_legal_charges` | `assert 'const chargesPayload=await requestAutomaticLegalCharges(' in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi...\'goToPgdasUploads\') {\n        showWorkflowStep(\'documents\');\n      }\n    });\n\n  </script>\n</body>\n\n</html>'` | B |
 | 12 | `tests/test_one_click_complete_estimate.py::test_complete_result_unlocks_report` | `assert "setAnalysisTabEnabled('report',true)" in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi...\'goToPgdasUploads\') {\n        showWorkflowStep(\'documents\');\n      }\n    });\n\n  </script>\n</body>\n\n</html>'` | B |
@@ -50,7 +50,7 @@ Gerada a partir do JUnit XML da rodada (`--tb=line`). A coluna de erro é a mens
 | 27 | `tests/test_v142_install_compatibility.py::test_runtime_requirements_do_not_install_uvicorn_standard_extra` | `AssertionError: assert 'uvicorn==0.35.0' in 'fastapi==0.116.1\nuvicorn[standard]==0.35.0\npython-multipart==0.0.20\npdfplumber==0.11.7\n'` | C |
 | 28 | `tests/test_v142_install_compatibility.py::test_windows_launcher_selects_supported_python_and_unique_port` | `assert 'py -3.13' in '@echo off\nsetlocal\ncd /d "%~dp0"\ntitle Matriz Fiscal 1.41\n\nwhere py >nul 2>nul\nif %errorlevel%==0 (\n  set "PYT...l iniciar o Matriz Fiscal.\necho Confira a conexao com a internet e a instalacao do Python.\necho.\npause\nexit /b 1\n'` | C |
 | 29 | `tests/test_v142_install_compatibility.py::test_current_version_matches_api_and_ui` | `assert 'APP_VERSION = "1.45.0"' in 'from __future__ import annotations\n\nfrom pathlib import Path\nimport asyncio\nfrom io import BytesIO\nimport json\n...      render_client_report(model),\n        headers={\n            "Cache-Control": "no-store",\n        },\n    )\n\n'` | C |
-| 30 | `tests/test_v144_missing_pgdas.py::test_marking_missing_declarations_and_partial_report` | `AssertionError: {"detail":"Not Found"} assert 404 == 200  +  where 404 = <Response [404 Not Found]>.status_code` | F |
+| 30 | `tests/test_v144_missing_pgdas.py::test_marking_missing_declarations_and_partial_report` | `AssertionError: {"detail":"Not Found"} assert 404 == 200  +  where 404 = <Response [404 Not Found]>.status_code` | E |
 | 31 | `tests/test_workspace_visual_harmony.py::test_workspace_uses_one_visual_system_for_the_three_bands` | `assert '--workspace-radius:14px' in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi... grid-template-columns: 1fr\n      }\n\n      .history-event-type {\n        justify-self: start\n      }\n    }\n  \n'` | B |
 | 32 | `tests/test_workspace_visual_harmony.py::test_summary_metrics_are_one_unified_module` | `assert '#companyWorkspace .work-summary{\n  min-height:var(--workspace-cell-height);' in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi... grid-template-columns: 1fr\n      }\n\n      .history-event-type {\n        justify-self: start\n      }\n    }\n  \n'` | B |
 | 33 | `tests/test_workspace_visual_harmony.py::test_step_buttons_have_equal_height_and_flexible_width` | `assert 'flex:1 1 0' in '<!doctype html>\n<html lang="pt-BR">\n\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=devi... grid-template-columns: 1fr\n      }\n\n      .history-event-type {\n        justify-self: start\n      }\n    }\n  \n'` | B |
@@ -62,25 +62,24 @@ Gerada a partir do JUnit XML da rodada (`--tb=line`). A coluna de erro é a mens
 | Cat. | Falhas | Itens |
 |---|---|---|
 | A | 7 | F0-05 |
-| B | 20 | F0-13 |
+| B | 21 | F0-13 |
 | C | 3 | F0-12, F6-01 |
 | D | 1 | F0-14 |
-| E | 0 falhas + 1 não coletado (v145) | D1, F3-08, F3-09 |
-| **F (não classificadas)** | **2** | — |
+| E | 1 (+ 1 não coletado: v145) | D1, F3-08, F3-09 |
+| **F** | **0** | — |
 
-Total: 7 + 20 + 3 + 1 + 0 + 2 = 33.
+Total: 7 + 21 + 3 + 1 + 1 + 0 = 33 falhas. O v145 não coletado é extra e não entra no total.
 
-**Não classificadas (F):**
-- `test_malha_reader_ui_regression.py::test_reflection_coverage_does_not_create_new_document_requests`: `ValueError: substring not found`. A mensagem não diz qual substring.
-- `test_v144_missing_pgdas.py::test_marking_missing_declarations_and_partial_report`: `{"detail":"Not Found"} assert 404 == 200`. A mensagem não diz qual requisição retornou 404. O teste faz `POST /api/process/{pid}/pgdas-situation` e depois `GET /partial-report`. Essa rota não existe em `app.py` nem em `bf35530` (grep). Se o 404 for dessa rota, o caso seria E. Não classifiquei porque o erro não confirma isso.
+**Observações de classificação:**
+- `test_malha_reader_ui_regression::test_reflection_coverage_does_not_create_new_document_requests` (B): o teste faz `HTML.index("function renderReflectionCoverage(coverage){")` (`tests/test_malha_reader_ui_regression.py:19`). O `ValueError: substring not found` vem de `str.index()` ao não achar esse trecho em `static/index.html`. Confirmado: o trecho não existe no arquivo.
+- `test_v144_missing_pgdas::test_marking_missing_declarations_and_partial_report` (E): faz `client.post(f'/api/process/{pid}/pgdas-situation', ...)` (`tests/test_v144_missing_pgdas.py:30`). A rota não existe em `app.py` (grep sem resultado fora de `tests/`), por isso 404. Funcionalidade 1.44, decisão D1 / F3-08.
 
 ## Ordem sugerida de tratamento
 
 1. **A (F0-05):** versionar PDFs sanitizados. Destrava os testes de malha reais.
 2. **C (F0-12, F6-01):** alinhar versão, launcher e `requirements` a uma fonte única.
 3. **D (F0-14):** trocar o teste de hash por casos de regressão fiscal.
-4. **E (D1, F3-08, F3-09):** depende da decisão D1. Inclui o v145.
-5. **B (F0-13):** reescrever os testes de trecho por `id` ou rota estável. É o maior grupo e não depende de A a E.
-6. **F:** primeiro obter a mensagem completa (`pytest -x --tb=long` no teste), depois classificar.
+4. **E (D1, F3-08, F3-09):** depende da decisão D1. Inclui o v145 e a rota 1.44 `pgdas-situation`.
+6. **B (F0-13):** reescrever os testes de trecho por `id` ou rota estável. É o maior grupo e não depende de A a E.
 
 Nada disso foi implementado nesta rodada.
