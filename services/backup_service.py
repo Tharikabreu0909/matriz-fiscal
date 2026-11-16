@@ -10,6 +10,7 @@ import shutil
 import sqlite3
 import zipfile
 
+from database import exclusive_access
 from services.runtime_paths import BACKUPS_DIR, DB_PATH, DOCUMENTS_DIR
 
 
@@ -31,6 +32,7 @@ def create_backup(app_version: str) -> Path:
 
         source = sqlite3.connect(DB_PATH)
         try:
+            source.execute("PRAGMA wal_checkpoint(TRUNCATE)")
             destination = sqlite3.connect(database_copy)
             try:
                 source.backup(destination)
@@ -95,45 +97,67 @@ def validate_backup_bytes(content: bytes) -> dict[str, Any]:
             return manifest
 
 
+def _integrity_ok(path: Path) -> bool:
+    check = sqlite3.connect(path)
+    try:
+        result = check.execute("PRAGMA integrity_check").fetchone()
+        return bool(result) and result[0] == "ok"
+    finally:
+        check.close()
+
+
 def restore_backup(content: bytes, app_version: str) -> dict[str, Any]:
-    manifest = validate_backup_bytes(content)
-    safety_backup = create_backup(app_version)
+    manifest = validate_backup_bytes(content)  # antes de tocar no banco
 
     with TemporaryDirectory() as temp_name:
         temp = Path(temp_name)
         archive_path = temp / "backup.zip"
         archive_path.write_bytes(content)
-
         with zipfile.ZipFile(archive_path) as archive:
             _safe_extract(archive, temp / "extracted")
-
         extracted = temp / "extracted"
         restored_db = extracted / "database" / "checkfiscal.db"
-        check = sqlite3.connect(restored_db)
-        try:
-            result = check.execute("PRAGMA integrity_check").fetchone()
-            if not result or result[0] != "ok":
-                raise ValueError("O banco do backup não passou na verificação de integridade.")
-        finally:
-            check.close()
+        if not _integrity_ok(restored_db):
+            raise ValueError("O banco do backup não passou na verificação de integridade.")
 
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-        for suffix in ("-wal", "-shm"):
-            Path(str(DB_PATH) + suffix).unlink(missing_ok=True)
-        temporary_db = DB_PATH.with_suffix(".restore.tmp")
-        shutil.copy2(restored_db, temporary_db)
-        os.replace(temporary_db, DB_PATH)
-
-        restored_documents = extracted / "documents"
-        if DOCUMENTS_DIR.exists():
-            shutil.rmtree(DOCUMENTS_DIR)
-        DOCUMENTS_DIR.mkdir(parents=True, exist_ok=True)
-        if restored_documents.exists():
-            shutil.copytree(
-                restored_documents,
-                DOCUMENTS_DIR,
-                dirs_exist_ok=True,
-            )
+        with exclusive_access():  # sem conexões abertas: seguro mexer em -wal/-shm
+            safety_backup = create_backup(app_version)
+            previous_db = temp / "previous.db"
+            had_db = DB_PATH.exists()
+            if had_db:
+                shutil.copy2(DB_PATH, previous_db)  # create_backup já fez checkpoint
+            staged_docs = DOCUMENTS_DIR.with_name(DOCUMENTS_DIR.name + ".new")
+            old_docs = DOCUMENTS_DIR.with_name(DOCUMENTS_DIR.name + ".old")
+            shutil.rmtree(staged_docs, ignore_errors=True)
+            shutil.rmtree(old_docs, ignore_errors=True)
+            restored_documents = extracted / "documents"
+            if restored_documents.exists():
+                shutil.copytree(restored_documents, staged_docs)
+            else:
+                staged_docs.mkdir(parents=True)
+            temporary_db = DB_PATH.with_suffix(".restore.tmp")
+            try:
+                shutil.copy2(restored_db, temporary_db)
+                for suffix in ("-wal", "-shm"):
+                    Path(str(DB_PATH) + suffix).unlink(missing_ok=True)
+                os.replace(temporary_db, DB_PATH)
+                if not _integrity_ok(DB_PATH):
+                    raise ValueError("O banco restaurado não passou na verificação de integridade.")
+                if DOCUMENTS_DIR.exists():
+                    os.replace(DOCUMENTS_DIR, old_docs)
+                os.replace(staged_docs, DOCUMENTS_DIR)
+            except BaseException:
+                temporary_db.unlink(missing_ok=True)
+                if had_db:
+                    for suffix in ("-wal", "-shm"):
+                        Path(str(DB_PATH) + suffix).unlink(missing_ok=True)
+                    shutil.copy2(previous_db, DB_PATH)
+                if old_docs.exists() and not DOCUMENTS_DIR.exists():
+                    os.replace(old_docs, DOCUMENTS_DIR)
+                shutil.rmtree(staged_docs, ignore_errors=True)
+                raise
+            shutil.rmtree(old_docs, ignore_errors=True)
 
     return {
         "manifest": manifest,

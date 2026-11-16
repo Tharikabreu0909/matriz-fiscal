@@ -6,7 +6,6 @@ consegue ler nem alterar os dados reais do operador.
 from __future__ import annotations
 
 from pathlib import Path
-import gc
 import json
 import os
 import shutil
@@ -121,11 +120,6 @@ def test_backup_and_restore_services_target_test_root(isolation_guard):
     backup = backup_service.create_backup("teste-isolamento")
     assert isolation_guard.test_root in backup.resolve().parents
 
-    # Defeito preexistente de produção (registrado para a T03): conexões
-    # abertas por database.connect() só são fechadas pelo coletor de lixo, e
-    # no Windows o arquivo -wal fica travado (WinError 32) durante a
-    # restauração. Este teste verifica apenas o destino da restauração.
-    gc.collect()
     result = backup_service.restore_backup(backup.read_bytes(), "teste-isolamento")
     assert isolation_guard.test_root in Path(result["safety_backup"]).resolve().parents
     assert isolation_guard.test_root in backup_service.DB_PATH.resolve().parents
