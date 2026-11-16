@@ -28,8 +28,27 @@
 
 - Trava por processo, não multi-processo.
 - Documentos trocados por `rename`, com pastas `.new` e `.old`.
-- DEF-002 (`init_db()` a cada import, `user_version` rebaixado) **não tratado**.
+- DEF-002: tratado, ver seção abaixo.
 
 ## Como reverter
 
 `git revert 048aef5`. Isso reabre o DEF-001: o teste de restauração volta a falhar no Windows e o canário volta a depender de `gc.collect()`. Sem migração de banco.
+
+## DEF-002 (init_db / `PRAGMA user_version`)
+
+**Regra de classificação** (`init_db()`, antes de qualquer escrita, sem `connect()`): `read_user_version()` lê o cabeçalho do arquivo (bytes 60-63; com `-wal` pendente, usa SQLite `mode=ro`).
+- Inexistente/vazio ou versão 0 → cria o esquema e grava `SCHEMA_VERSION` (2).
+- `0 <= versão < 2` → migrações aditivas de sempre; só **eleva** `user_version` (escrita condicional em `_run_migrations`).
+- `versão == 2` → `init_db()` retorna sem abrir transação (arquivo idêntico em hash).
+- `versão > 2` → `DatabaseSchemaTooNewError`; nada é escrito (sem `-wal`/`-shm`, bytes idênticos).
+- Restore (`backup_service`): backup com `user_version > SCHEMA_VERSION` é rejeitado com `ValueError` (422) antes de tocar no banco.
+
+**Não mudou:** `init_db()` continua rodando no import; `app.py`, rotas, esquema, colunas, regras fiscais, `database_status()` (sem campos novos); linhas de `schema_migrations` (version=1 vs `user_version`=2 é divergência pré-existente, não corrigida).
+
+**Residuais:**
+- `init_db()` no import: um banco mais novo faz o import falhar (intencional). Mover para startup explícito é recomendado, mas muda testes/scripts.
+- Com `user_version == 2` as migrações aditivas não rodam: coluna nova exige subir `SCHEMA_VERSION`.
+- Backup de versão menor é aceito e fica no esquema antigo até a próxima inicialização.
+- Leitura do cabeçalho ignora `user_version` alterado só em WAL não consolidado sem arquivo `-wal` (caso impossível em operação normal).
+
+**Como reverter:** `git revert` do commit de DEF-002; volta o `PRAGMA user_version = 2` incondicional.

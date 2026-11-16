@@ -10,7 +10,7 @@ import shutil
 import sqlite3
 import zipfile
 
-from database import exclusive_access
+from database import SCHEMA_VERSION, exclusive_access, read_user_version
 from services.runtime_paths import BACKUPS_DIR, DB_PATH, DOCUMENTS_DIR
 
 
@@ -117,6 +117,8 @@ def restore_backup(content: bytes, app_version: str) -> dict[str, Any]:
             _safe_extract(archive, temp / "extracted")
         extracted = temp / "extracted"
         restored_db = extracted / "database" / "checkfiscal.db"
+        if read_user_version(restored_db) > SCHEMA_VERSION:
+            raise ValueError("Backup de versão de esquema mais recente que este aplicativo.")
         if not _integrity_ok(restored_db):
             raise ValueError("O banco do backup não passou na verificação de integridade.")
 
