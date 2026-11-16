@@ -6,6 +6,9 @@ from datetime import datetime, timezone
 import json
 import os
 import sqlite3
+import threading
+from contextlib import contextmanager
+from typing import Iterator
 
 
 from services.runtime_paths import DB_PATH
@@ -16,13 +19,62 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def connect() -> sqlite3.Connection:
-    connection = sqlite3.connect(DB_PATH, timeout=30)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA foreign_keys = ON")
-    connection.execute("PRAGMA journal_mode = WAL")
-    connection.execute("PRAGMA busy_timeout = 5000")
-    return connection
+class DatabaseBusyError(RuntimeError):
+    """Troca exclusiva do banco (restauração) em andamento ou não obtida."""
+
+
+_state = threading.Condition()
+_open_connections = 0
+_swapping = False
+
+
+@contextmanager
+def connect() -> Iterator[sqlite3.Connection]:
+    """Abre, confirma/desfaz e SEMPRE fecha a conexão (DEF-001)."""
+    global _open_connections
+    with _state:
+        if not _state.wait_for(lambda: not _swapping, timeout=30):
+            raise DatabaseBusyError("Banco indisponível: restauração em andamento.")
+        _open_connections += 1
+    connection = None
+    try:
+        connection = sqlite3.connect(DB_PATH, timeout=30)
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA foreign_keys = ON")
+        connection.execute("PRAGMA journal_mode = WAL")
+        connection.execute("PRAGMA busy_timeout = 5000")
+        yield connection
+        connection.commit()
+    except BaseException:
+        if connection is not None:
+            connection.rollback()
+        raise
+    finally:
+        if connection is not None:
+            connection.close()
+        with _state:
+            _open_connections -= 1
+            _state.notify_all()
+
+
+@contextmanager
+def exclusive_access(timeout: float = 15.0) -> Iterator[None]:
+    """Bloqueia novas conexões e espera as abertas fecharem (restauração)."""
+    global _swapping
+    with _state:
+        if _swapping:
+            raise DatabaseBusyError("Já existe uma restauração em andamento.")
+        _swapping = True
+        if not _state.wait_for(lambda: _open_connections == 0, timeout=timeout):
+            _swapping = False
+            _state.notify_all()
+            raise DatabaseBusyError("Há operações em andamento no banco; tente novamente.")
+    try:
+        yield
+    finally:
+        with _state:
+            _swapping = False
+            _state.notify_all()
 
 
 def _column_names(
