@@ -142,3 +142,63 @@ Repita o item 1 do passo 7 após um dia de uso e compare a contagem com o espera
 - O código antigo que está rodando hoje **não** tem a proteção do DEF-002 (ela só vale para as versões novas): só a partir da integração um banco de versão superior deixa de ser rebaixado.
 - Backup restaurado de versão de esquema **menor** fica no esquema antigo até a próxima inicialização (risco residual do DEF-002).
 - Trava de restore vale por processo; WebSocket não é checado; `https` bloqueado como `Origin`.
+
+
+## Revisão técnica (QA, 16/11)
+
+> Revisão **somente leitura**. Nenhum comando do procedimento foi executado; os passos acima não foram alterados. Base: `phase0/rc` (`9e5aa81`) em `phase0/qa-backlog`.
+
+### Tabela de itens
+
+| # | Item verificado | Resultado | Evidência |
+|---|---|---|---|
+| 1.1 | Commits e branches citados existem (`phase0/rc`, `phase0/ui`, `phase0/integration`, `bf35530`, `79ded57`, `0eba842`, `e1f1c0b`, `2974e87`) | OK | `git rev-parse --verify` em todos |
+| 1.2 | `backup/pre-fase0` ainda não existe (criada no 3.1) | OK | esperado |
+| 1.3 | Arquivos e pastas citados existem em `phase0/rc` | OK | `git ls-tree` / `cat-file`: runbook, backlog, t02/t03, `security-policy.md`, `docs/decisions`, `docs/integrations`, `pytest.ini`, `tests/conftest.py`, `tests/test_t01_isolation.py`, `tests/test_v139_…`, `requirements-dev.txt`, `static/*`, `compose.yaml`, `iniciar_docker.sh`, `Dockerfile`, `.gitignore`, `.dockerignore` |
+| 1.4 | Lista de worktrees da seção 0 | **PROBLEMA P6** | ver P6 |
+| 2 | Sintaxe dos 8 blocos ```powershell (linhas 30, 41, 70, 77, 92, 100, 109, 119) | OK | `Parser::ParseInput`, 0 erros em todos. Feito in-process, não pela forma `powershell -Command`; resultado equivalente |
+| 3.1 | Container parado antes de qualquer mudança em `.py` | OK | passo 2 antes do 4 |
+| 3.2 | Backup antes de mover arquivos | OK no tempo; **ver P2 e P3** | 3.1 antes de 4.2 |
+| 3.3 | Verificação antes e depois | OK | manifestos 3.1 a 3.3 e seção 6 |
+| 3.4 | `git add -A`, `stash`, `reset --hard`, `clean`, `checkout -f`, `docker compose up/down/--build` só em frase de proibição | OK | busca por padrão; linhas 21, 22, 35, 119 |
+| 3.5 | Nenhum comando destrutivo sem cópia prévia | **PROBLEMA P2** | `git checkout -- requirements-dev.txt` (4.2) depende do patch |
+| 3.6 | Move só o que é não versionado | **PROBLEMA P1** | 4.2 manda mover `docs/` inteiro |
+| 3.7 | Seção 10 coerente com o passo 4.3 | **PROBLEMA P5** | seção 10 cita `phase0/integration` |
+| 4.1 | Comando `git diff --quiet $base -- …` existe e aponta `f154929` | OK | git 2.50.0; `rc..ui` = só `f154929` |
+| 4.1b | Semântica do `git diff --quiet` | OK | testado no worktree: idêntico = 0, diferente = 1 |
+| 4.1c | Afirmação "os três arquivos já estão copiados no backup do 3.1" | **PROBLEMA P3** | 3.1 copia só não versionados |
+| 4.3 | "`phase0/ui` inclui rc" | **PROBLEMA P4** | ver P4 |
+| 5 | Aceite: mesma lista de 33 falhas, 0 novas | OK no rc (no worktree) | rc: 276 passam / 33 falham; lista idêntica à do integration; violações = 0 |
+| 0a | Serviço, porta, mounts, `--reload --reload-dir /app`, `CHECKFISCAL_DATA_DIR=/data`, sem política de restart, sem `USER` no Dockerfile (root) | OK | `compose.yaml`, `Dockerfile` (em `phase0/rc`) |
+| 0b | Não versionados em `bf35530`: `docs/architecture`, `docs/decisions`, `docs/integrations`, `pytest.ini`, `tests/conftest.py`, `tests/test_t01_isolation.py`; versionados: `requirements-dev.txt`, `static/*`, `tests/test_v139_…` | OK | `git ls-tree bf35530` |
+| 0c | Estado da pasta operacional (git status, branch, `docker compose ps -a`, `docker inspect`, hash e tamanho do banco, `pdfs/`, backup de 22/10) | **NÃO VERIFICADO** | ver "Não verificado" |
+
+### PROBLEMAS
+
+**P1 (alto), passo 4.2: mover `docs/` inteiro.** `bf35530` versiona 23 arquivos sob `docs/`, entre eles `docs/CHECKLIST_BETA_COMERCIAL.md`, `docs/POLITICA_LOCAL_DE_DADOS.md` e `docs/TERMO_BETA_COMERCIAL_MODELO.md`. Movê-los deixa deleções de arquivos versionados. **Correção sugerida:** mover só `docs/architecture`, `docs/decisions` e `docs/integrations`, que são os não versionados.
+
+**P2 (médio), passo 3.1: patch como única cópia do `requirements-dev.txt`.** O 4.2 faz `git checkout -- requirements-dev.txt`, que descarta a alteração. A única cópia dela é `git diff > …patch`. Dois problemas: (a) neste ambiente o redirecionamento do PowerShell 5.1 gravou **UTF-8 com BOM** (`EF BB BF`); não testei se `git apply` aceita isso; (b) `git diff` não mostra mudanças já em stage. **Correção sugerida:** `git diff HEAD --output="$bk\fix-arquitetura-tracked.patch"` (grava bytes sem BOM) e conferir o arquivo antes do checkout.
+
+**P3 (médio), passo 4.1: "os três arquivos já estão copiados no backup do passo 3.1" é falso.** O 3.1 copia só `git ls-files -o` (não versionados). Os três arquivos (`static/index.html`, `static/app.css`, `tests/test_v139_…`) são versionados em `bf35530`; neles só existe o diff do patch (ver P2). **Correção sugerida:** copiar esses três explicitamente para `$bk` antes de mover.
+
+**P4 (médio), passo 4.3: `phase0/ui` não contém o commit `9e5aa81`.** `merge-base(rc, ui)` = `3b74dda`; `rc..ui` = só `f154929`. O conteúdo de código de `ui` é igual ao de `rc`; diferem só `docs/architecture/homologation-runbook.md` e os três arquivos de interface (`git diff --name-only`). O runbook dentro de `ui` **não tem a linha `git diff --quiet`** do passo 4.1 (ver `git show phase0/ui:docs/architecture/homologation-runbook.md`). Um ff para `ui` traz o runbook antigo e um histórico diferente do `rc`. O comentário "inclui rc" só vale para o código. **Correção sugerida:** escolher `rc` ou fazer `ui` absorver `rc` antes do ff, e ajustar o comentário.
+
+**P5 (médio), seção 10: `git merge --ff-only phase0/integration`.** O passo 4.3 usa `phase0/ui` ou `phase0/rc`. `phase0/integration` é ancestral de ambos, mas a seção 10 não corresponde ao passo. **Correção sugerida:** trocar por `phase0/ui` ou `phase0/rc`, conforme a escolha do responsável.
+
+**P6 (baixo), seção 0, "Worktrees".** A lista é `base, c5, t02, t03, integration`. Os worktrees reais são `base` (`phase0/base`), `c5` (`phase0/qa-backlog` nesta revisão), `integration` (`phase0/integration`), `rc` (`phase0/rc`), `t02` (`phase0/hardening`), `t03` (`phase0/def002`) e `ui` (`phase0/ui`). `rc` e `ui` faltam, e os nomes de `t02`/`t03` não batem com as branches. **Correção sugerida:** atualizar a lista. Não há dado nos worktrees (`checkfiscal_data/` e `*.db` ausentes em todos).
+
+**P7 (baixo), seção 9: "o commit do frontend … continuam em `$bk`".** O commit fica em `phase0/ui` (f154929). `$bk` tem as cópias e o patch, não o commit. **Correção sugerida:** trocar o texto.
+
+**P8 (a verificar), passo 4.2: deleções antes do ff.** Mover os três arquivos de interface (rastreados) deixa deleções no status. Não verifiquei se `git merge --ff-only` aceita isso. **Sugestão:** conferir `git status --short` antes do merge; o esperado é só `pdfs/` e as deleções movidas.
+
+**P9 (a verificar), passo 3.3: sqlite com URI Windows.** `sqlite3.connect('file:'+caminho+'?mode=ro', uri=True)` com caminho `C:\…` não foi testado. Não rodei o comando do procedimento.
+
+### Não verificado (exige autorização)
+
+- **Estado de partida da pasta operacional (0c):** `git status`/`git branch` da pasta operacional, `docker compose ps -a`, `docker inspect` dos mounts, hash e tamanho do banco, `pdfs/`, backup de 22/10 e a afirmação "Verificado em 16/11: 0 para os três arquivos" do passo 4.1 (que depende do estado operacional). Não executei: as regras do papel proíbem comandos `docker` e a leitura da pasta operacional. Preciso de autorização explícita para leituras somente leitura.
+- **Afirmação do passo 4.1 sobre `app.py`** ("1 para um arquivo que sabidamente difere"): não reproduzida, porque `app.py` não está entre os três arquivos do teste.
+- **Equivalência da pasta operacional com `f154929`:** só é verificável na pasta operacional.
+
+### Correções feitas nesta revisão
+
+Nenhuma. Não encontrei erro de digitação óbvio. Os passos não foram alterados.
