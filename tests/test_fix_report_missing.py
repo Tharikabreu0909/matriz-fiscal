@@ -25,7 +25,7 @@ def test_html_without_missing_months_is_byte_identical():
     for model in (_model(), _model([])):
         html = render_client_report(_fix_clock(model))
         assert hashlib.sha256(html.encode()).hexdigest() == HTML_SHA256_BEFORE_FIX
-        assert "Não calculado" not in html
+        assert "Cálculo pendente de documentação" not in html
 
 
 def test_missing_competence_shows_reason_instead_of_zero():
@@ -34,13 +34,14 @@ def test_missing_competence_shows_reason_instead_of_zero():
         "missing_competences": ["06/2024", "07/2024", "08/2024", "12/2024"],
     }]))
     html = render_client_report(model)
-    assert "Não calculado: faltam PGDAS que cubram 06/2024 a 08/2024, 12/2024" in html
+    assert "Cálculo pendente de documentação" in html
+    assert "faltam PGDAS que cubram 06/2024 a 08/2024, 12/2024" in html
     assert "R$ 1.240,00" not in html.split("Pontos de atenção")[1].split("</table>")[0]
-    assert html.count("Não calculado") == 1
+    assert html.count("Cálculo pendente de documentação") == 1
 
 
 def test_missing_reflection_month_outside_malha_is_not_flagged():
     model = _fix_clock(_model([{
         "competence": "09/2025", "missing_competences": ["09/2024"],
     }]))
-    assert "Não calculado" not in render_client_report(model)
+    assert "Cálculo pendente de documentação" not in render_client_report(model)

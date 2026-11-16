@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 import app as app_module
 import database
 from services import legal_charges
-from services.client_report import MISSING_NOT_CALCULATED  # noqa: F401  (texto novo coberto em test_fix_report_missing)
 
 RATE = [Decimal("1.00")]
 TODAY = date(2026, 5, 15)

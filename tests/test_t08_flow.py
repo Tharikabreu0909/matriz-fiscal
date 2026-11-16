@@ -112,7 +112,6 @@ def cenario_calculado_com_pgdas_novo(client: TestClient) -> int:
     return pid
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("sem PGDAS, imposto PENDENTE_DE_DADOS (MISSING_DOCUMENTS)"))
 def test_processo_sem_pgdas_tem_imposto_pendente_de_dados(client):
     pid = criar_processo()
     fresh = estado(client, pid)
@@ -121,7 +120,6 @@ def test_processo_sem_pgdas_tem_imposto_pendente_de_dados(client):
     assert fresh["report"]["can_emit"] is False
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("PGDAS aceito sem cálculo: imposto NAO_CALCULADO (NO_CALCULATION)"))
 def test_processo_com_pgdas_sem_calculo_tem_imposto_nao_calculado(client):
     pid = criar_processo()
     salvar_pgdas(pid, "03/2026")
@@ -131,7 +129,6 @@ def test_processo_com_pgdas_sem_calculo_tem_imposto_nao_calculado(client):
     assert fresh["charges"]["state"] == "NAO_CALCULADO"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("calculate-tax ainda não devolve 'freshness' nem marca ATUALIZADO"))
 def test_calculo_de_imposto_atualiza_estado_e_resposta_traz_freshness(client):
     pid = criar_processo()
     salvar_pgdas(pid, "03/2026")
@@ -140,7 +137,6 @@ def test_calculo_de_imposto_atualiza_estado_e_resposta_traz_freshness(client):
     assert estado(client, pid)["tax"]["state"] == "ATUALIZADO"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("PGDAS relevante novo não torna imposto/encargos DESATUALIZADO"))
 def test_novo_pgdas_relevante_torna_imposto_e_encargos_desatualizados(client):
     pid = cenario_calculado_com_pgdas_novo(client)
     fresh = estado(client, pid)
@@ -149,7 +145,6 @@ def test_novo_pgdas_relevante_torna_imposto_e_encargos_desatualizados(client):
     assert fresh["charges"]["state"] == "DESATUALIZADO"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("client-report ainda emite relatório com cálculo desatualizado (200)"))
 def test_relatorio_com_calculo_desatualizado_retorna_409_e_nao_grava(client):
     pid = cenario_calculado_com_pgdas_novo(client)
     antes = contagens(pid)
@@ -163,7 +158,6 @@ def test_relatorio_com_calculo_desatualizado_retorna_409_e_nao_grava(client):
     assert database.get_process(pid)["status"] == status_antes
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("recalcular só o imposto ainda não marca encargos com TAX_OUTDATED"))
 def test_recalcular_so_imposto_deixa_encargos_desatualizados_por_tax_outdated(client):
     pid = cenario_calculado_com_pgdas_novo(client)
     calcular_imposto(client, pid)
@@ -173,7 +167,6 @@ def test_recalcular_so_imposto_deixa_encargos_desatualizados_por_tax_outdated(cl
     assert fresh["charges"]["reason"] == "TAX_OUTDATED"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("encargos recalculados sobre imposto atual não viram ATUALIZADO/can_emit"))
 def test_recalcular_encargos_torna_tudo_atualizado_e_relatorio_permitido(client):
     pid = cenario_calculado_com_pgdas_novo(client)
     calcular_imposto(client, pid)
@@ -185,7 +178,6 @@ def test_recalcular_encargos_torna_tudo_atualizado_e_relatorio_permitido(client)
     assert client.get(f"/api/client-report?process_id={pid}").status_code == 200
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("mudança de Selic/data-base ainda não é isolada do imposto"))
 def test_mudar_so_data_base_e_selic_nao_desatualiza_imposto(client, selic):
     pid = criar_processo()
     salvar_pgdas(pid, "03/2026")
@@ -201,7 +193,6 @@ def test_mudar_so_data_base_e_selic_nao_desatualiza_imposto(client, selic):
     assert fresh["charges"]["base_date"] == "2026-12-01"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("cálculo sem input_fingerprint ainda não vira DESATUALIZADO (LEGACY_NO_FINGERPRINT)"))
 def test_calculo_legado_sem_fingerprint_fica_desatualizado(client):
     pid = criar_processo()
     salvar_pgdas(pid, "03/2026")
@@ -228,7 +219,6 @@ def test_calculo_legado_sem_fingerprint_fica_desatualizado(client):
     assert fresh["tax"]["reason"] == "LEGACY_NO_FINGERPRINT"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("encargos sobre imposto desatualizado ainda retornam 200"))
 def test_encargos_com_imposto_desatualizado_retornam_409_tax_outdated(client):
     pid = cenario_calculado_com_pgdas_novo(client)
     r = client.post(f"/api/calculate-legal-charges?process_id={pid}&update_date={DATA_BASE}")
@@ -236,7 +226,6 @@ def test_encargos_com_imposto_desatualizado_retornam_409_tax_outdated(client):
     assert r.json()["code"] == "TAX_OUTDATED"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("GET /api/process ainda não traz 'freshness' (a invariante de não-escrita já vale hoje)"))
 def test_get_processo_nao_grava_resultados_de_calculo(client):
     pid = criar_processo()
     salvar_pgdas(pid, "03/2026")
@@ -250,7 +239,6 @@ def test_get_processo_nao_grava_resultados_de_calculo(client):
     assert "freshness" in r.json()
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("recálculo ainda não devolve freshness ATUALIZADO (histórico já é preservado hoje)"))
 def test_recalculo_preserva_calculos_antigos(client):
     pid = criar_processo()
     salvar_pgdas(pid, "03/2026")
@@ -273,7 +261,6 @@ def test_recalculo_preserva_calculos_antigos(client):
     assert segundo.json()["freshness"]["tax"]["state"] == "ATUALIZADO"
 
 
-@pytest.mark.xfail(strict=True, reason=XFAIL.format("relatório ainda mostra 'R$ 0,00' e texto antigo na competência pendente"))
 def test_competencia_pendente_nao_aparece_como_zero_no_relatorio():
     from services.client_report import render_client_report
 
