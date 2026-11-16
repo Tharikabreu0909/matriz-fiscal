@@ -12,7 +12,7 @@
 | Mounts (bind, rw) | `<repo>` → `/app` · `<repo>\checkfiscal_data` → `/data` · `CHECKFISCAL_DATA_DIR=/data` · nenhum volume nomeado |
 | Banco do Docker | `checkfiscal_data\checkfiscal.db`, 671.744 bytes, mod. 15/11 16:31 |
 | Banco nativo | `%LOCALAPPDATA%\CheckFiscal\checkfiscal.db`, 106.496 bytes (app nativa parada; arquivo tocado em 15/11 16:37 por um teste manual de interface com `init_db()`, sem dado de negócio) |
-| Worktrees | `base`, `c5`, `t02`, `t03`, `integration` em `C:\Users\Ismael\CheckFiscal-floors\`; nenhum contém `checkfiscal_data/`, nenhum `.db`, nenhum link |
+| Worktrees | `base` (`phase0/base`), `c5` (`phase0/qa-backlog`), `t02` (`phase0/hardening`), `t03` (`phase0/def002`), `integration` (`phase0/integration`), `rc` (`phase0/rc`), `ui` (`phase0/ui`), todos em `C:\Users\Ismael\CheckFiscal-floors\`; nenhum contém `checkfiscal_data/`, nenhum `.db`, nenhum link |
 | Sem commit (tracked) | `static/index.html`, `static/app.css`, `tests/test_v139_ui_and_pgdas_plan.py`, `requirements-dev.txt` |
 | Sem commit (untracked) | `docs/architecture/`, `docs/decisions/`, `docs/integrations/`, `pytest.ini`, `tests/conftest.py`, `tests/test_t01_isolation.py`, **`pdfs/`** |
 | `pdfs/` | 7 PDFs, não ignorada pelo `.gitignore` nem pelo `.dockerignore`, dentro do mount `/app` |
@@ -75,7 +75,10 @@ Aceite do backup: manifestos idênticos, `integrity= ok`, `user_version= 2`, con
 ### 3.1 Preservar as alterações não commitadas (sem stash)
 ```powershell
 cd C:\Users\Ismael\Desktop\checkfiscal-pipeline-malha-pgdas-v1.45
-git diff > "$bk\fix-arquitetura-tracked.patch"
+git diff --output="$bk\fix-arquitetura-tracked.patch"   # UTF-8 sem BOM (o `>` do PowerShell 5.1 grava com BOM/UTF-16)
+$tm = "$bk\tracked-modificados"; New-Item -ItemType Directory $tm | Out-Null
+git diff --name-only | ForEach-Object {
+  $d = Join-Path $tm (Split-Path $_ -Parent); New-Item -ItemType Directory $d -Force | Out-Null; Copy-Item $_ (Join-Path $tm $_) }
 $u = "$bk\untracked-sem-pdfs"; New-Item -ItemType Directory $u | Out-Null
 git ls-files -o --exclude-standard | Where-Object { $_ -notlike 'pdfs/*' } | ForEach-Object {
   $d = Join-Path $u (Split-Path $_ -Parent); New-Item -ItemType Directory $d -Force | Out-Null; Copy-Item $_ (Join-Path $u $_) }
@@ -87,19 +90,27 @@ git branch backup/pre-fase0 bf35530     # 🔒 ponteiro de segurança (não alte
 ## 4. Integração sem perder o frontend 🔒
 O frontend sem commit (`static/index.html`, `static/app.css`, `tests/test_v139_ui_and_pgdas_plan.py`) **não** é commitado na pasta operacional: um commit ali geraria conflito certo com a branch `phase0/ui` (mesmo arquivo, mesma base, conteúdo diferente). Em vez disso:
 
+**4.0 Pré-condição.** A `phase0/ui` nasceu do `phase0/rc` em `3b74dda`; o `rc` recebeu depois commits de documentação. Antes da janela:
+```powershell
+git merge-base --is-ancestor phase0/rc phase0/ui; $LASTEXITCODE     # 0 = a ui contém o rc atual; 1 = falta mesclar
+```
+Se der 1, mescle o `rc` na `ui` **no worktree dela** (`git merge phase0/rc`, fora da pasta operacional) e repita os testes do passo 5 lá. Só então siga.
+
 1. **Provar que a pasta operacional ainda tem o mesmo frontend** que serviu de ponto de partida da `phase0/ui` (o primeiro commit dela, o "baseline"). Use o próprio Git, que já normaliza o fim de linha do Windows (comparar hash de arquivo cru dá falso "diferente" por causa do `autocrlf`):
    ```powershell
    $base = git log --reverse --format=%h phase0/rc..phase0/ui | Select-Object -First 1
    git diff --quiet $base -- static/index.html static/app.css tests/test_v139_ui_and_pgdas_plan.py
    $LASTEXITCODE        # 0 = idênticos ao baseline; 1 = alguém editou depois
    ```
-   Se der 1, **pare**: trate a diferença antes de seguir (`git diff $base -- <arquivo>` mostra o que mudou). Verificado em 16/11 somente leitura: 0 para os três arquivos e 1 para um arquivo que sabidamente difere (`app.py`), ou seja, o teste detecta diferença. Os três arquivos já estão copiados no backup do passo 3.1.
-2. **Liberar o caminho do fast-forward sem descartar nada** 🔒: mover (não apagar) para `$bk\movidos\` os três arquivos de interface, `docs/`, `pytest.ini`, `tests/conftest.py`, `tests/test_t01_isolation.py`; depois `git checkout -- requirements-dev.txt` (a alteração `httpx` vem na branch).
+   Se der 1, **pare**: trate a diferença antes de seguir (`git diff $base -- <arquivo>` mostra o que mudou). Verificado em 16/11 somente leitura: 0 para os três arquivos e 1 para um arquivo que sabidamente difere (`app.py`), ou seja, o teste detecta diferença. Os três arquivos já estão copiados em `$bk\tracked-modificados` (passo 3.1).
+2. **Liberar o caminho do fast-forward sem descartar nada** 🔒. Mover (não apagar) para `$bk\movidos\`: os três arquivos de interface; as **três pastas** não versionadas `docs\architecture`, `docs\decisions` e `docs\integrations` (⚠ **nunca `docs\` inteiro**: ela tem 23 arquivos versionados, como `docs\CHECKLIST_BETA_COMERCIAL.md`); `pytest.ini`; `tests\conftest.py`; `tests\test_t01_isolation.py`. Depois `git checkout -- requirements-dev.txt` (a alteração `httpx` está em `$bk\tracked-modificados` e vem na branch).
+   Os três arquivos de interface movidos aparecem como ` D` no `git status`: é esperado. **Antes do passo 3**, `git status --short` deve mostrar só essas três linhas ` D` e `?? pdfs/`; qualquer outra linha, **pare**.
+   *Simulado em 16/11 num worktree descartável com uma cópia do estado operacional (a pasta real não foi tocada):* sem este passo o fast-forward é recusado (“local changes would be overwritten”); com ele o fast-forward conclui, a árvore fica limpa, os três arquivos voltam idênticos ao baseline, os originais no backup têm o mesmo hash e os 23 arquivos versionados de `docs/` permanecem.
 3. **Integrar** (container ainda parado):
    ```powershell
    git merge --ff-only phase0/ui        # 🔒 inclui rc (C5+T02+T03+DEF-002+hardening+docs) e a interface
    ```
-   Se o responsável quiser liberar o backend sem a interface nova, use `git merge --ff-only phase0/rc`: a branch `rc` não toca em `static/*`, então o frontend sem commit continua intacto na pasta (o passo 2 então move só `docs/`, `pytest.ini`, `tests/conftest.py`, `tests/test_t01_isolation.py` e restaura `requirements-dev.txt`).
+   Se o responsável quiser liberar o backend sem a interface nova, use `git merge --ff-only phase0/rc`: a branch `rc` não toca em `static/*`, então o frontend sem commit continua intacto na pasta (o passo 2 então **não** move os três arquivos de interface; move só as três pastas de `docs`, `pytest.ini`, `tests/conftest.py` e `tests/test_t01_isolation.py`, e restaura `requirements-dev.txt`).
    Se não for fast-forward, **pare**: não resolva conflito às pressas; reporte.
 4. Commit próprio 🔒 adicionando `pdfs/` ao `.gitignore`, antes de qualquer outro `git add` amplo.
 
@@ -130,12 +141,12 @@ Repita o item 1 do passo 7 após um dia de uso e compare a contagem com o espera
 
 ## 9. Rollback 🔒
 **Gatilhos:** `integrity != ok`; contagem menor que a do backup sem explicação; erro de inicialização; laço de reload; guard bloqueando acesso legítimo.
-- **Só código** (dados íntegros): `docker compose stop checkfiscal`; `git switch -C fix/arquitetura backup/pre-fase0` (volta a branch ao ponto de segurança; o commit do frontend e os arquivos movidos continuam em `$bk`); `docker compose start checkfiscal`. A imagem não muda, então não há rebuild.
+- **Só código** (dados íntegros): `docker compose stop checkfiscal`; `git switch -C fix/arquitetura backup/pre-fase0` (volta a branch ao ponto de segurança; a interface continua na branch `phase0/ui` e os arquivos movidos em `$bk\movidos`); `docker compose start checkfiscal`. A imagem não muda, então não há rebuild.
 - **Dados** (banco inconsistente): `docker compose stop checkfiscal`; renomear (não apagar) `checkfiscal_data` para `checkfiscal_data.quebrado-<ts>`; `robocopy "$bk\checkfiscal_data" "<repo>\checkfiscal_data" /E /COPY:DAT`; repetir o manifesto e a verificação de integridade do passo 3; `docker compose start checkfiscal`. O banco quebrado fica preservado para análise.
 - Dados criados **depois** do backup só voltam se o banco quebrado ainda estiver legível (não os descarte).
 
 ## 10. Comandos que exigem autorização operacional (resumo)
-`docker compose stop|start checkfiscal` · cópia fria e manifestos (leem a pasta operacional) · `git branch backup/pre-fase0` · mover arquivos sem commit para o backup · `git checkout -- requirements-dev.txt` · `git merge --ff-only phase0/integration` · commit do `.gitignore` · qualquer rollback do passo 9.
+`docker compose stop|start checkfiscal` · cópia fria e manifestos (leem a pasta operacional) · `git branch backup/pre-fase0` · mover arquivos sem commit para o backup · `git checkout -- requirements-dev.txt` · `git merge --ff-only phase0/ui` (ou `phase0/rc`) · commit do `.gitignore` · qualquer rollback do passo 9.
 
 ## 11. Riscos conhecidos
 - O container roda como root com escrita em `/app`: o código que ele executa é a árvore de trabalho; qualquer edição de `.py` com ele ligado reinicia o servidor.
@@ -202,3 +213,18 @@ Repita o item 1 do passo 7 após um dia de uso e compare a contagem com o espera
 ### Correções feitas nesta revisão
 
 Nenhuma. Não encontrei erro de digitação óbvio. Os passos não foram alterados.
+
+### Resolução dos achados (Maestro, 16/11)
+
+| Achado | Resolução |
+|---|---|
+| P1 (alto) mover `docs/` inteiro | **Corrigido** no passo 4.2: só as três pastas não versionadas. Simulado: os 23 arquivos versionados permanecem |
+| P2 patch como única cópia | **Corrigido** no passo 3.1: `git diff --output` (sem BOM) **e** cópia dos arquivos modificados em `$bk\tracked-modificados` |
+| P3 "já copiados no backup" falso | **Corrigido**: o passo 3.1 agora copia os arquivos versionados modificados; o 4.1 aponta para `tracked-modificados` |
+| P4 `ui` sem o commit `9e5aa81` | **Corrigido** com a pré-condição 4.0 (`merge-base --is-ancestor`); o `rc` é mesclado na `ui` antes da janela |
+| P5 seção 10 | **Corrigido**: `phase0/ui` (ou `phase0/rc`) |
+| P6 lista de worktrees | **Corrigido** na seção 0 |
+| P7 seção 9 | **Corrigido** |
+| P8 deleções antes do ff | **Verificado por simulação**: ` D` é esperado, o ff conclui e restaura os arquivos; checagem de `git status` adicionada antes do passo 3 |
+| P9 URI do SQLite no Windows | **Verificado**: `file:C:\…`, `Path.as_posix()` e `Path.as_uri()` funcionam, inclusive com espaço no caminho; nada a mudar |
+| 0c estado da pasta operacional | **Verificado pelo Maestro** (seção 0 e relatório de homologação); fora do papel da QA, que continua sem acesso |
