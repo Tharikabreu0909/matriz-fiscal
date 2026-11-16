@@ -13,7 +13,7 @@ def test_ui_has_summary_tabs_and_clear_crossing_labels():
     assert "Relatório do cliente" in html
     # Cliente: lista única de competências; sem aba "Análise detalhada" nem blocos longos por tipo.
     assert "Análise detalhada" not in html
-    assert "Considerado pelo Fisco" in html
+    assert "Valor considerado pelo Fisco" in html
 
 
 def test_ui_hides_accounting_study_and_uses_single_estimate():

@@ -12,21 +12,24 @@
   <div class="app-shell">
     <aside class="sidebar" id="appSidebar">
       <div class="brand">
-        <div class="brand-mark">✓</div>
-        <div>Matriz Fiscal<small>Auditoria Inteligente</small></div>
+        <div class="brand-mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <div>CheckFiscal</div>
       </div>
-      <div class="nav-title">Visão do escritório</div>
       <nav class="app-nav">
-        <button class="active" data-app-page="dashboard"><span class="nav-icon">▦</span>Visão geral</button>
-        <button data-app-page="companies"><span class="nav-icon">◫</span>Empresas</button>
-        <button data-app-page="malhas"><span class="nav-icon">!</span>Malhas</button>
-        <button data-app-page="reports"><span class="nav-icon">▤</span>Relatórios</button>
-        <button data-app-page="history"><span class="nav-icon">↺</span>Histórico</button>
+        <button class="active" data-app-page="dashboard"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>Dashboard</button>
       </nav>
-      <div class="nav-title">Sistema</div>
-      <nav class="app-nav"><button data-app-page="settings"><span class="nav-icon">⚙</span>Configurações</button></nav>
-      <div class="sidebar-foot"><strong>Ambiente de homologação</strong><span>Versão local para validar cadastro,
-          carteira e fluxo fiscal antes da produção.</span></div>
+      <div class="nav-title">Carteira fiscal</div>
+      <nav class="app-nav">
+        <button data-app-page="companies"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9h.01M9 12h.01M9 15h.01M9 18h.01"/></svg></span>Empresas</button>
+        <button data-app-page="malhas"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>Malhas</button>
+        <button data-app-page="reports"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>Relatórios</button>
+        <button data-app-page="history"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg></span>Histórico</button>
+      </nav>
+      <div class="nav-title">Configurações</div>
+      <nav class="app-nav">
+        <button data-app-page="settings"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>Configurações</button>
+      </nav>
+      <div class="sidebar-foot"><strong>Ambiente de homologação</strong></div>
     </aside>
     <main class="main-shell">
       <div class="topbar">
@@ -46,28 +49,21 @@
         <div class="page-header">
           <div>
             <h1>Olá, Tharik! 👋</h1>
+            <p>Aqui está o resumo da sua carteira fiscal.</p>
           </div>
         </div>
         <section class="dashboard-kpis">
-          <div class="dashboard-kpi"><span>Empresas</span><strong id="dashboardCompanyCount">0</strong></div>
-          <div class="dashboard-kpi"><span>Saudáveis</span><strong id="dashboardHealthyCount">0</strong></div>
-          <div class="dashboard-kpi"><span>Malhas ativas</span><strong id="dashboardActiveCount">0</strong></div>
-          <div class="dashboard-kpi"><span>Relatório gerado</span><strong id="dashboardReportCount">0</strong></div>
+          <div class="dashboard-kpi"><div class="kpi-head"><i class="kpi-ico blue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9h.01M9 12h.01M9 15h.01M9 18h.01"/></svg></i><span>Empresas</span></div><strong id="dashboardCompanyCount">0</strong><em>Total na carteira</em></div>
+          <div class="dashboard-kpi"><div class="kpi-head"><i class="kpi-ico green"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></i><span>Saudáveis</span></div><strong id="dashboardHealthyCount">0</strong><em>Sem pendências</em></div>
+          <div class="dashboard-kpi"><div class="kpi-head"><i class="kpi-ico red"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></i><span>Malhas ativas</span></div><strong id="dashboardActiveCount">0</strong><em>Aguardando análise</em></div>
+          <div class="dashboard-kpi"><div class="kpi-head"><i class="kpi-ico purple"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 14l2 2 4-4"/></svg></i><span>Relatório gerado</span></div><strong id="dashboardReportCount">0</strong><em>Com relatório</em></div>
         </section>
-        <div class="dashboard-grid">
-          <section class="card">
-            <div class="panel-head">
-              <h2>Maior impacto financeiro</h2>
-            </div>
-            <div class="rank-list" id="dashboardRanking"></div>
-          </section>
-          <section class="card">
-            <div class="panel-head">
-              <h2>Movimentações recentes</h2>
-            </div>
-            <div class="recent-list" id="dashboardRecent"></div>
-          </section>
-        </div>
+        <section class="card dashboard-ranking">
+          <div class="panel-head">
+            <h2>Maior impacto financeiro</h2>
+          </div>
+          <div class="rank-list" id="dashboardRanking"></div>
+        </section>
       </section>
 
       <section id="portfolioView" class="app-page">
@@ -142,18 +138,10 @@
           </div>
         </section>
 
-        <section class="portfolio-metrics">
-          <div class="portfolio-card"><span>Empresas</span><strong id="portfolioCompanyCount">0</strong></div>
-          <div class="portfolio-card"><span>Saudáveis</span><strong id="portfolioHealthyCount">0</strong></div>
-          <div class="portfolio-card"><span>Com malha / análise</span><strong id="portfolioActiveCount">0</strong></div>
-          <div class="portfolio-card"><span>Exposição estimada</span><strong id="portfolioExposure">R$ 0,00</strong>
-          </div>
-        </section>
-
         <div class="toolbar portfolio-toolbar">
           <label class="toolbar-search">
             <span class="visually-hidden">Buscar empresa</span>
-            <input class="search" id="companySearch" placeholder="Buscar por razão social ou CNPJ">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="companySearch" placeholder="Buscar empresa por nome, CNPJ ou razão social...">
           </label>
           <label class="toolbar-field">
             <span class="visually-hidden">Filtrar por status</span>
@@ -502,7 +490,7 @@
             <section class="analysis-summary analysis-panel" id="analysisSummarySection">
               <div class="section-title">
                 <div>
-                  <h2>Análise</h2>
+                  <h2>Competências analisadas</h2>
                 </div>
               </div>
 
@@ -901,6 +889,20 @@
   </article>`;
     }
 
+    function companyRow(company) {
+      const [label, klass] = statusLabel(company.process_status);
+      const group = statusGroup(company);
+      const action = company.active_process_id ? 'Continuar' : 'Incluir malha';
+      const tone = klass === 'healthy' ? 'green' : klass === 'done' ? 'purple' : group === 'active' ? 'red' : 'amber';
+      return `<div class="company-row" role="row" tabindex="0" data-company-id="${company.id}" data-group="${group}" onclick="openCompany(${company.id},'companies')" onkeydown="if(event.key==='Enter')openCompany(${company.id},'companies')">
+    <div class="company-cell company-main"><div class="company-avatar">${initials(company.trade_name || company.legal_name)}</div><div><strong>${escapeHtml(company.trade_name || company.legal_name)}</strong><span>${formatCnpj(company.cnpj)}</span></div></div>
+    <div class="company-cell"><span class="badge ${tone}">${label}</span></div>
+    <div class="company-cell">${company.competence_count ? company.competence_count + ' competências' : '—'}</div>
+    <div class="company-cell">${formatDateTime(company.last_activity_at, false)}</div>
+    <div class="company-cell company-actions"><button class="secondary" type="button" onclick="event.stopPropagation();editCompany(${company.id})">Editar</button><button class="action" type="button">${action}</button></div>
+  </div>`;
+    }
+
     function renderCompanies() {
       const grid = document.getElementById('companyGrid');
       const query = (document.getElementById('companySearch')?.value || '').toLowerCase().trim();
@@ -910,14 +912,8 @@
         const text = (company.legal_name + ' ' + (company.trade_name || '') + ' ' + company.cnpj).toLowerCase();
         return text.includes(query) && (filter === 'all' || statusGroup(company) === filter);
       }).slice(0, size);
-      const healthy = allCompanies.filter(item => !item.active_process_id).length;
-      const active = allCompanies.length - healthy;
-      const exposure = allCompanies.reduce((sum, item) => sum + Number(item.exposure_estimated_cents || 0), 0);
-      document.getElementById('portfolioCompanyCount').textContent = allCompanies.length;
-      document.getElementById('portfolioHealthyCount').textContent = healthy;
-      document.getElementById('portfolioActiveCount').textContent = active;
-      document.getElementById('portfolioExposure').textContent = brlPgdas(exposure);
-      grid.innerHTML = filtered.length ? filtered.map(item => companyCard(item)).join('') : '<div class="empty-state" style="grid-column:1/-1">Nenhuma empresa encontrada.</div>';
+      const head = '<div class="company-row company-head" role="row"><div>Empresa</div><div>Situação</div><div>Malhas</div><div>Última atualização</div><div></div></div>';
+      grid.innerHTML = filtered.length ? head + filtered.map(companyRow).join('') : '<div class="empty-state">Nenhuma empresa encontrada.</div>';
     }
 
     function refreshWorkspaceFromOverview() {
@@ -949,9 +945,8 @@
       document.getElementById('dashboardActiveCount').textContent = allCompanies.filter(item => statusGroup(item) === 'active').length;
       document.getElementById('dashboardReportCount').textContent = allCompanies.filter(item => item.report_available).length;
       const ranking = [...allCompanies].filter(item => item.exposure_estimated_cents > 0).sort((a, b) => b.exposure_estimated_cents - a.exposure_estimated_cents).slice(0, 5);
-      document.getElementById('dashboardRanking').innerHTML = ranking.length ? ranking.map((item, index) => `<div class="rank-item${index === 0 ? ' rank-first' : ''}" onclick="openCompany(${item.id})"><div class="rank-pos">${index + 1}</div><div><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong></div><div class="rank-value"><strong>${brlPgdas(item.exposure_estimated_cents)}</strong></div></div>`).join('') : '<div class="no-data">As estimativas calculadas aparecerão aqui.</div>';
-      const recent = [...allCompanies].sort((a, b) => String(b.last_activity_at).localeCompare(String(a.last_activity_at))).slice(0, 6);
-      document.getElementById('dashboardRecent').innerHTML = recent.length ? recent.map(item => `<div class="recent-item" onclick="openCompany(${item.id})"><div class="company-avatar" style="width:30px;height:30px;font-size:9px">${initials(item.trade_name || item.legal_name)}</div><div><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong><span>${escapeHtml(item.latest_event_title || 'Empresa cadastrada')}</span></div><span>${formatDateTime(item.last_activity_at, false)}</span></div>`).join('') : '<div class="no-data">Cadastre a primeira empresa.</div>';
+      const top = ranking.length ? ranking[0].exposure_estimated_cents : 1;
+      document.getElementById('dashboardRanking').innerHTML = ranking.length ? ranking.map((item, index) => `<div class="rank-item${index === 0 ? ' rank-first' : ''}" onclick="openCompany(${item.id})"><div class="rank-pos">${index + 1}</div><div class="rank-name"><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong><i class="rank-bar"><b style="width:${Math.max(4, Math.round(item.exposure_estimated_cents / top * 100))}%"></b></i></div><div class="rank-value"><strong>${brlPgdas(item.exposure_estimated_cents)}</strong></div></div>`).join('') : '<div class="no-data">Sem estimativas calculadas ainda.</div>';
     }
 
     function renderMalhaIndex() {
@@ -1641,7 +1636,7 @@ CFDF: ${malhaRegistration}
       document.querySelectorAll('[data-workflow-screen]').forEach(screen => screen.classList.toggle('active', screen.dataset.workflowScreen === step));
       document.querySelectorAll('[data-workflow-step]').forEach(item => item.classList.toggle('active', item.dataset.workflowStep === step));
       // O nome da empresa já aparece no cabeçalho "Razão social"; a barra superior mostra só o contexto e a etapa.
-      document.getElementById('topbarTitle').textContent = `Painel fiscal da empresa · ${workflowStepLabel(step)}`;
+      if (currentCompanyId) document.getElementById('topbarTitle').textContent = `Painel fiscal da empresa · ${workflowStepLabel(step)}`;
       if (step === 'analysis') ensureAnalysisStageContent();
       document.getElementById('workflowStageHost')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -2468,23 +2463,27 @@ CFDF: ${malhaRegistration}
     function renderCrossingCompact(row) {
       const money = value => value == null ? '—' : brlPgdas(value);
       const is17 = row.crossing_type === '17';
+      const stat = (icon, label, value, cls = '') => `<div class="crossing-value ${cls}"><i>${icon}</i><div><span>${label}</span><strong>${value}</strong></div></div>`;
       return `
     <section class="crossing-compact crossing-t${row.crossing_type}">
       <h4>${typeBadge(row.crossing_type)}<span>${row.crossing_label}</span></h4>
       <div class="crossing-values">
-        <div class="crossing-value"><span>${is17 ? 'Informado no PGDAS' : 'Informado no SPED/LFE'}</span><strong>${money(row.informed_cents)}</strong></div>
-        <div class="crossing-value"><span>${is17 ? 'Considerado pelo Fisco' : 'Movimentação de cartão'}</span><strong>${money(row.considered_cents)}</strong></div>
-        <div class="crossing-value"><span>Divergência</span><strong>${brlPgdas(row.divergence_cents)}</strong></div>
+        ${stat('<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>', is17 ? 'Informado no PGDAS' : 'Informado no SPED/LFE', money(row.informed_cents))}
+        ${stat('<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 21h12M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></svg>', is17 ? 'Valor considerado pelo Fisco' : 'Movimentação de cartão', money(row.considered_cents))}
+        ${stat('<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>', 'Divergência apontada', brlPgdas(row.divergence_cents), 'is-divergence')}
       </div>
     </section>`;
     }
 
-    // Alíquota e DAS só existem depois do cálculo (visible_impacts); antes: "A calcular".
-    function competenceTaxRow(competence) {
+    // Alíquota e DAS só existem depois do cálculo (visible_impacts) e só no Tipo 17; Tipo 01 não gera imposto sozinho.
+    function competenceTaxRow(competence, types) {
+      if (!types.includes('17')) return '<p class="competence-note">O Tipo 01 não gera imposto automaticamente.</p>';
       const impact = (currentTaxResult?.visible_impacts || []).find(row => row.competence === competence);
+      if (!impact) return '<p class="competence-note">Alíquota e DAS: A calcular.</p>';
+      const cell = (label, value) => `<div><span>${label}</span><strong>${value}</strong></div>`;
       return `<div class="competence-tax">
-        <div><span>Alíquota</span><strong>${impact ? percentText(impact.corrected_effective_rate) : 'A calcular'}</strong></div>
-        <div><span>DAS a pagar</span><strong>${impact ? brlPgdas(impact.corrected_das_cents) : 'A calcular'}</strong></div>
+        ${cell('Alíquota original', percentText(impact.original_effective_rate))}${cell('Alíquota corrigida', percentText(impact.corrected_effective_rate))}
+        ${cell('DAS original', brlPgdas(impact.original_das_cents))}${cell('DAS corrigido', brlPgdas(impact.corrected_das_cents))}
       </div>`;
     }
 
@@ -2556,18 +2555,17 @@ CFDF: ${malhaRegistration}
           const types = item.types.map(typeBadge).join('') || 'Sem tipo';
 
           return `
-          <details class="competence-accordion"
+          <details class="competence-accordion" name="competences"
             data-summary-competence="${item.competence}">
             <summary>
+              <span class="competence-chevron" aria-hidden="true"></span>
               <strong class="competence-month">${item.competence}</strong>
               <span class="competence-types">${types}</span>
-              <span class="competence-divergence">${item.primary_divergence_cents > 0 ? brlPgdas(item.primary_divergence_cents) : '—'}</span>
               <span class="summary-status ${statusClass}">${label}</span>
-              <span class="competence-chevron" aria-hidden="true">⌄</span>
             </summary>
             <div class="competence-content">
               ${(item.crossings || []).map(renderCrossingCompact).join('')}
-              ${competenceTaxRow(item.competence)}
+              ${competenceTaxRow(item.competence, item.types)}
               ${competenceReviewArea(item.competence)}
             </div>
           </details>`;

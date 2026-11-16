@@ -7338,53 +7338,125 @@
       font-weight: 600 !important;
     }
 
-    /* ===== UI v2: dashboard enxuto + lista única de competências (tema escuro) ===== */
-    .dashboard-kpi strong { font-size: 32px !important; margin-top: 8px !important }
-    .dashboard-kpi span { font-size: 13px !important }
-    .rank-item { grid-template-columns: 36px 1fr auto !important }
-    .rank-item strong { font-size: 14px !important }
-    .rank-item .rank-value strong { font-size: 14px !important }
-    .rank-first { background: var(--blue-soft); border-radius: 10px; padding: 14px 10px !important; border-bottom-color: transparent !important }
-    .rank-first .rank-pos { background: var(--blue); color: #fff }
-    .panel-head p { display: none }
+    /* ===== UI v2 (referências do cliente): sidebar, dashboard, carteira e análise ===== */
+    .ico { width: 20px; height: 20px; flex: none }
 
-    .type-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font-size: 12px; font-weight: 800; letter-spacing: .02em; border: 1px solid; white-space: nowrap }
-    .type-badge.t01 { background: #0e2a3d; color: #7fd4ff; border-color: #2f7fae }
-    .type-badge.t17 { background: #3a1230; color: #ffa3dc; border-color: #b0498f }
+    /* Sidebar */
+    .sidebar .brand { font-size: 20px; font-weight: 800; gap: 10px; align-items: center }
+    .sidebar .brand-mark { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--blue); color: #fff }
+    .sidebar .brand-mark .ico { width: 20px; height: 20px; stroke-width: 2.6 }
+    .sidebar .nav-title { font-size: 12px !important; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 22px 12px 8px }
+    .sidebar .app-nav button { display: flex !important; align-items: center; gap: 12px; font-size: 15px !important; min-height: 44px; padding: 0 12px !important; border-radius: 10px; color: #c3cbd8 }
+    .sidebar .app-nav button .nav-icon { display: inline-flex; width: 20px; color: var(--muted) }
+    .sidebar .app-nav button:hover { background: #121b2b }
+    .sidebar .app-nav button.active { background: #14213d !important; color: #fff }
+    .sidebar .app-nav button.active .nav-icon { color: #6c9cff }
+    .sidebar .app-nav button:focus-visible, .company-row:focus-visible, .rank-item:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px }
+    .sidebar-foot { font-size: 12px !important; padding: 12px !important }
 
-    #analysisStageContent .competence-accordion { background: var(--panel) !important; border: 1px solid var(--line) !important; border-radius: 12px !important }
-    #analysisStageContent .competence-accordion[open] { border-color: #3a4a63 !important; box-shadow: none !important }
-    #analysisStageContent .competence-accordion > summary { display: grid !important; grid-template-columns: 90px 1fr auto auto 20px !important; gap: 14px !important; align-items: center !important; padding: 14px 16px !important; background: transparent !important; border: 0 !important; min-height: 56px }
-    #analysisStageContent .competence-accordion[open] > summary { border-bottom: 1px solid var(--line) !important }
-    #analysisStageContent .competence-month { font-size: 16px; color: var(--text) }
-    #analysisStageContent .competence-types { display: flex; flex-wrap: wrap; gap: 6px }
-    #analysisStageContent .competence-divergence { font-size: 14px; font-weight: 700; color: var(--text); text-align: right }
-    #analysisStageContent .summary-status { font-size: 12px !important; padding: 5px 10px !important }
-    #analysisStageContent .competence-content { display: grid; gap: 12px; padding: 16px !important }
-    #analysisStageContent .crossing-compact { background: var(--panel-2) !important; border: 1px solid var(--line) !important; border-left-width: 4px !important; border-radius: 10px; padding: 12px 14px }
-    #analysisStageContent .crossing-t01 { border-left-color: #2f7fae !important }
-    #analysisStageContent .crossing-t17 { border-left-color: #b0498f !important }
-    #analysisStageContent .crossing-compact h4 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; color: var(--muted) }
-    #analysisStageContent .crossing-values { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 12px }
-    #analysisStageContent .crossing-value { background: transparent !important; border: 0 !important; padding: 0 !important }
-    #analysisStageContent .crossing-value span, #analysisStageContent .competence-tax span { display: block; color: var(--muted); font-size: 12px }
-    #analysisStageContent .crossing-value strong, #analysisStageContent .competence-tax strong { display: block; margin-top: 4px; font-size: 16px; color: var(--text) }
-    #analysisStageContent .competence-tax { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 4px 14px 0 }
-    #analysisStageContent .review-action-area { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 0 14px }
-    #analysisStageContent .confirm-value { display: grid; gap: 4px; font-size: 12px; color: var(--muted) }
-    #analysisStageContent .summary-primary-metrics { grid-template-columns: repeat(3, 1fr) }
+    /* Dashboard */
+    #dashboardPage .page-header h1 { font-size: 30px; margin: 0 0 6px }
+    #dashboardPage .page-header p { font-size: 15px; color: var(--muted); margin: 0 0 22px }
+    .dashboard-kpis { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 16px !important; margin-bottom: 20px !important }
+    .dashboard-kpi { padding: 18px 20px !important; background: #0d1420 !important; border: 1px solid #1d2738 !important; border-radius: 14px !important }
+    .kpi-head { display: flex; align-items: center; gap: 12px }
+    .dashboard-kpi .kpi-head span { font-size: 15px !important; color: #dbe2ee !important; margin: 0 }
+    .kpi-ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-style: normal }
+    .kpi-ico.blue { background: #13244a; color: #6c9cff }
+    .kpi-ico.green { background: #10301f; color: var(--green) }
+    .kpi-ico.red { background: #35191d; color: var(--red) }
+    .kpi-ico.purple { background: #231a3d; color: #b8a3ff }
+    .dashboard-kpi strong { font-size: 38px !important; line-height: 1; margin-top: 14px !important }
+    .dashboard-kpi em { font-size: 14px !important; color: var(--muted) !important; margin-top: 8px !important }
+    .dashboard-ranking { background: #0d1420; border: 1px solid #1d2738; border-radius: 14px }
+    .dashboard-ranking .panel-head h2 { font-size: 18px; margin: 0 }
+    .rank-list { padding: 4px 20px 16px !important }
+    .rank-item { display: grid !important; grid-template-columns: 36px minmax(0, 1fr) auto !important; gap: 14px !important; padding: 12px 10px !important; border-radius: 10px; cursor: pointer; border-bottom: 1px solid #1d2738 }
+    .rank-item:hover { background: #111a2b }
+    .rank-item:last-child { border-bottom: 0 }
+    .rank-item strong { font-size: 15px !important }
+    .rank-first { background: #101b33 }
+    .rank-name { min-width: 0 }
+    .rank-bar { display: block; height: 4px; border-radius: 4px; background: #1a2436; margin-top: 8px }
+    .rank-bar b { display: block; height: 100%; border-radius: 4px; background: var(--blue) }
+    .rank-item .rank-value strong { font-size: 15px !important; color: #ff7d78 !important }
+    .dashboard-ranking .no-data { padding: 12px 4px; color: var(--muted); font-size: 14px }
 
-    @media (max-width: 720px) {
-      .dashboard-kpis { grid-template-columns: repeat(2, 1fr) !important }
-      #analysisStageContent .competence-accordion > summary { grid-template-columns: 1fr auto 20px !important; row-gap: 8px !important }
-      #analysisStageContent .competence-types { grid-column: 1 / 2 }
-      #analysisStageContent .competence-divergence { text-align: right }
-      #analysisStageContent .summary-status { grid-column: 1 / 3; justify-self: start }
-      #analysisStageContent .crossing-values, #analysisStageContent .competence-tax, #analysisStageContent .summary-primary-metrics { grid-template-columns: 1fr !important }
-    }
-    #analysisStageContent .summary-status { border: 1px solid }
-    #analysisStageContent .summary-status.action { background: var(--green-soft) !important; color: var(--green) !important }
+    /* Carteira (Empresas) como tabela */
+    .portfolio-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px }
+    .portfolio-toolbar .toolbar-search { position: relative; flex: 1; display: block }
+    .portfolio-toolbar .toolbar-search .ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 18px; height: 18px }
+    .portfolio-toolbar .search { width: 100%; height: 46px; padding-left: 42px; font-size: 15px; border-radius: 10px }
+    #companyGrid { display: block !important; background: #0d1420; border: 1px solid #1d2738; border-radius: 14px; overflow: hidden }
+    .company-row { display: grid; grid-template-columns: minmax(0, 2.2fr) 1fr 1fr 1.1fr auto; gap: 14px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #1d2738; cursor: pointer; font-size: 14px }
+    .company-row:last-child { border-bottom: 0 }
+    .company-row:not(.company-head):hover { background: #111a2b }
+    .company-head { cursor: default; color: var(--muted); font-size: 13px; padding-top: 14px; padding-bottom: 10px }
+    .company-main { display: flex; align-items: center; gap: 12px; min-width: 0 }
+    .company-main strong { display: block; font-size: 15px }
+    .company-main span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px }
+    .company-actions { display: flex; gap: 8px; justify-content: flex-end }
+    .company-actions button { font-size: 13px; min-height: 36px }
+    #companyGrid .empty-state { padding: 28px; text-align: center; color: var(--muted) }
+
+    /* Análise: lista única, colapsada, uma aberta por vez */
+    .type-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid; white-space: nowrap }
+    .type-badge.t01 { background: #3a2a0c; color: #ffc766; border-color: #8a6420 }
+    .type-badge.t17 { background: #12274f; color: #86adff; border-color: #2f5bb8 }
+
+    #analysisStageContent .competence-accordion { background: #0d1420 !important; border: 1px solid #1d2738 !important; border-radius: 12px !important; overflow: hidden }
+    #analysisStageContent .competence-accordion[open] { border-color: #2a3a57 !important; box-shadow: none !important }
+    #analysisStageContent .competence-accordion > summary { display: flex !important; align-items: center; gap: 14px; padding: 14px 18px !important; min-height: 56px; background: transparent !important; border: 0 !important; cursor: pointer }
+    #analysisStageContent .competence-accordion > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px }
+    #analysisStageContent .competence-accordion > summary:hover { background: #111a2b !important }
+    #analysisStageContent .competence-chevron { display: block !important; width: 8px; height: 8px; border: solid var(--muted); border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; flex: none; margin: 0 6px 0 2px }
+    #analysisStageContent .competence-accordion[open] .competence-chevron { transform: rotate(45deg) !important }
+    #analysisStageContent .competence-month { font-size: 16px; color: var(--text); min-width: 76px }
+    #analysisStageContent .competence-types { display: flex; gap: 6px; flex: 1 }
+    #analysisStageContent .summary-status { font-size: 12px !important; padding: 5px 12px !important; border: 1px solid; margin-left: auto }
+    #analysisStageContent .summary-status.action { background: #10301f !important; color: var(--green) !important }
     #analysisStageContent .summary-status.review { background: var(--red-soft) !important; color: var(--red) !important }
     #analysisStageContent .summary-status.ancillary { background: #231a3d !important; color: #b8a3ff !important }
     #analysisStageContent .summary-status.clear { background: var(--panel-2) !important; color: var(--muted) !important }
-    #analysisStageContent .competence-chevron { font-size: 18px; color: var(--muted) }
+    #analysisStageContent .competence-content { display: grid; gap: 12px; padding: 4px 18px 18px !important; background: transparent !important }
+    #analysisStageContent .crossing-compact { background: transparent !important; border: 0 !important; padding: 0 !important }
+    #analysisStageContent .crossing-compact h4 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 13px; color: var(--muted); font-weight: 600 }
+    #analysisStageContent .crossing-values { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 12px !important; margin: 0 !important }
+    #analysisStageContent .crossing-value { display: flex !important; align-items: center; gap: 14px; background: #101827 !important; border: 1px solid #1d2738 !important; border-radius: 10px !important; padding: 14px 16px !important }
+    #analysisStageContent .crossing-value i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 8px; background: #13244a; color: #6c9cff; flex: none }
+    #analysisStageContent .crossing-value.is-divergence i { background: #35191d; color: var(--red) }
+    #analysisStageContent .crossing-value span { display: block; font-size: 13px; color: var(--muted) }
+    #analysisStageContent .crossing-value strong { display: block; margin-top: 3px; font-size: 17px; color: var(--text) }
+    #analysisStageContent .crossing-t01 + .crossing-t17 { margin-top: 4px }
+    #analysisStageContent .competence-tax { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid #1d2738; border-radius: 10px; background: #101827; overflow: hidden }
+    #analysisStageContent .competence-tax > div { padding: 12px 14px; text-align: center; border-left: 1px solid #1d2738 }
+    #analysisStageContent .competence-tax > div:first-child { border-left: 0 }
+    #analysisStageContent .competence-tax span { display: block; font-size: 13px; color: var(--muted) }
+    #analysisStageContent .competence-tax strong { display: block; margin-top: 4px; font-size: 15px }
+    #analysisStageContent .competence-note { margin: 0; font-size: 13px; color: var(--muted) }
+    #analysisStageContent .review-action-area { display: flex; flex-wrap: wrap; align-items: end; gap: 12px }
+    #analysisStageContent .confirm-value { display: grid; gap: 4px; font-size: 12px; color: var(--muted) }
+    #analysisSummarySection #analysisCompetenceList { display: grid !important; gap: 10px }
+
+    @media (max-width: 1100px) {
+      .dashboard-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important }
+      #analysisStageContent .crossing-values { grid-template-columns: 1fr !important }
+      #analysisStageContent .competence-tax { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+      #analysisStageContent .competence-tax > div:nth-child(3) { border-left: 0 }
+      #analysisStageContent .competence-tax > div:nth-child(n+3) { border-top: 1px solid #1d2738 }
+    }
+    @media (max-width: 720px) {
+      .dashboard-kpis { grid-template-columns: 1fr !important }
+      .company-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 6px }
+      .company-head { display: none }
+      .company-row .company-cell:nth-child(3), .company-row .company-cell:nth-child(4) { display: none }
+      .company-actions .secondary { display: none }
+      .portfolio-toolbar { flex-wrap: wrap }
+      #analysisStageContent .competence-accordion > summary { flex-wrap: wrap; gap: 8px 10px }
+      #analysisStageContent .competence-types { flex-basis: 100% ; order: 3; padding-left: 24px }
+    }
+    .rank-value { min-width: 130px; text-align: right }
+    .company-row { grid-template-columns: minmax(0, 2.2fr) 1.1fr 1fr 1.1fr 200px }
+    .company-row .badge { font-size: 12px; padding: 4px 10px }
+    /* Cliente: sem cartões de totais na análise; o total já está no topo do painel */
+    #analysisSummarySection .summary-primary-metrics { display: none !important }

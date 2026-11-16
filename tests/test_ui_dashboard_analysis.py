@@ -26,4 +26,11 @@ def test_analysis_has_single_competence_list_with_type_badges():
     assert 'id="diagnosticList"' not in HTML
     assert 'id="analysisCompetenceList"' in HTML
     assert "type-badge t${type}" in HTML and "Tipo ${type}" in HTML
-    assert "A calcular" in HTML and "DAS a pagar" in HTML
+    assert "A calcular" in HTML and "DAS corrigido" in HTML
+    assert "name=\"competences\"" in HTML  # uma competência aberta por vez
+
+
+def test_dashboard_dropped_recent_movements_and_portfolio_is_a_table():
+    assert 'id="dashboardRecent"' not in HTML
+    assert "Movimentações recentes" not in HTML
+    assert "function companyRow" in HTML and "Última atualização" in HTML
