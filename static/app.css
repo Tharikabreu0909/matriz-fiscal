@@ -7562,8 +7562,7 @@
 .dashboard-portfolio .link-button[hidden] { display: none }
 @media (max-width: 720px) {
   .dashboard-alert { flex-wrap: wrap }
-  .dashboard-toolbar { grid-template-columns: 1fr 1fr }
-  .dashboard-toolbar .toolbar-search { grid-column: 1 / -1 }
+  .dashboard-toolbar { grid-template-columns: 1fr }
   .dashboard-portfolio .company-row.dash { grid-template-columns: minmax(0, 1fr) auto }
   .dashboard-portfolio .company-row.dash .company-cell:nth-child(3), .dashboard-portfolio .company-row.dash .company-cell:nth-child(5) { display: none }
   .dashboard-portfolio .company-row.dash .company-cell:nth-child(4) { display: block }
