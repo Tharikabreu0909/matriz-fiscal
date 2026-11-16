@@ -7351,7 +7351,7 @@
     .sidebar .app-nav button:hover { background: #121b2b }
     .sidebar .app-nav button.active { background: #14213d !important; color: #fff }
     .sidebar .app-nav button.active .nav-icon { color: #6c9cff }
-    .sidebar .app-nav button:focus-visible, .company-row:focus-visible, .rank-item:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px }
+    .sidebar .app-nav button:focus-visible, .company-row:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px }
     .sidebar-foot { font-size: 12px !important; padding: 12px !important }
 
     /* Dashboard */
@@ -7368,19 +7368,6 @@
     .kpi-ico.purple { background: #231a3d; color: #b8a3ff }
     .dashboard-kpi strong { font-size: 38px !important; line-height: 1; margin-top: 14px !important }
     .dashboard-kpi em { font-size: 14px !important; color: var(--muted) !important; margin-top: 8px !important }
-    .dashboard-ranking { background: #0d1420; border: 1px solid #1d2738; border-radius: 14px }
-    .dashboard-ranking .panel-head h2 { font-size: 18px; margin: 0 }
-    .rank-list { padding: 4px 20px 16px !important }
-    .rank-item { display: grid !important; grid-template-columns: 36px minmax(0, 1fr) auto !important; gap: 14px !important; padding: 12px 10px !important; border-radius: 10px; cursor: pointer; border-bottom: 1px solid #1d2738 }
-    .rank-item:hover { background: #111a2b }
-    .rank-item:last-child { border-bottom: 0 }
-    .rank-item strong { font-size: 15px !important }
-    .rank-first { background: #101b33 }
-    .rank-name { min-width: 0 }
-    .rank-bar { display: block; height: 4px; border-radius: 4px; background: #1a2436; margin-top: 8px }
-    .rank-bar b { display: block; height: 100%; border-radius: 4px; background: var(--blue) }
-    .rank-item .rank-value strong { font-size: 15px !important; color: #ff7d78 !important }
-    .dashboard-ranking .no-data { padding: 12px 4px; color: var(--muted); font-size: 14px }
 
     /* Carteira (Empresas) como tabela */
     .portfolio-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px }
@@ -7455,7 +7442,6 @@
       #analysisStageContent .competence-accordion > summary { flex-wrap: wrap; gap: 8px 10px }
       #analysisStageContent .competence-types { flex-basis: 100% ; order: 3; padding-left: 24px }
     }
-    .rank-value { min-width: 130px; text-align: right }
     .company-row { grid-template-columns: minmax(0, 2.2fr) 1.1fr 1fr 1.1fr 200px }
     .company-row .badge { font-size: 12px; padding: 4px 10px }
 
@@ -7555,3 +7541,31 @@
       #analysisStageContent .competence-num { display: none }
     }
     #companyWorkspace [data-workflow-screen="analysis"] .workflow-screen-head { display: none }
+
+/* ===== Dashboard v2: alerta, busca e carteira (ref. imagem) ===== */
+.dashboard-alert { display: flex; align-items: center; gap: 14px; padding: 14px 18px; margin-bottom: 16px; background: #0d1420; border: 1px solid #1d2738; border-left: 3px solid var(--red); border-radius: 12px }
+.dashboard-alert[hidden] { display: none }
+.dashboard-alert .ico { width: 24px; height: 24px; color: var(--red); flex: none }
+.dashboard-alert div { flex: 1; min-width: 0 }
+.dashboard-alert strong { display: block; font-size: 16px }
+.dashboard-alert span { display: block; margin-top: 2px; font-size: 13px; color: var(--muted) }
+.dashboard-toolbar { grid-template-columns: minmax(0, 1fr) 190px auto }
+.dashboard-portfolio { background: #0d1420; border: 1px solid #1d2738; border-radius: 14px; overflow: hidden }
+.dashboard-portfolio-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 20px 12px }
+.dashboard-portfolio-head h2 { margin: 0; font-size: 18px }
+.dashboard-portfolio-head p { margin: 4px 0 0; font-size: 13px; color: var(--muted) }
+.dashboard-portfolio-head > span { font-size: 13px; color: var(--muted); white-space: nowrap }
+.dashboard-portfolio .company-row.dash { grid-template-columns: minmax(0, 2.2fr) 1fr 1fr 1.1fr 1.1fr 130px }
+.dashboard-portfolio .company-row .company-cell:last-child button { min-height: 36px; font-size: 13px }
+.dashboard-portfolio .empty-state { padding: 28px; text-align: center; color: var(--muted) }
+.dashboard-portfolio .link-button { display: block; margin: 0; padding: 14px 20px; font-size: 14px; border-top: 1px solid #1d2738 }
+.dashboard-portfolio .link-button[hidden] { display: none }
+@media (max-width: 720px) {
+  .dashboard-alert { flex-wrap: wrap }
+  .dashboard-toolbar { grid-template-columns: 1fr 1fr }
+  .dashboard-toolbar .toolbar-search { grid-column: 1 / -1 }
+  .dashboard-portfolio .company-row.dash { grid-template-columns: minmax(0, 1fr) auto }
+  .dashboard-portfolio .company-row.dash .company-cell:nth-child(3), .dashboard-portfolio .company-row.dash .company-cell:nth-child(5) { display: none }
+  .dashboard-portfolio .company-row.dash .company-cell:nth-child(4) { display: block }
+  .dashboard-portfolio .company-row.dash .company-cell:nth-child(4):not(:empty)::before { content: "Impacto: "; color: var(--muted) }
+}

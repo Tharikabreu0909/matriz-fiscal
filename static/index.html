@@ -58,11 +58,35 @@
           <div class="dashboard-kpi"><div class="kpi-head"><i class="kpi-ico red"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></i><span>Malhas ativas</span></div><strong id="dashboardActiveCount">0</strong><em>Aguardando análise</em></div>
           <div class="dashboard-kpi"><div class="kpi-head"><i class="kpi-ico purple"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 14l2 2 4-4"/></svg></i><span>Relatório gerado</span></div><strong id="dashboardReportCount">0</strong><em>Com relatório</em></div>
         </section>
-        <section class="card dashboard-ranking">
-          <div class="panel-head">
-            <h2>Maior impacto financeiro</h2>
+        <div class="dashboard-alert" id="dashboardAlert" role="status" hidden>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>
+          <div><strong id="dashboardAlertTitle"></strong><span>Abra a malha e siga para a análise.</span></div>
+          <button class="secondary" type="button" id="dashboardAlertButton">Ver malhas</button>
+        </div>
+        <div class="toolbar portfolio-toolbar dashboard-toolbar">
+          <label class="toolbar-search">
+            <span class="visually-hidden">Buscar empresa</span>
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="dashboardSearch" placeholder="Buscar empresa por nome, CNPJ ou razão social...">
+          </label>
+          <label class="toolbar-field">
+            <span class="visually-hidden">Filtrar por situação</span>
+            <select id="dashboardFilter">
+              <option value="all">Todas as situações</option>
+              <option value="healthy">Saudáveis</option>
+              <option value="active">Malha ativa</option>
+              <option value="analysis">Em análise</option>
+              <option value="done">Estimativa / relatório</option>
+            </select>
+          </label>
+          <button class="primary" type="button" id="dashboardNewCompany">＋ Nova empresa</button>
+        </div>
+        <section class="dashboard-portfolio">
+          <div class="dashboard-portfolio-head">
+            <div><h2>Sua carteira de empresas</h2><p>Acompanhe a situação fiscal das empresas na sua carteira.</p></div>
+            <span id="dashboardPortfolioCount">0 empresas</span>
           </div>
-          <div class="rank-list" id="dashboardRanking"></div>
+          <div id="dashboardPortfolio"></div>
+          <button class="link-button" type="button" id="dashboardSeeAll" hidden>Ver todas as empresas</button>
         </section>
       </section>
 
@@ -884,18 +908,27 @@
   </article>`;
     }
 
-    function companyRow(company) {
+    function companyRow(company, dash = false) {
       const [label, klass] = statusLabel(company.process_status);
       const group = statusGroup(company);
-      const action = company.active_process_id ? 'Continuar' : 'Incluir malha';
+      let action = company.active_process_id ? 'Continuar' : 'Incluir malha';
+      if (dash) action = group === 'active' ? 'Analisar' : group === 'analysis' ? 'Continuar' : company.report_available ? 'Ver relatório' : 'Abrir';
       const tone = klass === 'healthy' ? 'green' : klass === 'done' ? 'purple' : group === 'active' ? 'red' : 'amber';
-      return `<div class="company-row" role="row" tabindex="0" data-company-id="${company.id}" data-group="${group}" onclick="openCompany(${company.id},'companies')" onkeydown="if(event.key==='Enter')openCompany(${company.id},'companies')">
+      return `<div class="company-row${dash ? ' dash' : ''}" role="row" tabindex="0" data-company-id="${company.id}" data-group="${group}" onclick="openCompany(${company.id},'companies')" onkeydown="if(event.key==='Enter')openCompany(${company.id},'companies')">
     <div class="company-cell company-main"><div class="company-avatar">${initials(company.trade_name || company.legal_name)}</div><div><strong>${escapeHtml(company.trade_name || company.legal_name)}</strong><span>${formatCnpj(company.cnpj)}</span></div></div>
     <div class="company-cell"><span class="badge ${tone}">${label}</span></div>
     <div class="company-cell">${company.competence_count ? company.competence_count + ' competências' : '—'}</div>
+    ${dash ? `<div class="company-cell">${company.exposure_estimated_cents > 0 ? brlPgdas(company.exposure_estimated_cents) : '—'}</div>` : ''}
     <div class="company-cell">${formatDateTime(company.last_activity_at, false)}</div>
-    <div class="company-cell company-actions"><button class="secondary" type="button" onclick="event.stopPropagation();editCompany(${company.id})">Editar</button><button class="action" type="button">${action}</button></div>
+    <div class="company-cell company-actions">${dash ? '' : `<button class="secondary" type="button" onclick="event.stopPropagation();editCompany(${company.id})">Editar</button>`}<button class="action" type="button">${action}</button></div>
   </div>`;
+    }
+
+    function filterCompanies(query, filter) {
+      return allCompanies.filter(company => {
+        const text = (company.legal_name + ' ' + (company.trade_name || '') + ' ' + company.cnpj).toLowerCase();
+        return text.includes(query) && (filter === 'all' || statusGroup(company) === filter);
+      });
     }
 
     function renderCompanies() {
@@ -903,10 +936,7 @@
       const query = (document.getElementById('companySearch')?.value || '').toLowerCase().trim();
       const filter = document.getElementById('companyFilter')?.value || 'all';
       const size = Number(document.getElementById('companyPageSize')?.value || 10);
-      const filtered = allCompanies.filter(company => {
-        const text = (company.legal_name + ' ' + (company.trade_name || '') + ' ' + company.cnpj).toLowerCase();
-        return text.includes(query) && (filter === 'all' || statusGroup(company) === filter);
-      }).slice(0, size);
+      const filtered = filterCompanies(query, filter).slice(0, size);
       const head = '<div class="company-row company-head" role="row"><div>Empresa</div><div>Situação</div><div>Malhas</div><div>Última atualização</div><div></div></div>';
       grid.innerHTML = filtered.length ? head + filtered.map(companyRow).join('') : '<div class="empty-state">Nenhuma empresa encontrada.</div>';
     }
@@ -939,9 +969,16 @@
       document.getElementById('dashboardHealthyCount').textContent = allCompanies.filter(item => !item.active_process_id).length;
       document.getElementById('dashboardActiveCount').textContent = allCompanies.filter(item => statusGroup(item) === 'active').length;
       document.getElementById('dashboardReportCount').textContent = allCompanies.filter(item => item.report_available).length;
-      const ranking = [...allCompanies].filter(item => item.exposure_estimated_cents > 0).sort((a, b) => b.exposure_estimated_cents - a.exposure_estimated_cents).slice(0, 5);
-      const top = ranking.length ? ranking[0].exposure_estimated_cents : 1;
-      document.getElementById('dashboardRanking').innerHTML = ranking.length ? ranking.map((item, index) => `<div class="rank-item${index === 0 ? ' rank-first' : ''}" onclick="openCompany(${item.id})"><div class="rank-pos">${index + 1}</div><div class="rank-name"><strong>${escapeHtml(item.trade_name || item.legal_name)}</strong><i class="rank-bar"><b style="width:${Math.max(4, Math.round(item.exposure_estimated_cents / top * 100))}%"></b></i></div><div class="rank-value"><strong>${brlPgdas(item.exposure_estimated_cents)}</strong></div></div>`).join('') : '<div class="no-data">Sem estimativas calculadas ainda.</div>';
+      const active = allCompanies.filter(item => statusGroup(item) === 'active').length;
+      document.getElementById('dashboardAlert').hidden = !active;
+      document.getElementById('dashboardAlertTitle').textContent = active === 1 ? 'Você possui 1 malha que precisa da sua atenção.' : `Você possui ${active} malhas que precisam da sua atenção.`;
+      // Ranking = a própria tabela, ordenada por impacto estimado (maior primeiro; sem estimativa por último).
+      const found = filterCompanies((document.getElementById('dashboardSearch').value || '').toLowerCase().trim(), document.getElementById('dashboardFilter').value)
+        .sort((a, b) => (b.exposure_estimated_cents || 0) - (a.exposure_estimated_cents || 0));
+      const head = '<div class="company-row dash company-head" role="row"><div>Empresa</div><div>Situação</div><div>Malhas</div><div>Impacto estimado</div><div>Última atualização</div><div></div></div>';
+      document.getElementById('dashboardPortfolio').innerHTML = found.length ? head + found.slice(0, 10).map(item => companyRow(item, true)).join('') : '<div class="empty-state">Nenhuma empresa encontrada.</div>';
+      document.getElementById('dashboardPortfolioCount').textContent = `${found.length} ${found.length === 1 ? 'empresa' : 'empresas'}`;
+      document.getElementById('dashboardSeeAll').hidden = found.length <= 10;
     }
 
     function renderMalhaIndex() {
@@ -1230,6 +1267,11 @@
         button.textContent = 'Excluir empresa';
       }
     });
+    document.getElementById('dashboardSearch').addEventListener('input', renderDashboard);
+    document.getElementById('dashboardFilter').addEventListener('change', renderDashboard);
+    document.getElementById('dashboardSeeAll').addEventListener('click', () => showAppPage('companies'));
+    document.getElementById('dashboardAlertButton').addEventListener('click', () => showAppPage('malhas'));
+    document.getElementById('dashboardNewCompany').addEventListener('click', () => { showAppPage('companies'); fillCompanyForm(); });
     document.getElementById('companySearch').addEventListener('input', renderCompanies);
     document.getElementById('companyFilter').addEventListener('change', renderCompanies);
     document.getElementById('companyPageSize').addEventListener('change', renderCompanies);

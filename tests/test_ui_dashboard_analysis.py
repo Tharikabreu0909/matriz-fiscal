@@ -17,9 +17,18 @@ def test_dashboard_has_no_regularization_concept():
     assert "regulariza" not in dashboard.lower()
 
 
-def test_dashboard_ranking_is_sorted_by_exposure_desc():
-    assert "b.exposure_estimated_cents - a.exposure_estimated_cents" in HTML
-    assert 'id="dashboardRanking"' in HTML
+def test_dashboard_portfolio_table_is_the_ranking_sorted_by_impact_desc():
+    assert 'id="dashboardRanking"' not in HTML  # sem ranking duplicado: a tabela e o ranking
+    assert "b.exposure_estimated_cents || 0) - (a.exposure_estimated_cents || 0)" in HTML
+    assert 'id="dashboardPortfolio"' in HTML and "Sua carteira de empresas" in HTML
+    assert "<div>Impacto estimado</div>" in HTML and "slice(0, 10)" in HTML
+    assert 'id="dashboardSearch"' in HTML and "filterCompanies(" in HTML
+
+
+def test_dashboard_alert_only_when_active_malhas():
+    assert 'id="dashboardAlert"' in HTML and "Ver malhas" in HTML
+    assert "document.getElementById('dashboardAlert').hidden = !active" in HTML
+    assert "Você possui 1 malha que precisa" in HTML and "malhas que precisam da sua atenção" in HTML
 
 
 def test_analysis_has_single_competence_list_with_type_badges():
