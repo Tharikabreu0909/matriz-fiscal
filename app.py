@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 import asyncio
 from io import BytesIO
@@ -14,6 +15,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from starlette.concurrency import run_in_threadpool
 
 from database import (
+    utc_now,
     DatabaseBusyError,
     create_process,
     create_company,
@@ -107,6 +109,7 @@ from services.backup_service import (
 )
 from services.support_bundle import create_support_bundle
 from services.app_logging import logger
+from services import fingerprints as fprint
 from services.runtime_paths import DATA_DIR, DOCUMENTS_DIR
 
 
@@ -289,6 +292,70 @@ def build_analysis_context(
         "tax_results": tax_results,
         "charge_results": charge_results,
         "analysis_summary": analysis_summary,
+    }
+
+
+def build_freshness(
+    process_id: int,
+    process: dict,
+    accepted_pgdas: list[dict],
+    scenario: str,
+    context: dict | None = None,
+    as_of_date: date | None = None,
+) -> dict:
+    """Estado de atualizacao do cenario. SOMENTE LEITURA: nada e gravado."""
+    context = context or build_analysis_context(process_id, process, accepted_pgdas)
+    analysis_fp = fprint.analysis_fingerprint(
+        process, accepted_pgdas, context["confirmations"], context["conclusions"]
+    )
+    tax_result = context["tax_results"].get(scenario)
+    charges_result = context["charge_results"].get(scenario)
+    # mesmo gating de calculate_tax: PGDAS do plano e meses vencidos cobertos
+    blocked = not calculate_initial_plan_status(process, accepted_pgdas)[
+        "analysis_requests_complete"
+    ]
+    current_tax_fp = None
+    try:
+        coverage = calculate_reflection_coverage(
+            accepted_pgdas,
+            build_scenario_confirmations(context["regularization_result"], scenario),
+            as_of_date,
+        )
+    except AccountingStudyError:
+        coverage = None
+    if coverage is not None:
+        blocked = blocked or not coverage["closed_months_complete"]
+        if tax_result is not None:
+            current_tax_fp = fprint.tax_fingerprint(
+                analysis_fp,
+                annex=(tax_result.get("configuration") or {}).get("annex", ""),
+                scenario=scenario,
+                standard_profile_confirmed=True,
+                calculation_end=coverage["actual_calculation_end"],
+                full_reflection_end=coverage["full_reflection_end"],
+                future_pending=coverage["future_pending_competences"],
+            )
+    state = fprint.freshness_state(
+        tax_result, charges_result, current_tax_fp, blocked, analysis_fp
+    )
+
+    def stamp(result):
+        return ((result or {}).get("input_fingerprint") or {}).get("calculated_at")
+
+    return {
+        "scenario": scenario,
+        "analysis": {
+            "state": "PENDENTE_DE_DADOS" if blocked else "ATUALIZADO",
+            "fingerprint": analysis_fp,
+        },
+        "tax": {**state["tax"], "calculated_at": stamp(tax_result)},
+        "charges": {
+            **state["charges"],
+            "calculated_at": stamp(charges_result),
+            "base_date": ((charges_result or {}).get("source") or {}).get("update_date"),
+        },
+        "report": {"can_emit": state["can_emit"], "message": state["message"]},
+        "block_code": state["block_code"],
     }
 
 
@@ -1312,7 +1379,10 @@ def system_support_bundle() -> FileResponse:
 
 
 @app.get("/api/process/{process_id}")
-def process_status(process_id: int) -> JSONResponse:
+def process_status(
+    process_id: int,
+    scenario: str = EXPOSURE_SCENARIO,
+) -> JSONResponse:
     try:
         process = get_process(process_id)
     except KeyError as error:
@@ -1384,6 +1454,9 @@ def process_status(process_id: int) -> JSONResponse:
         ],
         "latest_client_report": latest_client_report(
             process_id
+        ),
+        "freshness": build_freshness(
+            process_id, process, accepted_pgdas, scenario, context
         ),
     })
 
@@ -1880,6 +1953,23 @@ def calculate_tax(
             detail=str(error),
         ) from error
 
+    analysis_fp = fprint.analysis_fingerprint(
+        process, accepted_pgdas, context["confirmations"], context["conclusions"]
+    )
+    result["input_fingerprint"] = {
+        "version": 1,
+        "analysis": analysis_fp,
+        "tax": fprint.tax_fingerprint(
+            analysis_fp,
+            annex=annex,
+            scenario=scenario,
+            standard_profile_confirmed=request.standard_profile_confirmed,
+            calculation_end=reflection_coverage["actual_calculation_end"],
+            full_reflection_end=reflection_coverage["full_reflection_end"],
+            future_pending=reflection_coverage["future_pending_competences"],
+        ),
+        "calculated_at": utc_now(),
+    }
     save_tax_profile(
         process_id=process_id,
         scenario=scenario,
@@ -1929,6 +2019,9 @@ def calculate_tax(
         "regularization_result": refreshed[
             "regularization_result"
         ],
+        "freshness": build_freshness(
+            process_id, process, accepted_pgdas, scenario, refreshed
+        ),
     })
 
 
@@ -1971,6 +2064,13 @@ def calculate_legal_charges_endpoint(
 
     accepted_pgdas = list_accepted_pgdas(process_id)
 
+    fresh = build_freshness(process_id, process, accepted_pgdas, scenario)
+    if fresh["tax"]["state"] == "DESATUALIZADO":
+        return JSONResponse(
+            status_code=409,
+            content={"detail": fprint.PERIOD_ADVANCED_MESSAGE if fresh["tax"]["reason"] == "PERIOD_ADVANCED" else fprint.OUTDATED_MESSAGE, "code": "TAX_OUTDATED"},
+        )
+
     try:
         result = calculate_legal_charges(
             tax_result=tax_result,
@@ -1986,6 +2086,16 @@ def calculate_legal_charges_endpoint(
     result.setdefault("source", {})[
         "scenario"
     ] = scenario
+    base_date, selic_used, dues = fprint.charges_inputs(result)
+    tax_fp = (tax_result.get("input_fingerprint") or {}).get("tax")
+    result["input_fingerprint"] = {
+        "version": 1,
+        "tax": tax_fp,
+        "charges": fprint.charges_fingerprint(
+            tax_fp or "", update_date=base_date, selic_used=selic_used, dues=dues
+        ),
+        "calculated_at": utc_now(),
+    }
 
     calculation_id = save_legal_charge_calculation(
         process_id=process_id,
@@ -2023,6 +2133,9 @@ def calculate_legal_charges_endpoint(
         "analysis_summary": refreshed[
             "analysis_summary"
         ],
+        "freshness": build_freshness(
+            process_id, process, accepted_pgdas, scenario, refreshed
+        ),
     })
 
 
@@ -2080,30 +2193,24 @@ def client_report(
         selected_scenario,
     )
 
-    if tax_result is None:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Calcule primeiro o imposto e os reflexos "
-                "do cenário selecionado."
-            ),
-        )
-
-    if legal_charges is None:
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Calcule primeiro a multa e os juros "
-                "do cenário selecionado."
-            ),
-        )
-
     accepted_pgdas = list_accepted_pgdas(process_id)
     context = build_analysis_context(
         process_id,
         process,
         accepted_pgdas,
     )
+    freshness = build_freshness(
+        process_id, process, accepted_pgdas, selected_scenario, context
+    )
+
+    if freshness["block_code"]:
+        return JSONResponse(
+            status_code=409,
+            content={
+                "detail": freshness["report"]["message"],
+                "code": freshness["block_code"],
+            },
+        )
 
     analysis_for_report = {
         "summary": context["analysis_result"]["summary"],

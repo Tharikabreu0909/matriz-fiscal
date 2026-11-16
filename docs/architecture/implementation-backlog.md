@@ -62,7 +62,7 @@
 | F3-02 | `UNIQUE(process_id, sha256)` em `pgdas_documents` com saneamento das duplicatas | M | Reenvio do mesmo PDF → "repetido ignorado" |
 | F3-03 | Extrair `declaration_number` e `transmitted_at` no leitor e definir a precedência por eles | M | Caso de regressão original × retificadora em ordem inversa produz a mesma RBT12 |
 | F3-04 | Cache SQLite da Selic + valores mensais gravados no snapshot + paginação de 10 anos | M | Cálculo offline com meses em cache; reprodução idêntica |
-| F3-05 | `input_fingerprint` e `rule_versions` no cálculo; bloquear relatório desatualizado | M | Upload posterior de PGDAS → relatório bloqueado com aviso |
+| F3-05 ✅ | `input_fingerprint` e `rule_versions` no cálculo; bloquear relatório desatualizado (T08 concluída: `input_fingerprint.version` e `RULES`, sem campo `rule_versions` separado) | M | Upload posterior de PGDAS → relatório bloqueado com aviso. Ver `t08-fingerprints.md`. |
 | F3-06 | Decisões humanas append-only (`analysis_decision`) | M | O histórico de decisões fica visível; a decisão em vigor é a mais recente |
 | F3-07 | Conferência Tipo 01 × PGDAS exibida (sem imposto) | M | Divergência é exibida na análise; nenhum valor entra no cálculo |
 | F3-08 | (Se aprovado em D1) Situação do PGDAS, 1.44 | M | Testes 1.44 restaurados e verdes |

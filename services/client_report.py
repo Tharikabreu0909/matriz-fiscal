@@ -5,8 +5,14 @@ from html import escape
 from typing import Any
 
 
-# Textos novos do aviso de competência não calculada (redação sujeita a aprovação).
-MISSING_NOT_CALCULATED = "Não calculado: faltam PGDAS que cubram {faixa}"
+# Competência não calculada: nunca "R$ 0,00" (redação aprovada pelo responsável, T08 §3).
+MISSING_TITLE = "Cálculo pendente de documentação"
+MISSING_DETAIL = (
+    "Não foi possível concluir a estimativa desta competência porque faltam informações de "
+    "faturamento de períodos anteriores. O valor será atualizado após a apresentação dos "
+    "documentos necessários e uma nova análise."
+)
+MISSING_RANGE = "faltam PGDAS que cubram {faixa}"
 MISSING_NOTICE = (
     "Algumas competências não foram calculadas porque faltam PGDAS que cubram "
     "os 12 meses anteriores a elas. Envie os PGDAS solicitados no plano e "
@@ -313,8 +319,11 @@ def competence_table_rows(
 ) -> str:
     rendered: list[str] = []
     not_calculated = {
-        item["competence"]: MISSING_NOT_CALCULATED.format(
-            faixa=compact_competences(item["missing_competences"])
+        item["competence"]: (
+            f"<strong>{escape(MISSING_TITLE)}</strong><br>{escape(MISSING_DETAIL)}<br>"
+            + escape(MISSING_RANGE.format(
+                faixa=compact_competences(item["missing_competences"])
+            ))
         )
         for item in missing_months or []
     }
@@ -329,8 +338,8 @@ def competence_table_rows(
             <tr>
               <td class="competence">{escape(row["competence"])}</td>
               <td><ul>{actions}</ul></td>
-              <td class="money">{brl(row["tax_increment_cents"])}</td>
-              <td class="money">{escape(not_calculated[row["competence"]]) if row["competence"] in not_calculated else brl(row["updated_total_cents"])}</td>
+              <td class="money">{"—" if row["competence"] in not_calculated else brl(row["tax_increment_cents"])}</td>
+              <td class="money">{not_calculated[row["competence"]] if row["competence"] in not_calculated else brl(row["updated_total_cents"])}</td>
             </tr>
             """
         )

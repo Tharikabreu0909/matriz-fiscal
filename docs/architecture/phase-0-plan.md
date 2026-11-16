@@ -269,3 +269,11 @@ Nenhuma contradição foi encontrada em `api-catalog.md`, `company-registry.md`,
 - **Aceite:** zero erros de coleta por `httpx`; a suíte roda sem nenhuma variável de ambiente manual; o banco real fica intocado (item 4).
 
 Em seguida, a **T02**, com os 6 vetores de §2.4 como testes de aceitação.
+
+## 10. T08: concluída
+
+- **O que foi feito:** fingerprints de análise, imposto e encargos (`services/fingerprints.py`), estados `ATUALIZADO` / `DESATUALIZADO` / `PENDENTE_DE_DADOS` / `NAO_CALCULADO`, bloqueio do relatório (409 `CALCULATION_OUTDATED`) e dos encargos (409 `TAX_OUTDATED`). Detalhes em `t08-fingerprints.md`.
+- **Testes:** 36 novos (`test_t08_fingerprints.py`, `test_t08_api.py`, `test_t08_flow.py`), todos passando. Suíte geral: 325 passam e 33 falham, as mesmas 33 da baseline (ver `t08-test-report.md`).
+- **Divergências do plano:** o módulo ficou em `services/fingerprints.py` (o plano citava `services/process_fingerprint.py`). Não há `rule_versions` gravado; a versão das regras vai em `input_fingerprint.version` e nas constantes `RULES`.
+- **Limites:** a Selic publicada depois do cálculo não é detectada offline (depende do cache de F3-04). O estado depende da data de hoje, e os testes de API fixam a data.
+- **Próximo:** T09 e T11 (dependências em `t08-t09-t11-dependencias.md`). Upload e confirmação não invalidam nada: só mudam o estado.
