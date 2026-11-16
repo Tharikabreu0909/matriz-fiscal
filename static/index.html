@@ -909,6 +909,7 @@
     }
 
     function companyRow(company, dash = false) {
+      dash = dash === true;
       const [label, klass] = statusLabel(company.process_status);
       const group = statusGroup(company);
       let action = company.active_process_id ? 'Continuar' : 'Incluir malha';
@@ -938,7 +939,7 @@
       const size = Number(document.getElementById('companyPageSize')?.value || 10);
       const filtered = filterCompanies(query, filter).slice(0, size);
       const head = '<div class="company-row company-head" role="row"><div>Empresa</div><div>Situação</div><div>Malhas</div><div>Última atualização</div><div></div></div>';
-      grid.innerHTML = filtered.length ? head + filtered.map(companyRow).join('') : '<div class="empty-state">Nenhuma empresa encontrada.</div>';
+      grid.innerHTML = filtered.length ? head + filtered.map(company => companyRow(company)).join('') : '<div class="empty-state">Nenhuma empresa encontrada.</div>';
     }
 
     function refreshWorkspaceFromOverview() {

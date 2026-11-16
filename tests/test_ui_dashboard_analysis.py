@@ -43,6 +43,8 @@ def test_dashboard_dropped_recent_movements_and_portfolio_is_a_table():
     assert 'id="dashboardRecent"' not in HTML
     assert "Movimentações recentes" not in HTML
     assert "function companyRow" in HTML and "Última atualização" in HTML
+    assert "filtered.map(company => companyRow(company))" in HTML
+    assert "dash = dash === true" in HTML
 
 
 def test_analysis_has_five_indicators_side_summary_and_header_actions():
