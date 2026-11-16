@@ -15,6 +15,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from starlette.concurrency import run_in_threadpool
 
 from database import (
+    utc_now,
     DatabaseBusyError,
     create_process,
     create_company,
