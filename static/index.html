@@ -590,6 +590,7 @@
               </div>
 
               <div class="stage-message" id="calculationMessage" role="status" aria-live="polite"></div>
+              <div class="stage-message freshness-banner" data-freshness-banner role="status" hidden></div>
 
               <section class="estimate-summary-panel compact-estimate-summary" id="estimateSummaryPanel">
                 <div class="compact-summary-heading">
@@ -704,6 +705,7 @@
                   <p class="sub">Uma apresentação simples, separada da memória técnica do contador.</p>
                 </div>
               </div>
+              <div class="stage-message freshness-banner" data-freshness-banner role="status" hidden></div>
               <div class="report-box">
                 <div>
                   <h3>Relatório de exposição fiscal pronto</h3>
@@ -1180,6 +1182,7 @@
       const tax = payload.tax_calculations?.CONSERVATIVE_FISCAL_EXPOSURE;
       const charges = payload.legal_charge_calculations?.CONSERVATIVE_FISCAL_EXPOSURE;
       if (tax) renderTaxResult(tax); if (charges) renderLegalCharges(charges);
+      applyFreshness(payload.freshness);
       renderHistory(payload.events || []);
       await loadStoredDocuments();
       updateWorkspaceOverview(payload);
@@ -1699,7 +1702,25 @@ CFDF: ${malhaRegistration}
       button.disabled = !enabled;
       button.classList.toggle('complete', complete);
       const id = { malha: 'stepStatusMalha', documents: 'stepStatusDocuments', analysis: 'stepStatusAnalysis', calculation: 'stepStatusCalculation', report: 'stepStatusReport', history: 'stepStatusHistory' }[step];
-      const label = document.getElementById(id); if (label) label.textContent = status;
+      const label = document.getElementById(id);
+      if (label) label.textContent = freshnessOutdated && (step === 'calculation' || step === 'report') ? 'Desatualizado' : status;
+    }
+
+    let freshnessOutdated = false;
+    // T08: avisa cálculo desatualizado e impede abrir relatório que a API recusaria (409).
+    function applyFreshness(f) {
+      if (!f) return;
+      freshnessOutdated = f.tax.state === 'DESATUALIZADO' || f.charges.state === 'DESATUALIZADO';
+      document.querySelectorAll('[data-freshness-banner]').forEach(el => {
+        el.hidden = !freshnessOutdated;
+        el.classList.toggle('visible', freshnessOutdated);
+        el.textContent = freshnessOutdated ? (f.report.message || '') : '';
+      });
+      const open = document.getElementById('openClientReport');
+      if (open) { open.disabled = !f.report.can_emit; open.title = f.report.can_emit ? '' : (f.report.message || ''); }
+      if (freshnessOutdated) {
+        for (const id of ['stepStatusCalculation', 'stepStatusReport']) document.getElementById(id).textContent = 'Desatualizado';
+      }
     }
 
     function updateGuidedJourney() {
@@ -3001,6 +3022,7 @@ CFDF: ${malhaRegistration}
         );
         setAnalysisTabEnabled('memory', true);
         setAnalysisTabEnabled('report', true);
+        applyFreshness(chargesPayload.freshness);
         document.getElementById(
           'legalChargesSection'
         ).style.display = 'block';
