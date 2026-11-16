@@ -593,6 +593,7 @@
               <div class="stage-message freshness-banner" data-freshness-banner role="status" hidden></div>
 
               <section class="estimate-summary-panel compact-estimate-summary" id="estimateSummaryPanel">
+                <small class="estimate-outdated-label">Valores do último cálculo</small>
                 <div class="compact-summary-heading">
                   <div>
                     <span>Resultado</span>
@@ -1714,6 +1715,7 @@ CFDF: ${malhaRegistration}
       document.querySelectorAll('[data-freshness-banner]').forEach(el => {
         el.hidden = !freshnessOutdated;
         el.classList.toggle('visible', freshnessOutdated);
+        document.getElementById('estimateSummaryPanel')?.classList.toggle('is-outdated', freshnessOutdated);
         el.textContent = freshnessOutdated ? (f.report.message || '') : '';
       });
       const open = document.getElementById('openClientReport');
