@@ -1703,15 +1703,13 @@ CFDF: ${malhaRegistration}
       button.disabled = !enabled;
       button.classList.toggle('complete', complete);
       const id = { malha: 'stepStatusMalha', documents: 'stepStatusDocuments', analysis: 'stepStatusAnalysis', calculation: 'stepStatusCalculation', report: 'stepStatusReport', history: 'stepStatusHistory' }[step];
-      const label = document.getElementById(id);
-      if (label) label.textContent = freshnessOutdated && (step === 'calculation' || step === 'report') ? 'Desatualizado' : status;
+      const label = document.getElementById(id); if (label) label.textContent = status;
     }
 
-    let freshnessOutdated = false;
     // T08: avisa cálculo desatualizado e impede abrir relatório que a API recusaria (409).
     function applyFreshness(f) {
       if (!f) return;
-      freshnessOutdated = f.tax.state === 'DESATUALIZADO' || f.charges.state === 'DESATUALIZADO';
+      const freshnessOutdated = f.tax.state === 'DESATUALIZADO' || f.charges.state === 'DESATUALIZADO';
       document.querySelectorAll('[data-freshness-banner]').forEach(el => {
         el.hidden = !freshnessOutdated;
         el.classList.toggle('visible', freshnessOutdated);
@@ -1720,9 +1718,6 @@ CFDF: ${malhaRegistration}
       });
       const open = document.getElementById('openClientReport');
       if (open) { open.disabled = !f.report.can_emit; open.title = f.report.can_emit ? '' : (f.report.message || ''); }
-      if (freshnessOutdated) {
-        for (const id of ['stepStatusCalculation', 'stepStatusReport']) document.getElementById(id).textContent = 'Desatualizado';
-      }
     }
 
     function updateGuidedJourney() {
