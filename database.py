@@ -143,10 +143,51 @@ def _run_migrations(connection: sqlite3.Connection) -> None:
         """,
         (utc_now(),),
     )
-    connection.execute("PRAGMA user_version = 2")
+    # Nunca rebaixa nem reescreve quando já está atual (DEF-002).
+    if connection.execute("PRAGMA user_version").fetchone()[0] < SCHEMA_VERSION:
+        connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
+
+
+SCHEMA_VERSION = 2  # versão de esquema que este código entende
+
+
+class DatabaseSchemaTooNewError(RuntimeError):
+    """O banco foi criado por uma versão mais nova do aplicativo."""
+
+
+def read_user_version(path: Path) -> int:
+    """user_version sem escrever nada (0 se o arquivo não existir ou estiver vazio).
+
+    Sem -wal pendente, lê o cabeçalho (bytes 60-63): abrir um banco WAL pelo
+    SQLite, mesmo somente leitura, criaria -wal/-shm. Com -wal pendente os
+    arquivos já existem e a leitura pelo SQLite não cria nada novo.
+    """
+    path = Path(path)
+    if not path.exists() or path.stat().st_size == 0:
+        return 0
+    wal = path.with_name(path.name + "-wal")
+    if not (wal.exists() and wal.stat().st_size > 0):
+        with open(path, "rb") as handle:
+            header = handle.read(64)
+        return int.from_bytes(header[60:64], "big") if len(header) == 64 else 0
+    raw = sqlite3.connect(f"file:{path.as_posix()}?mode=ro", uri=True)
+    try:
+        return int(raw.execute("PRAGMA user_version").fetchone()[0])
+    finally:
+        raw.close()
 
 
 def init_db() -> None:
+    # Sondagem sem escrita, antes de qualquer connect() (que ativa WAL e escreve).
+    found = read_user_version(DB_PATH)
+    if found > SCHEMA_VERSION:
+        raise DatabaseSchemaTooNewError(
+            f"O banco de dados tem versão de esquema {found}, mas esta versão do "
+            f"aplicativo entende até a {SCHEMA_VERSION}. Use a versão mais recente "
+            "do aplicativo ou restaure um backup compatível."
+        )
+    if found == SCHEMA_VERSION:
+        return  # já atual: não abre transação de escrita
     with connect() as connection:
         connection.executescript(
             """
