@@ -186,6 +186,9 @@ for _root in PROTECTED_ROOTS:
 
 os.environ["CHECKFISCAL_DATA_DIR"] = str(TEST_DATA_DIR)
 os.environ["CHECKFISCAL_DB_PATH"] = str(TEST_DB_PATH)
+# T02: o TestClient envia Host "testserver". A variável é ADITIVA aos hosts
+# padrão do guard e só existe na suíte; em produção ela não é definida.
+os.environ["CHECKFISCAL_ALLOWED_HOSTS"] = "testserver"
 # Fallbacks de runtime_paths e de subprocessos também caem no diretório de teste.
 os.environ["LOCALAPPDATA"] = str(TEST_ROOT / "localappdata")
 os.environ["APPDATA"] = str(TEST_ROOT / "appdata")
