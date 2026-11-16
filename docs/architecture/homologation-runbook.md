@@ -228,3 +228,12 @@ Nenhuma. Não encontrei erro de digitação óbvio. Os passos não foram alterad
 | P8 deleções antes do ff | **Verificado por simulação**: ` D` é esperado, o ff conclui e restaura os arquivos; checagem de `git status` adicionada antes do passo 3 |
 | P9 URI do SQLite no Windows | **Verificado**: `file:C:\…`, `Path.as_posix()` e `Path.as_uri()` funcionam, inclusive com espaço no caminho; nada a mudar |
 | 0c estado da pasta operacional | **Verificado pelo Maestro** (seção 0 e relatório de homologação); fora do papel da QA, que continua sem acesso |
+
+## 12. Efeito esperado nos dados existentes: correção de cobertura (planejador 2.5.0)
+Validado em 16/11 sobre uma **cópia** do banco real (nada foi gravado no banco operacional):
+- Ao **abrir** um processo existente, o plano é recalculado (a versão do planejador mudou de 2.4.0 para 2.5.0). No processo 1 o plano passa de 4 para **5 pedidos**: surge um PGDAS **PA 06/2025** (janela 01/2024 a 06/2025, cobre 06 a 12/2024). Os 5 PGDAS já aceitos continuam aceitos.
+- Até o usuário enviar esse PGDAS, o relatório mostra, nas competências sem cálculo, **"Não calculado: faltam PGDAS que cubram …"** no lugar de R$ 0,00, com uma frase de aviso. Os números do relatório não mudam por causa disso (a soma da tabela de DAS foi idêntica antes e depois, R$ 4.319,30).
+- O envio em lote passa a **aceitar** o extrato de PA 06/2025 (com o plano antigo ele era recusado como `NOT_REQUESTED`). Depois de enviado e recalculado, entram 07 a 12/2025 e a diferença de DAS (imposto direto + reflexos) vai de R$ 4.319,30 para R$ 5.161,44.
+- **Atenção:** multa e juros gravados **não** se recalculam sozinhos quando o imposto é recalculado (o plano da Fase 0 prevê o `input_fingerprint` na T08, ainda não feito). Depois de recalcular o imposto, recalcule também os encargos antes de gerar o relatório.
+- Critério adicional do passo 7: abrir o processo 1 e conferir que o plano é 2.5.0, `VALID`, e pede o PA 06/2025.
+- A redação do aviso "Não calculado" depende de aprovação do responsável (caso C13).
