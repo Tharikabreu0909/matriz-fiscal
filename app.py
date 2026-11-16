@@ -335,7 +335,9 @@ def build_freshness(
                 full_reflection_end=coverage["full_reflection_end"],
                 future_pending=coverage["future_pending_competences"],
             )
-    state = fprint.freshness_state(tax_result, charges_result, current_tax_fp, blocked)
+    state = fprint.freshness_state(
+        tax_result, charges_result, current_tax_fp, blocked, analysis_fp
+    )
 
     def stamp(result):
         return ((result or {}).get("input_fingerprint") or {}).get("calculated_at")
@@ -2062,10 +2064,11 @@ def calculate_legal_charges_endpoint(
 
     accepted_pgdas = list_accepted_pgdas(process_id)
 
-    if build_freshness(process_id, process, accepted_pgdas, scenario)["tax"]["state"] == "DESATUALIZADO":
+    fresh = build_freshness(process_id, process, accepted_pgdas, scenario)
+    if fresh["tax"]["state"] == "DESATUALIZADO":
         return JSONResponse(
             status_code=409,
-            content={"detail": fprint.OUTDATED_MESSAGE, "code": "TAX_OUTDATED"},
+            content={"detail": fprint.PERIOD_ADVANCED_MESSAGE if fresh["tax"]["reason"] == "PERIOD_ADVANCED" else fprint.OUTDATED_MESSAGE, "code": "TAX_OUTDATED"},
         )
 
     try:
