@@ -18,6 +18,14 @@
 | P0-7 | **Precedência inconsistente entre retificadora e original** | `tax_engine.build_revenue_timeline` (`:142–167`) e `analysis_engine.build_revenue_index` (`:25–49`): no histórico **o primeiro documento enviado vence**; no PA corrente, **o último vence**. `pgdas_documents` não guarda a versão da declaração | O PGDAS original de 03/2025 é enviado primeiro e a retificadora depois. O histórico de 02/2025 continua sendo o do original, e a RBT12 sai errada | Ordenar por data de transmissão da declaração (já extraída do PDF; confirmar o campo) e registrar original × retificadora |
 | P0-8 | **Mesmo PGDAS aceito em duplicidade** | `/api/upload-pgdas` sempre insere (`database.save_pgdas_document`), sem `UNIQUE` | Duplicatas não mudam o índice hoje, mas inflam as contagens e combinam com P0-7 | `UNIQUE(process_id, sha256)` em uma migração aditiva, com tratamento das duplicatas existentes |
 
+## Status de mitigação (Fase 0, 16/11/2026)
+
+| ID | Status | Residual |
+|---|---|---|
+| **P0-S1** (CSRF / DNS rebinding na restauração e escrita) | **Mitigado** na T02 (`services/request_guard.py`, `phase0/integration`). Vetores de §2.4 do plano cobertos por testes | Trava só por processo; `Host` duplicado valida o primeiro; WebSocket não checado (app não tem rota); `https` bloqueado como `Origin` (ajustar se houver proxy TLS); navegador sem `Sec-Fetch-*` e GET sem `Origin` passam só pela regra de `Host`. Ver [t02-implementation.md](t02-implementation.md) |
+| **DEF-001** (conexões SQLite não fechadas; restauração insegura) | **Corrigido** na T03 (`048aef5`) | Trava por processo (não multi-processo); documentos trocados por `rename` com pastas `.new`/`.old`. Ver [t03-sqlite-connections.md](t03-sqlite-connections.md) |
+| P0-1 a P0-8 (fiscais e de integridade) | **Não tratados** (T04 em diante) | — |
+
 ## P1 — Segurança
 
 | ID | Risco | Evidência | Mitigação |

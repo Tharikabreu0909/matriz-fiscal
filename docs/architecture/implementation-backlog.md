@@ -9,8 +9,8 @@
 |---|---|---|---|
 | F0-01 | Decidir D1 a D4 (`migration-plan.md`) e registrar em `jarvis_docs/activeContext.md` | P | Decisões escritas e datadas |
 | F0-02 | Criar a tag `baseline-1.41-bf35530` | P | A tag existe no remoto |
-| F0-03 | Adicionar `httpx` e `pytest-cov` a `requirements-dev.txt` | P | Zero erros de coleta por `httpx` |
-| F0-04 | `tests/conftest.py` com fixture `autouse` que define `CHECKFISCAL_DATA_DIR` e `CHECKFISCAL_DB_PATH` em `tmp_path` **antes** de importar `database` | P | Rodar a suíte não cria nem altera nada em `%LOCALAPPDATA%\CheckFiscal` (verificar o mtime) |
+| F0-03 | Adicionar `httpx` e `pytest-cov` a `requirements-dev.txt` | P | **PARCIAL:** `httpx==0.28.1` feito (T01); `pytest-cov` não adicionado. Zero erros de coleta por `httpx` |
+| F0-04 | `tests/conftest.py` com fixture `autouse` que define `CHECKFISCAL_DATA_DIR` e `CHECKFISCAL_DB_PATH` em `tmp_path` **antes** de importar `database` | P | **FEITO (T01, `0a1b7e6`/`4b496c7`).** Rodar a suíte não cria nem altera nada em `%LOCALAPPDATA%\CheckFiscal` (verificar o mtime) |
 | F0-05 | Versionar PDFs **sanitizados** (malha de 1 e de 2 páginas; extrato; declaração) em `tests/fixtures/pdf/` e trocar `/mnt/data/...` | M | Nenhum teste referencia `/mnt/data`; `test_v143` usa a fixture e **falha** no HEAD atual |
 | F0-06 | Trocar os `return` silenciosos por `pytest.skip("motivo")` ou por falha | P | `grep -n "return$" tests` não encontra guarda de fixture |
 | F0-07 | Restaurar a leitura de avisos multipágina (`64c9578:readers/malha_reader.py`) | M | `raw_rows` traz as linhas da página 2 com `page = 2`; teste novo de continuação de tipo entre páginas |
@@ -23,6 +23,8 @@
 | F0-14 | Remover o teste de hash de arquivo-fonte (`test_tax_calculator_files_were_not_changed`) e substituí-lo por casos de regressão fiscal | P | Mudança de CRLF não quebra a suíte |
 | F0-15 | Corrigir `checkfiscal.spec` (`hiddenimports` com `app`, `database`, `readers.*`, `services.*`) e validar o build no Windows | M | O executável responde em `/api/health` em uma VM limpa |
 | F0-16 | Primeiros 3 casos de regressão fiscal aprovados por contador (Tipo 17 simples; Tipo 17 com reflexo; só Tipo 01) | M | `tests/regression/cases/*/expected.json` assinados |
+| T02 | Middleware Host/Origin/Sec-Fetch-Site (P0-S1), plano §6 | P | **FEITO** (`2974e87`, `e1f1c0b`, `0eba842`, `79ded57`). Ver [t02-implementation.md](t02-implementation.md) |
+| T03 | Conexões SQLite sempre fechadas; restauração segura (DEF-001) | P | **FEITO** (`048aef5`). Ver [t03-sqlite-connections.md](t03-sqlite-connections.md). Divergência do plano: 409 em vez de `restart_required` |
 
 ## Fase 1 — Fundação
 

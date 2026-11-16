@@ -192,6 +192,8 @@ Os testes "bloquear" ficam marcados `xfail(strict=True)` até a T02; os "permiti
 
 ### DEF-001: conexões SQLite fechadas só pelo coletor de lixo; restauração falha (Windows) ou fica insegura (Linux)
 
+**Status: CORRIGIDO na T03 (`048aef5`).** Ver [t03-sqlite-connections.md](t03-sqlite-connections.md). `gc.collect()` removido do canário.
+
 - **Evidência:** `test_commercial_hardening.py::test_backup_and_restore_preserve_database_and_documents` falha com `PermissionError [WinError 32]` ao apagar `checkfiscal.db-wal` (`backup_service.py:122`). Sonda isolada: 2 objetos `sqlite3.Connection` vivos; a restauração só funciona após `gc.collect()`, que deixa 1.
 - **Causa:** `database.connect()` é usado como `with connect() as connection:`. O gerenciador de contexto do `sqlite3.Connection` faz **commit/rollback, mas não fecha**. O fechamento depende do coletor, e ciclos de referência atrasam esse fechamento.
 - **Efeito:** no Windows, a restauração com o servidor ativo falha com 500. No Linux/Docker, `unlink` do `-wal` com conexões abertas é permitido: conexões remanescentes podem escrever num WAL órfão, e há risco de perda ou corrupção após a restauração.
@@ -199,6 +201,8 @@ Os testes "bloquear" ficam marcados `xfail(strict=True)` até a T02; os "permiti
 - **Paliativo atual:** `gc.collect()` em `tests/test_t01_isolation.py` (canário), apenas para testar o destino da restauração. **Não é solução**: remover quando o DEF-001 for corrigido.
 
 ### DEF-002: `init_db()` grava a cada import e rebaixa `user_version`
+
+**Status: PENDENTE** (não tratado na T02 nem na T03).
 
 - **Evidência:** §1 (contador 2 → 3 → 4; `user_version` 3 → 2).
 - **Correção proposta (Fase 0, junto da T13, ou Fase 1):** `init_db()` explícito no startup (não no import); `user_version` só é **elevado**, nunca rebaixado; abortar com mensagem clara se o banco for mais novo que o código.
@@ -208,8 +212,8 @@ Os testes "bloquear" ficam marcados `xfail(strict=True)` até a T02; os "permiti
 1. `docker compose ps` mostra o serviço `checkfiscal` **parado**, ou existe evidência de que nenhum container monta este repositório **e** `checkfiscal_data/` ao mesmo tempo.
 2. Cópia fria de `checkfiscal_data/` fora do repositório, com manifesto SHA-256 conferido.
 3. Hash de referência de `checkfiscal_data/checkfiscal.db` registrado (C3).
-4. Suíte da T01: 0 violações, 0 arquivos reais alterados, mesmos 141/33/1.
-5. Testes da §6 materializados: "bloquear" vermelhos (xfail estrito), "permitir" verdes.
-6. Decisões tomadas: portas e hosts permitidos (8141 e/ou 8145); política para GET somente leitura vindo de outro site (proposta: permitido, F4).
-7. DEF-001 e DEF-002 registrados (este documento) e fora do escopo da T02.
-8. Autorização explícita sua para a T02.
+4. Suíte da T01: 0 violações, 0 arquivos reais alterados, mesmos 141/33/1. *(Na execução atual: 0 violações, 0 arquivos reais alterados, 247 passam / 33 falham, 1 arquivo sem coleta. A contagem 141 é a do plano de 22/10 e não é comparável.)*
+5. **Atendido:** testes da §6 materializados (`tests/test_t02_*.py`; xfail removido em `0eba842`); "bloquear" verdes, "permitir" verdes.
+6. **Atendido:** portas 8141/8145/8146 com host 127.0.0.1/localhost; sem token nem interruptor; GET cross-site permitido só em `/`, `/static/app.css` e `/api/health`. Detalhes em [t02-implementation.md](t02-implementation.md).
+7. **Atendido:** DEF-001 corrigido na T03; DEF-002 registrado e pendente, fora do escopo da T02.
+8. Autorização explícita sua para a T02. *(Concedida e executada; ver [t02-implementation.md](t02-implementation.md).)*

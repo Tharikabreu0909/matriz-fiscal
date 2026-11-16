@@ -1,8 +1,18 @@
 # Fase 0 — Estabilização e recuperação da confiabilidade fiscal
 
-> Plano de 22/10/2026, sobre `bf35530` (branch `fix/arquitetura`). **Nada foi implementado.**
+> Plano de 22/10/2026, sobre `bf35530` (branch `fix/arquitetura`). Implementação parcial: ver **Status de execução** abaixo.
 > Base: comparação integral `git diff 64c9578 fe0679b` (19 arquivos, +100/−553) e releitura das rotas afetadas.
 > Decisões de entrada: restauração **seletiva**; sem migração de esquema; sem integrações externas; frontend intocado.
+
+---
+
+## Status de execução (16/11/2026)
+
+- **Branches locais `phase0/*`** (sem merge em `fix/arquitetura`, sem push). Integração: `phase0/integration` em `79ded57`.
+- **Concluídas:** T01 (`0a1b7e6`, `4b496c7`); C5 (`529fa2d`); T03 (`048aef5`, DEF-001 corrigido); T02 (`2974e87`, `e1f1c0b`, `0eba842`, `79ded57`).
+- **Pendentes:** T04 a T14, D1 a D4, casos fiscais C1 a C15, DEF-002, fixtures de PDF sanitizadas, mudanças de interface.
+- **Testes em `phase0/integration`:** alvo T01–T03 = 122 passam; suíte geral (`--ignore` do v145) = 247 passam / 33 falham; ordem invertida com a mesma lista de falhas; violações de isolamento = 0. Detalhes: [t02-implementation.md](t02-implementation.md), [t03-sqlite-connections.md](t03-sqlite-connections.md).
+- **Política de origem/host:** [security-policy.md](security-policy.md) (não duplicada aqui).
 
 ---
 
