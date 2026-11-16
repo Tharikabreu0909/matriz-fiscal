@@ -166,18 +166,17 @@
       </section>
 
       <section id="companyWorkspace" style="display:none">
-        <div class="workspace-commandbar-v139">
+        <div class="workspace-commandbar-v139 workspace-head">
+          <div class="workspace-title">
+            <h1 id="workspaceTitle">—</h1>
+            <p>CNPJ <span id="workspaceTitleCnpj">—</span><span class="version-pill">VERSÃO 1.41</span></p>
+          </div>
           <span id="workspaceCompanyName" hidden></span>
           <span id="workspaceCompanyCnpj" hidden></span>
-          <span class="version-pill">VERSÃO 1.41</span>
           <div class="workspace-actions">
             <span class="badge blue" id="workspaceStatusLabel">Saudável</span>
-            <button class="secondary" type="button" id="editCurrentCompany">
-              Editar empresa
-            </button>
-            <button class="danger-button" type="button" id="deleteCurrentCompany">
-              Excluir empresa
-            </button>
+            <button class="secondary" type="button" id="editCurrentCompany"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Editar empresa</button>
+            <button class="danger-button" type="button" id="deleteCurrentCompany"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Excluir empresa</button>
           </div>
         </div>
 
@@ -488,52 +487,48 @@
             </nav>
 
             <section class="analysis-summary analysis-panel" id="analysisSummarySection">
-              <div class="section-title">
-                <div>
-                  <h2>Competências analisadas</h2>
-                </div>
-              </div>
-
-              <section class="summary-primary-metrics simplified-summary-metrics">
-                <div class="summary-card">
-                  <span>Competências com ação</span>
-                  <strong id="summaryActionCount">0</strong>
-                </div>
-                <div class="summary-card">
-                  <span>Receita adicional potencial</span>
-                  <strong id="summaryAdditionalRevenue">R$ 0,00</strong>
-                </div>
-                <div class="summary-card highlight">
-                  <span>Exposição total estimada</span>
-                  <strong id="summaryUpdatedTotal">A calcular</strong>
-                </div>
+              <section class="analysis-kpis">
+              <div class="analysis-kpi"><i class="kpi-ico blue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><div><span>Competências analisadas</span><strong id="summaryCompetenceCount">0</strong><small><b id="summaryActionCount">0</b> com diferença</small></div></div>
+              <div class="analysis-kpi"><i class="kpi-ico amber"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2M12 16v2"/></svg></i><div><span>Diferença total (receita)</span><strong id="summaryAdditionalRevenue">R$ 0,00</strong></div></div>
+              <div class="analysis-kpi"><i class="kpi-ico red"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></i><div><span>Imposto estimado</span><strong id="summaryTax">A calcular</strong></div></div>
+              <div class="analysis-kpi"><i class="kpi-ico grey"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h5M3 10h18"/></svg></i><div><span>Total a recolher estimado</span><strong id="summaryUpdatedTotal">A calcular</strong></div></div>
+              <div class="analysis-kpi"><i class="kpi-ico blue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><div><span>Última competência</span><strong id="summaryLastCompetence">—</strong></div></div>
               </section>
 
-              <details class="financial-disclosure simplified-financial-disclosure">
-                <summary>Ver composição da estimativa</summary>
-                <div class="financial-disclosure-body">
-                  <section class="summary-financial">
-                    <div class="summary-card">
-                      <span>Diferença estimada de DAS</span>
-                      <strong id="summaryDirectTax">R$ 0,00</strong>
-                    </div>
-                    <div class="summary-card">
-                      <span>Reflexos posteriores</span>
-                      <strong id="summaryReflections">R$ 0,00</strong>
-                    </div>
-                    <div class="summary-card">
-                      <span>Multa e juros</span>
-                      <strong id="summaryCharges">R$ 0,00</strong>
-                    </div>
-                  </section>
+              <div class="analysis-layout">
+                <div class="analysis-main">
+                  <div class="section-title"><div><h2>Competências analisadas</h2></div></div>
+                  <div class="competence-list-head" aria-hidden="true"><span>Competência</span><span>Informado</span><span>Considerado</span><span>Diferença</span><span>Imposto</span><span>Situação</span></div>
+                  <div class="competence-list" id="analysisCompetenceList"></div>
 
-                  <div class="summary-note" id="summaryStageNote">
-                    Os valores serão preenchidos depois do cálculo completo.
-                  </div>
+                  <details class="financial-disclosure simplified-financial-disclosure" open>
+                    <summary>Ver composição da estimativa</summary>
+                    <div class="financial-disclosure-body">
+                      <table class="cost-table">
+                        <thead><tr><th>Descrição</th><th>Base de cálculo</th><th>Valor estimado</th></tr></thead>
+                        <tbody>
+                          <tr><td>Imposto (diferença de DAS)</td><td id="costBaseRevenue">—</td><td id="summaryDirectTax">A calcular</td></tr>
+                          <tr><td>Reflexos posteriores</td><td>—</td><td id="summaryReflections">A calcular</td></tr>
+                          <tr><td>Multa</td><td id="costBasePrincipalFine">—</td><td id="summaryFine">A calcular</td></tr>
+                          <tr><td>Juros (SELIC)</td><td id="costBasePrincipalInterest">—</td><td id="summaryInterest">A calcular</td></tr>
+                        </tbody>
+                        <tfoot><tr><td colspan="2">Total estimado</td><td id="costTotal">A calcular</td></tr></tfoot>
+                      </table>
+                      <p class="summary-note" id="summaryStageNote">Os valores serão preenchidos depois do cálculo completo.</p>
+                    </div>
+                  </details>
                 </div>
-              </details>
 
-              <div class="competence-list" id="analysisCompetenceList"></div>
+                <aside class="summary-side" aria-label="Resumo da análise">
+                  <h3>Resumo da análise</h3>
+                  <div class="side-row"><i class="kpi-ico amber"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2M12 16v2"/></svg></i><div><span>Diferença total (receita)</span><strong id="sideRevenue">R$ 0,00</strong></div></div>
+                  <div class="side-row"><i class="kpi-ico red"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></i><div><span>Imposto estimado</span><strong id="sideTax">A calcular</strong></div></div>
+                  <div class="side-row"><i class="kpi-ico blue"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2M12 16v2"/></svg></i><div><span>Juros (SELIC)</span><strong id="sideInterest">A calcular</strong></div></div>
+                  <div class="side-row"><i class="kpi-ico purple"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 13H5z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></i><div><span>Multa estimada</span><strong id="sideFine">A calcular</strong></div></div>
+                  <div class="side-row side-total"><i class="kpi-ico green"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h5M3 10h18"/></svg></i><div><span>Total a recolher estimado</span><strong id="sideTotal">A calcular</strong></div></div>
+                  <button class="primary" type="button" id="generateReportFromAnalysis" onclick="showWorkflowStep('report')" disabled><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Gerar relatório detalhado</button>
+                </aside>
+              </div>
             </section>
 
             <section class="tax-engine analysis-panel" id="taxEngineSection">
@@ -1016,7 +1011,7 @@
       Object.values(mapping).forEach(id => { const element = document.getElementById(id); if (element) { element.classList.remove('active'); element.style.display = 'none'; } });
       const target = document.getElementById(mapping[page] || mapping.dashboard);
       target.classList.add('active'); target.style.display = 'block';
-      document.querySelectorAll('[data-app-page]').forEach(button => button.classList.toggle('active', button.dataset.appPage === page));
+      document.querySelectorAll('[data-app-page]').forEach(button => button.classList.toggle('active', button.dataset.appPage === (page === 'workspace' ? 'companies' : page)));
       const titles = { dashboard: 'Visão geral da carteira', companies: 'Carteira de empresas', workspace: 'Painel fiscal da empresa', malhas: 'Processos de malha', reports: 'Relatórios e estimativas', history: 'Histórico da carteira', settings: 'Configurações' };
       document.getElementById('topbarTitle').textContent = titles[page] || titles.dashboard;
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1030,6 +1025,8 @@
       companyCnpjInput.value = formatCnpj(currentCompany.cnpj);
       document.getElementById('workspaceCompanyName').textContent = currentCompany.legal_name;
       document.getElementById('workspaceCompanyCnpj').textContent = formatCnpj(currentCompany.cnpj);
+      document.getElementById('workspaceTitle').textContent = currentCompany.legal_name;
+      document.getElementById('workspaceTitleCnpj').textContent = formatCnpj(currentCompany.cnpj);
       document.getElementById('contextCnpj').textContent = formatCnpj(currentCompany.cnpj);
       document.getElementById('contextLegalName').textContent = currentCompany.legal_name;
       document.getElementById('contextStateRegistration').textContent = currentCompany.state_registration || 'Não informado';
@@ -1633,6 +1630,7 @@ CFDF: ${malhaRegistration}
         return;
       }
       currentWorkflowStep = step;
+      document.getElementById('companyWorkspace').dataset.step = step;
       document.querySelectorAll('[data-workflow-screen]').forEach(screen => screen.classList.toggle('active', screen.dataset.workflowScreen === step));
       document.querySelectorAll('[data-workflow-step]').forEach(item => item.classList.toggle('active', item.dataset.workflowStep === step));
       // O nome da empresa já aparece no cabeçalho "Razão social"; a barra superior mostra só o contexto e a etapa.
@@ -2511,34 +2509,45 @@ CFDF: ${malhaRegistration}
       const metrics = summary.metrics;
       const financial = summary.financial;
 
-      document.getElementById('summaryActionCount').textContent =
-        metrics.action_competence_count;
-      document.getElementById('summaryAdditionalRevenue').textContent =
-        brlPgdas(financial.additional_revenue_cents);
-
-      const totalText = summary.stage.legal_charges_calculated
+      const competences = summary.competences || [];
+      const set = (id, text) => { document.getElementById(id).textContent = text; };
+      const taxDone = summary.stage.tax_calculated;
+      const chargesDone = summary.stage.legal_charges_calculated;
+      const calc = (cents, done) => done ? brlPgdas(cents) : 'A calcular';
+      const totalText = chargesDone
         ? brlPgdas(financial.updated_total_cents)
-        : (
-          summary.stage.tax_calculated
-            ? brlPgdas(financial.principal_cents)
-            : 'A calcular'
-        );
+        : (taxDone ? brlPgdas(financial.principal_cents) : 'A calcular');
+      const lastCompetence = competences.map(item => item.competence)
+        .sort((a, b) => a.split('/').reverse().join('').localeCompare(b.split('/').reverse().join('')))
+        .pop() || '—';
 
-      document.getElementById('summaryUpdatedTotal').textContent =
-        totalText;
-      document.getElementById('summaryDirectTax').textContent =
-        brlPgdas(financial.direct_tax_cents);
-      document.getElementById('summaryReflections').textContent =
-        brlPgdas(financial.reflection_tax_cents);
-      document.getElementById('summaryCharges').textContent =
-        brlPgdas(financial.charges_cents);
+      set('summaryCompetenceCount', competences.length);
+      set('summaryActionCount', metrics.action_competence_count);
+      set('summaryAdditionalRevenue', brlPgdas(financial.additional_revenue_cents));
+      set('summaryTax', calc(financial.principal_cents, taxDone));
+      set('summaryUpdatedTotal', totalText);
+      set('summaryLastCompetence', lastCompetence);
+      set('sideRevenue', brlPgdas(financial.additional_revenue_cents));
+      set('sideTax', calc(financial.principal_cents, taxDone));
+      set('sideInterest', calc(financial.interest_cents, chargesDone));
+      set('sideFine', calc(financial.fine_cents, chargesDone));
+      set('sideTotal', totalText);
+      set('summaryDirectTax', calc(financial.direct_tax_cents, taxDone));
+      set('summaryReflections', calc(financial.reflection_tax_cents, taxDone));
+      set('summaryFine', calc(financial.fine_cents, chargesDone));
+      set('summaryInterest', calc(financial.interest_cents, chargesDone));
+      set('costBaseRevenue', taxDone ? brlPgdas(financial.additional_revenue_cents) : '—');
+      set('costBasePrincipalFine', chargesDone ? brlPgdas(financial.principal_cents) : '—');
+      set('costBasePrincipalInterest', chargesDone ? brlPgdas(financial.principal_cents) : '—');
+      set('costTotal', totalText);
+      document.getElementById('generateReportFromAnalysis').disabled = !chargesDone;
 
       const note = document.getElementById('summaryStageNote');
 
-      if (summary.stage.legal_charges_calculated) {
+      if (chargesDone) {
         note.textContent =
           'Estimativa completa com imposto, reflexos, multa e juros.';
-      } else if (summary.stage.tax_calculated) {
+      } else if (taxDone) {
         note.textContent =
           'Imposto e reflexos calculados. A atualização será concluída automaticamente.';
       } else {
@@ -2547,20 +2556,29 @@ CFDF: ${malhaRegistration}
       }
 
       const list = document.getElementById('analysisCompetenceList');
-      const competences = summary.competences || [];
 
       list.innerHTML = competences.length
         ? competences.map(item => {
           const [label, statusClass] = summaryStatus(item.status);
           const types = item.types.map(typeBadge).join('') || 'Sem tipo';
+          // Na linha, o Tipo 17 (tributário) é o principal; o Tipo 01 aparece separado ao expandir. Nunca somados.
+          const primary = (item.crossings || []).find(row => row.crossing_type === '17') || (item.crossings || [])[0] || {};
+          const impact = (currentTaxResult?.visible_impacts || []).find(row => row.competence === item.competence);
+          const money = value => value == null ? '—' : brlPgdas(value);
 
           return `
           <details class="competence-accordion" name="competences"
             data-summary-competence="${item.competence}">
             <summary>
-              <span class="competence-chevron" aria-hidden="true"></span>
-              <strong class="competence-month">${item.competence}</strong>
-              <span class="competence-types">${types}</span>
+              <span class="competence-id">
+                <span class="competence-chevron" aria-hidden="true"></span>
+                <strong class="competence-month">${item.competence}</strong>
+                <span class="competence-types">${types}</span>
+              </span>
+              <span class="competence-num">${money(primary.informed_cents)}</span>
+              <span class="competence-num">${money(primary.considered_cents)}</span>
+              <span class="competence-num is-diff">${money(primary.divergence_cents)}</span>
+              <span class="competence-num">${impact ? brlPgdas(impact.difference_cents) : '—'}</span>
               <span class="summary-status ${statusClass}">${label}</span>
             </summary>
             <div class="competence-content">

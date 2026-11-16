@@ -34,3 +34,13 @@ def test_dashboard_dropped_recent_movements_and_portfolio_is_a_table():
     assert 'id="dashboardRecent"' not in HTML
     assert "Movimentações recentes" not in HTML
     assert "function companyRow" in HTML and "Última atualização" in HTML
+
+
+def test_analysis_has_five_indicators_side_summary_and_header_actions():
+    for label in ("Competências analisadas", "Diferença total (receita)", "Imposto estimado",
+                  "Total a recolher estimado", "Última competência"):
+        assert f"<span>{label}</span>" in HTML
+    assert "Resumo da análise" in HTML and "Gerar relatório detalhado" in HTML
+    assert 'id="workspaceTitle"' in HTML
+    assert "Editar empresa" in HTML and "Excluir empresa" in HTML
+    assert 'class="competence-list-head"' in HTML

@@ -7458,5 +7458,100 @@
     .rank-value { min-width: 130px; text-align: right }
     .company-row { grid-template-columns: minmax(0, 2.2fr) 1.1fr 1fr 1.1fr 200px }
     .company-row .badge { font-size: 12px; padding: 4px 10px }
-    /* Cliente: sem cartões de totais na análise; o total já está no topo do painel */
-    #analysisSummarySection .summary-primary-metrics { display: none !important }
+
+    /* ===== UI v2b: cabeçalho, stepper, indicadores, resumo e tabela da análise (ref. 3) ===== */
+    /* (a) Cabeçalho da empresa */
+    .workspace-head { display: flex !important; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px }
+    .workspace-title h1 { margin: 0; font-size: 24px; letter-spacing: .01em; text-transform: uppercase }
+    .workspace-title p { margin: 6px 0 0; color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 10px }
+    .workspace-head .version-pill { font-size: 11px; padding: 2px 8px }
+    .workspace-head .workspace-actions { display: flex; align-items: center; gap: 10px }
+    .workspace-head .workspace-actions .badge { font-size: 12px; padding: 5px 12px }
+    .workspace-head .workspace-actions button { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; font-size: 14px !important; font-weight: 600; border-radius: 10px; background: transparent; border: 1px solid #2a3750; color: var(--text) }
+    .workspace-head .workspace-actions button .ico { width: 17px; height: 17px }
+    .workspace-head .workspace-actions button:hover { background: #121b2b }
+    .workspace-head .workspace-actions .danger-button { color: #ff7d78; border-color: #6b2a2d; background: #2a1215 }
+    .workspace-head .workspace-actions .danger-button:hover { background: #3a181c }
+
+    /* (a) Stepper limpo: círculo + rótulo, linha tracejada, etapa ativa sublinhada */
+    #companyWorkspace #journeyStepper { display: flex !important; align-items: center; gap: 12px; padding: 0 20px !important; min-height: 60px; overflow: hidden; background: #0d1420; border: 1px solid #1d2738; border-radius: 14px }
+    #companyWorkspace #journeyStepper .step-connector { flex: 1 1 24px; min-width: 12px; height: 0 !important; width: auto !important; border: 0 !important; border-top: 1px dashed #2a3750 !important; background: none !important }
+    #companyWorkspace #journeyStepper > button { flex: none; display: inline-flex !important; align-items: center; gap: 10px; min-height: 58px; padding: 0 6px !important; background: transparent !important; border: 0 !important; border-bottom: 2px solid transparent !important; border-radius: 0 !important; box-shadow: none !important; color: var(--muted); font-size: 15px; cursor: pointer }
+    #companyWorkspace #journeyStepper > button small, #journeyStepper .step-icon-v146 { display: none !important }
+    #companyWorkspace #journeyStepper > button strong { font-size: 15px; font-weight: 600; color: inherit }
+    #companyWorkspace #journeyStepper .step-number { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #131c2b !important; color: var(--muted) !important; font-size: 13px; font-weight: 700; border: 1px solid #2a3750 }
+    #companyWorkspace #journeyStepper > button.active { color: #fff; border-bottom-color: var(--blue) !important }
+    #companyWorkspace #journeyStepper > button.active .step-number { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) }
+    #companyWorkspace #journeyStepper > button.complete .step-number { border-color: var(--green); color: var(--green) !important }
+    #companyWorkspace #journeyStepper > button:disabled { opacity: .55; cursor: not-allowed }
+    #companyWorkspace #journeyStepper > button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px }
+
+    /* Na análise, os indicadores próprios substituem os 4 cartões gerais da empresa */
+    #companyWorkspace[data-step="analysis"] .work-summary { display: none !important }
+
+    /* (b) 5 indicadores */
+    .analysis-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px }
+    .analysis-kpi { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #0d1420; border: 1px solid #1d2738; border-radius: 12px; min-width: 0 }
+    .analysis-kpi span { display: block; font-size: 13px; color: var(--muted) }
+    .analysis-kpi strong { display: block; margin-top: 3px; font-size: 20px; color: var(--text) }
+    .analysis-kpi small { display: block; margin-top: 2px; font-size: 12px; color: var(--green) }
+    .kpi-ico.amber { background: #332a12; color: var(--amber) }
+    .kpi-ico.grey { background: #182131; color: #aab4c5 }
+    .analysis-kpi .kpi-ico, .side-row .kpi-ico { flex: none }
+
+    /* (c)(d) Layout: lista à esquerda, resumo à direita */
+    .analysis-layout { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start }
+    .summary-side { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) }
+    .summary-side h3, .summary-side .primary { grid-column: 1 / -1 }
+    .side-total { border-top: 0 !important; padding-top: 0 !important }
+    @media (min-width: 1500px) {
+      .analysis-layout { grid-template-columns: minmax(0, 1fr) 300px }
+      .summary-side { grid-template-columns: 1fr }
+      .side-total { border-top: 1px solid #1d2738 !important; padding-top: 14px !important }
+    }
+    .analysis-main .section-title { margin: 0 0 10px }
+    .competence-list-head, #analysisStageContent .competence-accordion > summary { display: grid !important; grid-template-columns: minmax(190px, 1.5fr) repeat(4, minmax(0, 1fr)) 150px; gap: 12px; align-items: center }
+    .competence-list-head { padding: 0 18px 8px; font-size: 13px; color: var(--muted) }
+    .competence-list-head span:nth-child(n+2):nth-child(-n+5) { text-align: right }
+    .competence-list-head span:last-child { text-align: right }
+    #analysisStageContent .competence-id { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap }
+    #analysisStageContent .competence-id .competence-month { min-width: 0 }
+    #analysisStageContent .competence-num { text-align: right; font-size: 14px; color: var(--text); white-space: nowrap }
+    #analysisStageContent .competence-num.is-diff { color: var(--amber); font-weight: 600 }
+    #analysisStageContent .competence-accordion > summary .summary-status { margin-left: 0; justify-self: end }
+
+    .financial-disclosure { margin-top: 18px; background: #0d1420; border: 1px solid #1d2738; border-radius: 12px }
+    .financial-disclosure > summary { padding: 14px 18px; font-size: 15px; font-weight: 600; cursor: pointer }
+    .financial-disclosure-body { padding: 0 18px 16px }
+    .cost-table { width: 100%; border-collapse: collapse; font-size: 14px }
+    .cost-table th { text-align: left; color: var(--muted); font-weight: 500; font-size: 13px; padding: 6px 0 8px }
+    .cost-table td { padding: 9px 0; border-top: 1px solid #1d2738 }
+    .cost-table th:last-child, .cost-table td:last-child { text-align: right }
+    .cost-table tfoot td { font-weight: 700; font-size: 15px }
+    .cost-table #summaryDirectTax, .cost-table #summaryReflections, .cost-table #summaryFine, .cost-table #summaryInterest { color: #ff7d78 }
+    .financial-disclosure .summary-note { margin: 12px 0 0; font-size: 13px; color: var(--muted) }
+
+    .summary-side { background: #0d1420; border: 1px solid #1d2738; border-radius: 12px; padding: 18px; display: grid; gap: 14px }
+    .summary-side h3 { margin: 0 0 2px; font-size: 16px }
+    .side-row { display: flex; align-items: center; gap: 12px }
+    .side-row span { display: block; font-size: 13px; color: var(--muted) }
+    .side-row strong { display: block; margin-top: 2px; font-size: 18px }
+    .side-total { border-top: 1px solid #1d2738; padding-top: 14px }
+    .kpi-ico.green { background: #10301f; color: var(--green) }
+    .summary-side .primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; font-size: 15px; border-radius: 10px }
+    .summary-side .primary:disabled { opacity: .5; cursor: not-allowed }
+
+    @media (max-width: 1100px) {
+      .analysis-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+    }
+    @media (max-width: 720px) {
+      .workspace-head .workspace-actions { width: 100%; flex-wrap: wrap }
+      #journeyStepper { gap: 6px; padding: 0 10px !important }
+      #journeyStepper > button strong { display: none }
+      #journeyStepper > button.active strong { display: inline }
+      .analysis-kpis { grid-template-columns: 1fr }
+      .competence-list-head { display: none !important }
+      #analysisStageContent .competence-accordion > summary { grid-template-columns: minmax(0, 1fr) auto !important }
+      #analysisStageContent .competence-num { display: none }
+    }
+    #companyWorkspace [data-workflow-screen="analysis"] .workflow-screen-head { display: none }
