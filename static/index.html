@@ -3113,10 +3113,6 @@ CFDF: ${malhaRegistration}
     const chargesDateInput = document.getElementById('chargesUpdateDate');
     chargesDateInput.value = new Date().toLocaleDateString('en-CA');
 
-
-
-
-
     document.getElementById('openClientReport').addEventListener('click', () => {
       if (!currentProcessId) {
         showMessage('Nenhum processo foi iniciado.', true);
